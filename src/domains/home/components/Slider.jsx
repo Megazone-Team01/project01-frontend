@@ -24,9 +24,6 @@ const items = [
     },
 ]
 
-
-
-
 function SliderBanner() {
 
     return (
