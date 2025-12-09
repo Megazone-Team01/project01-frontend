@@ -10,6 +10,6 @@ export default function useHomeLectures(activeTab) {
         placeholderData: (prev) => prev
         // eact Query는 새 데이터를 가져오는 동안 이전 데이터를 그대로 화면에 보여줌
     });
-
+    console.log("react query: ",lectures);
     return {lectures, isLoading};
 }

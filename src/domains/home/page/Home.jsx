@@ -20,7 +20,6 @@ export default function Home() {
         return <Loading />
     }
 
-
     return (
         <div>
             <SliderBanner/>

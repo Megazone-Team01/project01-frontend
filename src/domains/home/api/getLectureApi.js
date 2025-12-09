@@ -1,6 +1,11 @@
+import axiosInstance from "@/common/api/axiosInstance.js";
 
 export async function getLectureApi(activeTab) {
-    const response = await fetch(`${process.env.REACT_APP_API_URL}/home?type=${activeTab}`);
-    if(!response.ok) throw new Error("데이터 요청을 실패했습니다.");
-    return response.json();
+    try {
+        const {data} = await axiosInstance.get(`/home?type=${activeTab}`);
+        return data; // axios는 data에 실제 응답이 들어있음
+    } catch (error) {
+        console.error("API 요청 실패:", error);
+        throw new Error("데이터 요청을 실패했습니다.");
+    }
 }
