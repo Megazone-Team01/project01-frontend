@@ -9,6 +9,10 @@ export const getOrganizations = async () => {
                 name: null
             }
         });
-    console.log( res )
+    return res.data;
+}
+
+export const getOrganization = async (organizationId) => {
+    const res = await axiosInstance.get("/v1/organization/" + organizationId);
     return res.data;
 }

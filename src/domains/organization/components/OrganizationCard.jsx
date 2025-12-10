@@ -1,9 +1,11 @@
 
 import {Card, CardDescription, CardHeader} from "../../../components/ui/card.js";
 
-export const OrganizationCard = ( { organization } ) => {
+export const OrganizationCard = ( { organization, onClick } ) => {
     return (
-        <Card className="bg-neutral-50 hover:bg-neutral-100 hover:cursor-pointer flex h-64">
+        <Card className="bg-neutral-50 hover:bg-neutral-100 hover:cursor-pointer flex h-64"
+            onClick={ onClick }
+        >
             <div className="w-1/2 flex justify-center items-center">
                 { /* 아카데미를 대표하는 사진을 저장하는 곳이 없음. 추후 추가되면 수정 필요 */}
                 <img className="w-full h-full object-cover" src={"./test.jpeg"} alt={"test Image"}/>

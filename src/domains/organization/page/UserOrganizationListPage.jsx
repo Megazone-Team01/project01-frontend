@@ -2,6 +2,7 @@ import OrganizationCard from "../components/OrganizationCard.jsx";
 import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "../../../components/ui/select.js";
 import {useEffect, useState} from "react";
 import {getOrganizations} from "../api/organizationApi.js";
+import {useNavigate} from "react-router";
 
 
 
@@ -9,6 +10,8 @@ export const UserOrganizationListPage = () => {
     const [ organizations, setOrganizations ] = useState([]);
     const [ loading, setLoading ] = useState(false);
     const [error, setError] = useState(null);
+
+    const navigate = useNavigate();
 
     useEffect( () => {
         const fetchOrganizations = async () => {
@@ -50,7 +53,7 @@ export const UserOrganizationListPage = () => {
             <div className="grid grid-cols-3 gap-3 p-3">
                 {
                     organizations.map( (organization, index) => (
-                        <OrganizationCard key={index} organization={organization} />
+                        <OrganizationCard onClick={() => navigate("/organization/" + organization.id)} key={index} organization={organization} />
                     ))
                 }
             </div>
