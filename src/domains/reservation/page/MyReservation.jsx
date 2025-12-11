@@ -2,14 +2,14 @@ import { useState, useEffect } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import { CalendarDays, History } from "lucide-react"; // 아이콘 이름 수정
+import { CalendarDays, History } from "lucide-react";
 import ReservationCard from "../components/ReservationCard";
 import { reservationApi } from "@/domains/reservation/api/reservationApi";
 
 function MyReservation() {
     const [reservations, setReservations] = useState([]);
     const [loading, setLoading] = useState(true);
-    const [showPast, setShowPast] = useState(false); // 변수명 직관적으로 변경
+    const [showPast, setShowPast] = useState(false);
     const [error, setError] = useState(null);
 
     // 데이터 불러오기
@@ -31,7 +31,7 @@ function MyReservation() {
         fetchReservations();
     }, []);
 
-    // 프론트엔드에서 날짜 기준 분류
+    // 날짜 기준 분류
     const now = new Date();
     const upcomingReservations = reservations.filter(
         r => new Date(r.startAt) >= now
@@ -40,7 +40,6 @@ function MyReservation() {
         r => new Date(r.startAt) < now
     );
 
-    // 로딩 스켈레톤 UI
     if (loading) {
         return (
             <div className="container mx-auto py-8 px-4 max-w-3xl space-y-4">
@@ -84,7 +83,7 @@ function MyReservation() {
                         </div>
                         <h3 className="text-lg font-semibold text-gray-900">예약된 내역이 없습니다</h3>
                         <p className="text-gray-500 mb-6 max-w-sm">
-                            새로운 상담이나 스터디룸을 예약해보세요.
+                            새로운 상담이나 회의실을 예약해보세요.
                         </p>
                         <Button onClick={() => window.location.href = '/'}>
                             예약하러 가기
