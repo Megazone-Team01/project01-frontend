@@ -19,7 +19,6 @@ export default function useSignupForm() {
     const [emailError, setEmailError] = useState("");
     const [passwordError, setPasswordError] = useState("");
     const [passwordConfirmError, setPasswordConfirmError] = useState("");
-    const [isPostcodeOpen, setIsPostcodeOpen] = useState(false);
 
     // 비밀번호 표시
     const [showPassword, setShowPassword] = useState(false);
