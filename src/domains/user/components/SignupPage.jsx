@@ -64,11 +64,11 @@ export default function SignupPage() {
                         </button>
                     </div>
                     {/* 에러 출력 */}
-                        {passwordError && (
-                            <div className="absolute left-full ml-1 top-1/2 -translate-y-1/2 bg-red-500 text-white text-xs px-2 py-0.5 rounded whitespace-nowrap">
-                                {passwordError}
-                            </div>
-                        )}
+                    {passwordError && (
+                        <div className="absolute left-full ml-1 top-1/2 -translate-y-1/2 bg-red-500 text-white text-xs px-2 py-0.5 rounded whitespace-nowrap">
+                            {passwordError}
+                        </div>
+                    )}
                 </div>
 
 
