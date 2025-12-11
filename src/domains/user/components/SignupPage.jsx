@@ -3,9 +3,13 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "../../../components/ui/radio-group.js";
 import useSignupForm from "../hook/useSignupForm";
+import { EyeIcon, EyeSlashIcon } from "@heroicons/react/24/outline";
+
 
 export default function SignupPage() {
-    const { form, handleChange, handlePhoneChange, handleSubmit, loading, error, phoneError } = useSignupForm();
+    const { form, handleChange, handlePhoneChange, handleEmailChange, handlePasswordChange, handlePasswordConfirmChange,
+            handleSubmit, loading, error, phoneError, emailError, passwordError, passwordConfirmError,
+            showPassword, setShowPassword, showPasswordConfirm, setShowPasswordConfirm,setForm, setError } = useSignupForm();
 
     return (
         <form onSubmit={handleSubmit}>
@@ -13,40 +17,95 @@ export default function SignupPage() {
             <div className="flex flex-col gap-4">
                 {/* 이메일 */}
                 <div className="flex flex-col gap-1">
-                <Label htmlFor="email">이메일</Label>
-                <Input
-                    id="email"
-                    name="email"
-                    value={form.email}
-                    onChange={handleChange}
-                    placeholder="이메일을 입력하세요"
-                />
+                    <div className="flex items-center gap-2">
+                        <div className="relative flex items-center">
+                            <Label htmlFor="email" className="whitespace-nowrap">
+                                이메일
+                            </Label>
+                                {emailError && (
+                                    <div className="absolute left-full ml-1 top-1/2 -translate-y-1/2 bg-red-500 text-white text-xs px-2 py-0.5 rounded whitespace-nowrap">
+                                        {emailError}
+                                    </div>
+                                )}
+                        </div>
+                    </div>
+                    <Input
+                        id="email"
+                        name="email"
+                        value={form.email}
+                        onChange={handleEmailChange}
+                        placeholder="이메일을 입력하세요"
+                    />
                 </div>
+
 
                 {/* 비밀번호 */}
-                <div className="flex flex-col gap-1">
+                <div className="flex flex-col gap-1 relative">
                     <Label htmlFor="password">비밀번호</Label>
-                    <Input
-                        id="password"
-                        name="password"
-                        type="password"
-                        value={form.password}
-                        onChange={handleChange}
-                        placeholder="비밀번호를 입력하세요"
-                    />
+                    <div className="relative">
+                        <Input
+                            id="password"
+                            name="password"
+                            type={showPassword ? "text" : "password"}
+                            value={form.password}
+                            onChange={handlePasswordChange}
+                            placeholder="비밀번호를 입력하세요"
+                        />
+                        <button
+                            type="button"
+                            className="absolute right-2 top-1/2 -translate-y-1/2"
+                            onClick={() => setShowPassword(!showPassword)}
+                        >
+                            {showPassword ? (
+                                <EyeSlashIcon className="w-5 h-5" />
+                            ) : (
+                                <EyeIcon className="w-5 h-5" />
+                            )}
+                        </button>
+                    </div>
+                    {/* 에러 출력 */}
+                        {passwordError && (
+                            <div className="absolute left-full ml-1 top-1/2 -translate-y-1/2 bg-red-500 text-white text-xs px-2 py-0.5 rounded whitespace-nowrap">
+                                {passwordError}
+                            </div>
+                        )}
                 </div>
 
+
                 {/* 비밀번호 확인 */}
-                <div className="flex flex-col gap-1">
+                <div className="flex flex-col gap-1 relative">
                     <Label htmlFor="passwordConfirm">비밀번호 확인</Label>
-                    <Input
-                        id="passwordConfirm"
-                        name="passwordConfirm"
-                        type="password"
-                        value={form.passwordConfirm}
-                        onChange={handleChange}
-                        placeholder="비밀번호를 다시 입력하세요"
-                    />
+
+                    <div className="relative">
+                        <Input
+                            id="passwordConfirm"
+                            name="passwordConfirm"
+                            type={showPasswordConfirm ? "text" : "password"}
+                            value={form.passwordConfirm}
+                            onChange={handlePasswordConfirmChange}
+                            placeholder="비밀번호를 다시 입력하세요"
+                        />
+
+                        {/* 비밀번호 확인 가능한 버튼 */}
+                        <button
+                            type="button"
+                            className="absolute right-2 top-1/2 -translate-y-1/2"
+                            onClick={() => setShowPasswordConfirm(!showPasswordConfirm)}
+                        >
+                            {showPasswordConfirm ? (
+                                <EyeSlashIcon className="w-5 h-5" />
+                            ) : (
+                                <EyeIcon className="w-5 h-5" />
+                            )}
+                        </button>
+                    </div>
+
+                    {/* 에러 출력 */}
+                    {passwordConfirmError && (
+                        <div className="absolute left-full ml-1 top-1/2 -translate-y-1/2 bg-red-500 text-white text-xs px-2 py-0.5 rounded whitespace-nowrap">
+                            {passwordConfirmError}
+                        </div>
+                    )}
                 </div>
 
                 {/* 이름 */}
