@@ -9,7 +9,7 @@ function MainLayout(){
         <>
             <div className="min-h-screen py-20 px-4 sm:px-8 md:px-30">
                 <Header />
-                <div className="max-w-9xl mx-auto py-10">
+                <div className="max-w-9xl mx-auto">
                     <Outlet/>
                 </div>
             </div>
