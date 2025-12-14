@@ -16,8 +16,6 @@ export default function Home() {
     const [activeTab, setActiveTab] = useState("online");
     const { lectures, isLoading } = useHomeLectures(activeTab);
 
-
-
     return (
         <div>
             <SliderBanner/>
