@@ -6,13 +6,16 @@ import Offline from "@/domains/lecture/offline/page/Offline.jsx";
 import OfflineDetail from "@/domains/lecture/offline/page/OfflineDetail.jsx";
 import Online from "@/domains/lecture/online/page/Online.jsx";
 import OnlineDetail from "@/domains/lecture/online/page/OnlineDetail.jsx";
+import LectureLayout from "@/domains/lecture/components/Layout/LectureLayout.jsx";
+
+
 
 function CommonRouter(){
     return  (
         <Routes>
             <Route element={<MainLayout/>}>
                 <Route path="/" element={<Home />}/>
-                <Route path="/lecture">
+                <Route path="/lecture" element={<LectureLayout/>}>
                     <Route path="offline" element={<Offline />}/>
                     <Route path="offlineId/:offlineId" element={<OfflineDetail />} />
 
