@@ -1,16 +1,41 @@
-
-
 import {Card, CardContent, CardHeader, CardTitle} from "@/components/ui/card.js";
 import {Button} from "@/components/ui/button.js";
 import {Input} from "@/components/ui/input.js";
 import {useLocation} from "react-router";
+import SelectBox from "@/domains/lecture/components/common/SelectBox.jsx";
+import {useDispatch, useSelector} from "react-redux";
+import {useState} from "react";
+import {executeSearch} from "@/common/store/lecture/lectureStore.js";
 
 
+
+const SEARCH_TYPES = [
+    { code: 1, label: '최신순' },
+    { code: 2, label: '날짜순' },
+    { code: 3, label: '인기순' }
+];
 
 
 function SearchBox() {
+
     const location = useLocation();
-    const lectureName = location.pathname === "online" ? "온라인" : "오프라인";
+    const dispatch = useDispatch();
+    const [keyword, setKeyword] = useState('');
+
+
+    const lectureName = location.pathname.includes("online")  ? "온라인" : "오프라인";
+
+    const handleKeyPress = (e) => {
+        if (e.key === 'Enter') {
+            handleSearch();
+        }
+    };
+
+    const handleSearch = () => {
+        console.log(keyword);
+        dispatch(executeSearch(keyword));
+    }
+    console.log(useSelector(state => state.lecture.searchType))
     return (
         <div>
             <Card>
@@ -22,13 +47,19 @@ function SearchBox() {
                         <Input
                             className="p-5 w-1/2 placeholder:opacity-75"
                             type="text"
-                            name="search"
-                            placeholder="Search here..."
+                            value={keyword}
+                            onChange={(e) => setKeyword(e.target.value)}
+                            onKeyDown={handleKeyPress}
+                            placeholder="강의를 검색해주세요..."
                         />
-                        <Button className="rounded-4xl block">검색</Button>
+                        <Button
+                            onClick={handleSearch}
+                            className="rounded-4xl block">검색
+                        </Button>
                     </div>
                 </CardContent>
             </Card>
+            <SelectBox />
         </div>
     )
 }
