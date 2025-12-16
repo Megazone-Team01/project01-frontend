@@ -7,9 +7,34 @@ import {InputGroup, InputGroupAddon, InputGroupInput} from "@/components/ui/inpu
 import {Search} from "lucide-react";
 import {RadioGroup, RadioGroupItem} from "@/components/ui/radio-group.js";
 import {Label} from "@/components/ui/label.js";
+import {useEffect, useState} from "react";
+import {getOrganizations, deleteOrganization} from "@/domains/admin/api/organizationApi.js";
 
 
 export const AdminOrganizationList = () => {
+    const [ organizations, setOrganizations ] = useState([]);
+
+    const deleteById = async ( id ) => {
+        const flag = confirm( "이 기관을 삭제하시겠습니까?" )
+        console.log( flag )
+        if( flag ){
+            const data = await deleteOrganization( id, 1 );
+            console.log( data );
+            alert( "삭제 되었습니다" )
+
+            const ref = await getOrganizations();
+            setOrganizations(ref);
+        }
+    }
+
+    useEffect(() => {
+        const fetchData = async () => {
+            const data = await getOrganizations();
+            setOrganizations(data);
+        }
+        fetchData();
+    }, [])
+
     return (
         <Card className="w-full min-h-80 bg-white">
             <CardHeader>
@@ -59,28 +84,40 @@ export const AdminOrganizationList = () => {
                             <TableHead className="text-center"> 전화번호 </TableHead>
                             <TableHead className="text-center"> 홈페이지 </TableHead>
                             <TableHead className="w-[100px] text-center"> 유형 </TableHead>
+                            <TableHead className="w-[100px] text-center"> 상태 </TableHead>
                             <TableHead className="w-[300px] text-center"> 작업 </TableHead>
                         </TableRow>
                     </TableHeader>
                     <TableBody>
-                        <TableRow className="hover:bg-white">
-                            <TableCell className="text-center"> 1 </TableCell>
-                            <TableCell className="text-center"> 1 </TableCell>
-                            <TableCell className="text-center"> 1 </TableCell>
-                            <TableCell className="text-center"> 1 </TableCell>
-                            <TableCell className="text-center"> 1 </TableCell>
-                            <TableCell className="text-center"> 1 </TableCell>
-                            <TableCell className="text-center flex justify-center">
-                                <ButtonGroup>
-                                    <Button
-                                        className="bg-white text-green-500 hover:bg-white hover:font-bold hover:cursor-pointer"> 수정 </Button>
-                                    <Button
-                                        className="bg-white text-red-500 hover:bg-white hover:font-bold hover:cursor-pointer"> 삭제 </Button>
-                                    <Button
-                                        className="bg-white text-black hover:bg-white hover:font-bold hover:cursor-pointer"> 정보 </Button>
-                                </ButtonGroup>
-                            </TableCell>
-                        </TableRow>
+                        {
+                            organizations.map((organization, index) => (
+                                <TableRow key={index} className="hover:bg-white">
+                                    <TableCell className="text-center"> { organization.id } </TableCell>
+                                    <TableCell className="text-center"> { organization.name } </TableCell>
+                                    <TableCell className="text-center"> { organization.ownerName } </TableCell>
+                                    <TableCell className="text-center"> { organization.tel } </TableCell>
+                                    <TableCell className="text-center"> { organization.url } </TableCell>
+                                    <TableCell className="text-center">
+                                        { organization.isOnline === 0 ? "온/오프라인" :
+                                            organization.isOnline === 1 ? "온라인" : "오프라인"
+                                        }
+                                    </TableCell>
+                                    <TableCell className="text-center"> { organization.deleted ? "삭제됨 " : "활성화" } </TableCell>
+                                    <TableCell className="text-center flex justify-center">
+                                        <ButtonGroup>
+                                            <Button
+                                                className="bg-white text-green-500 hover:bg-white hover:font-bold hover:cursor-pointer"> 수정 </Button>
+                                            <Button
+                                                className="bg-white text-red-500 hover:bg-white hover:font-bold hover:cursor-pointer"
+                                                onClick={ () => deleteById(organization.id) }
+                                            > 삭제 </Button>
+                                            <Button
+                                                className="bg-white text-black hover:bg-white hover:font-bold hover:cursor-pointer"> 정보 </Button>
+                                        </ButtonGroup>
+                                    </TableCell>
+                                </TableRow>
+                            ))
+                        }
                     </TableBody>
                 </Table>
             </CardContent>
