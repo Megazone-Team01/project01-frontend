@@ -6,6 +6,7 @@ import {useState} from "react";
 import {AdminOrganizationList} from "@/domains/admin/page/AdminOrganizationList.jsx";
 import AdminUserList from "@/domains/admin/page/AdminUserList.jsx";
 import AdminLectureList from "@/domains/admin/page/AdminLectureList.jsx";
+import AdminUserCreatePage from "@/domains/admin/page/AdminUserCreatePage.jsx";
 
 
 export const AdminMainPage = () => {
@@ -30,6 +31,8 @@ export const AdminMainPage = () => {
                           <AdminOrganizationList />
                       : selected === 1 ?
                           <AdminUserList />
+                      : selected === 2 ?
+                          <AdminUserCreatePage />
                       : selected === 6 ?
                           <AdminLectureList />
                       : null
