@@ -7,9 +7,13 @@ import {InputGroup, InputGroupAddon, InputGroupInput} from "@/components/ui/inpu
 import {Search} from "lucide-react";
 import {RadioGroup, RadioGroupItem} from "@/components/ui/radio-group.js";
 import {Label} from "@/components/ui/label.js";
+import {useState} from "react";
+import {Empty, EmptyTitle} from "@/components/ui/empty.js";
 
 
 export const AdminLectureList = () => {
+    const [ lectures, setLectures] = useState([]);
+
     return (
         <Card className="w-full min-h-80 bg-white">
             <CardHeader>
@@ -45,39 +49,46 @@ export const AdminLectureList = () => {
                         </RadioGroup>
                     </div>
                 </div>
-                <Table>
-                    <TableHeader>
-                        <TableRow className="hover:bg-white">
-                            <TableHead className="w-[70px] text-center"> 강의 ID </TableHead>
-                            <TableHead className="text-center"> 강의 이름 </TableHead>
-                            <TableHead className="text-center"> 소속 기관 </TableHead>
-                            <TableHead className="text-center"> 강사 </TableHead>
-                            <TableHead className="text-center"> 영상 파일 </TableHead>
-                            <TableHead className="w-[100px] text-center"> 유형 </TableHead>
-                            <TableHead className="w-[300px] text-center"> 작업 </TableHead>
-                        </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                        <TableRow className="hover:bg-white">
-                            <TableCell className="text-center"> 1 </TableCell>
-                            <TableCell className="text-center"> 1 </TableCell>
-                            <TableCell className="text-center"> 1 </TableCell>
-                            <TableCell className="text-center"> 1 </TableCell>
-                            <TableCell className="text-center"> 1 </TableCell>
-                            <TableCell className="text-center"> 1 </TableCell>
-                            <TableCell className="text-center flex justify-center">
-                                <ButtonGroup>
-                                    <Button
-                                        className="bg-white text-green-500 hover:bg-white hover:font-bold hover:cursor-pointer"> 수정 </Button>
-                                    <Button
-                                        className="bg-white text-red-500 hover:bg-white hover:font-bold hover:cursor-pointer"> 삭제 </Button>
-                                <Button
-                                    className="bg-white text-black hover:bg-white hover:font-bold hover:cursor-pointer"> 정보 </Button>
-                            </ButtonGroup>
-                        </TableCell>
-                    </TableRow>
-                </TableBody>
-            </Table>
+                {
+                    lectures.length === 0 ?
+                        <Empty>
+                            <EmptyTitle> 강의가 존재하지 않습니다 </EmptyTitle>
+                        </Empty>
+                        :
+                        <Table>
+                            <TableHeader>
+                                <TableRow className="hover:bg-white">
+                                    <TableHead className="w-[70px] text-center"> 강의 ID </TableHead>
+                                    <TableHead className="text-center"> 강의 이름 </TableHead>
+                                    <TableHead className="text-center"> 소속 기관 </TableHead>
+                                    <TableHead className="text-center"> 강사 </TableHead>
+                                    <TableHead className="text-center"> 영상 파일 </TableHead>
+                                    <TableHead className="w-[100px] text-center"> 유형 </TableHead>
+                                    <TableHead className="w-[300px] text-center"> 작업 </TableHead>
+                                </TableRow>
+                            </TableHeader>
+                            <TableBody>
+                                <TableRow className="hover:bg-white">
+                                    <TableCell className="text-center"> 1 </TableCell>
+                                    <TableCell className="text-center"> 1 </TableCell>
+                                    <TableCell className="text-center"> 1 </TableCell>
+                                    <TableCell className="text-center"> 1 </TableCell>
+                                    <TableCell className="text-center"> 1 </TableCell>
+                                    <TableCell className="text-center"> 1 </TableCell>
+                                    <TableCell className="text-center flex justify-center">
+                                        <ButtonGroup>
+                                            <Button
+                                                className="bg-white text-green-500 hover:bg-white hover:font-bold hover:cursor-pointer"> 수정 </Button>
+                                            <Button
+                                                className="bg-white text-red-500 hover:bg-white hover:font-bold hover:cursor-pointer"> 삭제 </Button>
+                                            <Button
+                                                className="bg-white text-black hover:bg-white hover:font-bold hover:cursor-pointer"> 정보 </Button>
+                                        </ButtonGroup>
+                                    </TableCell>
+                                </TableRow>
+                            </TableBody>
+                        </Table>
+                }
         </CardContent>
 </Card>
 )
