@@ -47,24 +47,24 @@ export default function useLoginForm() {
         }
 
         try {
-                setLoading(true);
-                setError("");
+            setLoading(true);
+            setError("");
 
-                const result = await login(form);
+            const result = await login(form);
 
-                // 백엔드 GetLoginResponse가 있으면 로그인 성공
-                if (result?.id) {
-                    alert(`로그인 성공! 환영합니다, ${result.name}`);
-                    navigate("/"); // 홈화면으로 이동
-                } else {
-                    setError("로그인에 실패했습니다.");
-                }
-            } catch (err) {
-                // 서버에서 내려준 메시지가 있으면 표시
-                setError(err.response?.data?.message || "서버 오류가 발생했습니다.");
-            } finally {
-                setLoading(false);
+            // 백엔드 GetLoginResponse가 있으면 로그인 성공
+            if (result?.id) {
+                alert(`로그인 성공! 환영합니다, ${result.name}`);
+                navigate("/"); // 홈화면으로 이동
+            } else {
+                setError("로그인에 실패했습니다.");
             }
+        } catch (err) {
+            // 서버에서 내려준 메시지가 있으면 표시
+            setError(err.response?.data?.message || "서버 오류가 발생했습니다.");
+        } finally {
+            setLoading(false);
+        }
     };
 
     return {
