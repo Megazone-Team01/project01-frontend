@@ -7,15 +7,6 @@ import {useDispatch, useSelector} from "react-redux";
 import {useState} from "react";
 import {executeSearch} from "@/common/store/lecture/lectureStore.js";
 
-
-
-const SEARCH_TYPES = [
-    { code: 1, label: '최신순' },
-    { code: 2, label: '날짜순' },
-    { code: 3, label: '인기순' }
-];
-
-
 function SearchBox() {
 
     const location = useLocation();
