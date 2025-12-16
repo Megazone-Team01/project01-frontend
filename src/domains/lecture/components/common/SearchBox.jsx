@@ -59,7 +59,9 @@ function SearchBox() {
                     </div>
                 </CardContent>
             </Card>
-            <SelectBox />
+
+                <SelectBox />
+
         </div>
     )
 }

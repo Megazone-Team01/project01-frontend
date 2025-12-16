@@ -17,7 +17,7 @@ function CommonRouter(){
                 <Route path="/" element={<Home />}/>
                 <Route path="/lecture" element={<LectureLayout/>}>
                     <Route path="offline" element={<Offline />}/>
-                    <Route path="offlineId/:offlineId" element={<OfflineDetail />} />
+                    <Route path="offline/:offlineId" element={<OfflineDetail />} />
 
                     <Route path="online" element={<Online />}/>
                     <Route path="online/:onlineId" element={<OnlineDetail />} />

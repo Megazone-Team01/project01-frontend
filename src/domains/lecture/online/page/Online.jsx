@@ -7,7 +7,7 @@ function Online() {
     const dispatch = useDispatch();
     const {searchKeword, searchType, page}= useSelector((state) => state.lecture);
     const {
-        data:offlineData,
+        data:onlineList,
         isLoading,
         isError
     } = useLectures("online", searchType, page, searchKeword);
@@ -15,6 +15,7 @@ function Online() {
     const handlePageChange = (newPage) => {
         dispatch(setPage(newPage));
     };
+    console.log("onlineData: ", onlineList);
     return (
         <>
             <div>online</div>
