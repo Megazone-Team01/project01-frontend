@@ -7,6 +7,8 @@ import {AdminOrganizationList} from "@/domains/admin/page/AdminOrganizationList.
 import AdminUserList from "@/domains/admin/page/AdminUserList.jsx";
 import AdminLectureList from "@/domains/admin/page/AdminLectureList.jsx";
 import AdminUserCreatePage from "@/domains/admin/page/AdminUserCreatePage.jsx";
+import AdminOrganizationCreatePage from "@/domains/admin/page/AdminOrganizationCreatePage.jsx";
+import AdminLectureCreatePage from "@/domains/admin/page/AdminLectreCreatePage.jsx";
 
 
 export const AdminMainPage = () => {
@@ -29,12 +31,16 @@ export const AdminMainPage = () => {
                           </div>
                       : selected === 3 ?
                           <AdminOrganizationList />
+                      : selected === 4 ?
+                          <AdminOrganizationCreatePage />
                       : selected === 1 ?
                           <AdminUserList />
                       : selected === 2 ?
                           <AdminUserCreatePage />
                       : selected === 6 ?
                           <AdminLectureList />
+                      : selected === 7 ?
+                          <AdminLectureCreatePage />
                       : null
                   }
               </div>
