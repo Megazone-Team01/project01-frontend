@@ -4,6 +4,8 @@ import AdminBarChart from "@/domains/admin/components/AdminBarChart.jsx";
 import AdminTodoBoard from "@/domains/admin/components/AdminTodoBoard.jsx";
 import {useState} from "react";
 import {AdminOrganizationList} from "@/domains/admin/page/AdminOrganizationList.jsx";
+import AdminUserList from "@/domains/admin/page/AdminUserList.jsx";
+import AdminLectureList from "@/domains/admin/page/AdminLectureList.jsx";
 
 
 export const AdminMainPage = () => {
@@ -26,6 +28,10 @@ export const AdminMainPage = () => {
                           </div>
                       : selected === 3 ?
                           <AdminOrganizationList />
+                      : selected === 1 ?
+                          <AdminUserList />
+                      : selected === 6 ?
+                          <AdminLectureList />
                       : null
                   }
               </div>
