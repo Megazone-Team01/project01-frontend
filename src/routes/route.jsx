@@ -1,4 +1,4 @@
-import {Routes, Route} from "react-router";
+import { Routes, Route } from "react-router";
 import MainLayout from "@/components/layout/MainLayout.jsx";
 import Home from "@/domains/home/page/Home.jsx";
 import Sign from "@/domains/user/page/Sign.jsx";
@@ -9,9 +9,14 @@ import OnlineDetail from "@/domains/lecture/online/page/OnlineDetail.jsx";
 import LectureLayout from "@/domains/lecture/components/Layout/LectureLayout.jsx";
 
 
+import MyReservation from "@/domains/reservation/page/MyReservation.jsx";
+import RoomList from "@/domains/room/page/RoomList.jsx";
+import Login from "@/domains/user/page/Login.jsx";
 
-function CommonRouter(){
-    return  (
+function CommonRouter() {
+
+
+    return (
         <Routes>
             <Route element={<MainLayout/>}>
                 <Route path="/" element={<Home />}/>
@@ -23,10 +28,16 @@ function CommonRouter(){
                     <Route path="online/:onlineId" element={<OnlineDetail />} />
                 </Route>
 
-                <Route path="/sign" element={<Sign />}/>
+          
+                <Route path="/reservations/my" element={<MyReservation />} />
+                <Route path="/rooms" element={<RoomList />} />
+                {/* <Route path="/room/:roomId" element={<RoomReserve />} /> */}
+                <Route path="/sign" element={<Sign />} />
+                <Route path="/login" element={<Login />}/>
             </Route>
         </Routes>
     )
 }
 
 export default CommonRouter;
+
