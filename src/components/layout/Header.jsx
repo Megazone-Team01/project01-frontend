@@ -27,8 +27,8 @@ import {useEffect, useState} from "react";
 
 const menus = [
     {
-        name: "Onlone",
-        to: "/online",
+        name: "Online",
+        to: "lecture/online",
         items: [
             {
                 name: "Leaderboards",
@@ -59,7 +59,7 @@ const menus = [
     },
     {
         name: "Offline",
-        to: "/Offline",
+        to: "lecture/offline",
         items: [
             {
                 name: "Remote Jobs",
@@ -145,7 +145,7 @@ export default function Header({isLoggedIn,hasNotifications,hasMessages}) {
         >
             <div className="flex items-center">
                 <Link to="/" className="font-bold tracking-tight text-lg">
-                    Megazon Academy
+                    LinkEd
                 </Link>
                 <Separator orientation="vertical" className="h-6 mx-4" />
                 <NavigationMenu>
