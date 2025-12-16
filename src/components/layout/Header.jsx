@@ -27,7 +27,7 @@ import {useEffect, useState} from "react";
 
 const menus = [
     {
-        name: "Onlone",
+        name: "Online",
         to: "lecture/online",
         items: [
             {
@@ -59,7 +59,7 @@ const menus = [
     },
     {
         name: "Offline",
-        to: "lecture/Offline",
+        to: "lecture/offline",
         items: [
             {
                 name: "Remote Jobs",
