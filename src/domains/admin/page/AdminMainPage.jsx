@@ -12,6 +12,7 @@ import AdminLectureCreatePage from "@/domains/admin/page/AdminLectreCreatePage.j
 import AdminOrganizationJudgePage from "@/domains/admin/page/AdminOrganizationJudgePage.jsx";
 import AdminLectureJudgePage from "@/domains/admin/page/AdminLectureJudgePage.jsx";
 import AdminCategoryPage from "@/domains/admin/page/AdminCategoryPage.jsx";
+import AdminDayPage from "@/domains/admin/page/AdminDayPage.jsx";
 
 
 export const AdminMainPage = () => {
@@ -50,6 +51,8 @@ export const AdminMainPage = () => {
                           <AdminLectureJudgePage />
                       : selected === 9 ?
                           <AdminCategoryPage />
+                      : selected === 10 ?
+                          <AdminDayPage />
                       : null
                   }
               </div>
