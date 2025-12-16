@@ -3,6 +3,7 @@ import MainLayout from "@/components/layout/MainLayout.jsx";
 import Home from "@/domains/home/page/Home.jsx";
 import Sign from "@/domains/user/page/Sign.jsx";
 import MyReservation from "@/domains/reservation/page/MyReservation.jsx";
+import RoomList from "@/domains/room/page/RoomList.jsx";
 
 function CommonRouter() {
 
@@ -11,7 +12,9 @@ function CommonRouter() {
         <Routes>
             <Route element={<MainLayout />}>
                 <Route path="/" element={<Home />} />
-                <Route path="/my/reservations" element={<MyReservation />} />
+                <Route path="/reservations/my" element={<MyReservation />} />
+                <Route path="/rooms" element={<RoomList />} />
+                {/* <Route path="/room/:roomId" element={<RoomReserve />} /> */}
                 <Route path="/sign" element={<Sign />} />
             </Route>
         </Routes>
@@ -19,3 +22,4 @@ function CommonRouter() {
 }
 
 export default CommonRouter;
+
