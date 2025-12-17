@@ -35,6 +35,17 @@ export const AdminLectureCreatePage = () => {
     const [ organizationOpen, setOrganizationOpen ] = useState(false);
     const [ categoryOpen, setCategoryOpen ] = useState(false);
 
+    const [ formData, setFormData ] = useState({
+        name: '',
+        organizationId: '',
+        organizationName: '',
+        teacherId: '',
+        teacherName: '',
+        category: '',
+        description: '',
+        type: ''
+    })
+
     return (
         <div>
             <Dialog open={userOpen} onClose={() => setUserOpen(false)}>
@@ -43,7 +54,6 @@ export const AdminLectureCreatePage = () => {
                 <Card className="bg-white">
                     <CardContent>
                         <form>
-
                             <FieldGroup>
                                 <FieldSet>
                                     <FieldLegend className="font-bold"> 강의 추가 </FieldLegend>
@@ -55,38 +65,37 @@ export const AdminLectureCreatePage = () => {
                                     <Field className="flex">
                                         <FieldLabel> 기관 </FieldLabel>
                                         <InputGroup>
-                                            <InputGroupInput placeholder="기관을 선택해주세요" disabled />
+                                            <InputGroupInput placeholder="기관을 선택해주세요" disabled/>
                                             <InputGroupAddon align="inline-end">
                                                 <DialogTrigger>
-                                                    <InputGroupButton onClick={() => setOrganizationOpen(true)} className="hover:cursor-pointer" variant="ghost">
-                                                        <MoreHorizontal />
+                                                    <InputGroupButton onClick={() => setOrganizationOpen(true)}
+                                                                      className="hover:cursor-pointer" variant="ghost">
+                                                        <MoreHorizontal/>
                                                     </InputGroupButton>
                                                 </DialogTrigger>
                                             </InputGroupAddon>
                                         </InputGroup>
                                     </Field>
                                     <Field className="flex">
-                                        <FieldLabel> 대표자 </FieldLabel>
+                                        <FieldLabel> 강사 </FieldLabel>
                                         <InputGroup>
-                                            <InputGroupInput placeholder="대표자를 선택해주세요" disabled />
+                                            <InputGroupInput placeholder="강사를 선택해주세요" disabled/>
                                             <InputGroupAddon align="inline-end">
                                                 <DialogTrigger>
-                                                    <InputGroupButton onClick={() => setUserOpen(true)} className="hover:cursor-pointer" variant="ghost">
-                                                        <MoreHorizontal />
+                                                    <InputGroupButton onClick={() => setUserOpen(true)}
+                                                                      className="hover:cursor-pointer" variant="ghost">
+                                                        <MoreHorizontal/>
                                                     </InputGroupButton>
                                                 </DialogTrigger>
                                             </InputGroupAddon>
                                         </InputGroup>
-                                    </Field>
-                                    <Field className="flex">
-                                        <FieldLabel> 전화번호 </FieldLabel>
-                                        <Input type="text" placeholder="01000000000" required/>
-                                        <FieldDescription> -를 제외한 숫자만 입력해주세요 </FieldDescription>
                                     </Field>
                                     <Field orientation="horizontal">
                                         <FieldLabel> 카테고리 </FieldLabel>
                                         <FieldDescription> 1 - 2 - 3</FieldDescription>
-                                        <Button onClick={() => setCategoryOpen(true)} type="button" className="hover:bg-gray-50 hover:text-gray-500 hover:cursor-pointer" variant="outline"> 카테고리 지정 </Button>
+                                        <Button onClick={() => setCategoryOpen(true)} type="button"
+                                                className="hover:bg-gray-50 hover:text-gray-500 hover:cursor-pointer"
+                                                variant="outline"> 카테고리 지정 </Button>
                                     </Field>
                                     <Field>
                                         <FieldLabel htmlFor="feedback"> 소개 </FieldLabel>
@@ -96,8 +105,29 @@ export const AdminLectureCreatePage = () => {
                                             rows={4}
                                         />
                                     </Field>
+                                    <div className="w-full max-w-md">
+                                        <FieldLabel> 유형 </FieldLabel>
+                                        <RadioGroup className="pt-3 flex">
+                                            <Field orientation="horizontal">
+                                                <RadioGroupItem
+                                                    onClick={() => setFormData({...formData, type: 1})}
+                                                    value="online" id="plan-monthly"/>
+                                                <FieldLabel htmlFor="plan-monthly" className="font-normal">
+                                                    온라인
+                                                </FieldLabel>
+                                            </Field>
+                                            <Field orientation="horizontal">
+                                                <RadioGroupItem
+                                                    onClick={() => setFormData({...formData, type: 2})}
+                                                    value="offline" id="plan-monthly"/>
+                                                <FieldLabel htmlFor="plan-monthly" className="font-normal">
+                                                    오프라인
+                                                </FieldLabel>
+                                            </Field>
+                                        </RadioGroup>
+                                    </div>
                                 </FieldSet>
-                                <FieldSeparator />
+                                <FieldSeparator/>
                                 <FieldSet>
                                     <Field>
                                         <FieldLabel> 개인 정보 수집 동의 </FieldLabel>
@@ -128,11 +158,11 @@ export const AdminLectureCreatePage = () => {
                 </Card>
                 <DialogContent className="w-full max-w-2/3">
                     <DialogHeader> 카테고리 </DialogHeader>
-                    <Separator />
+                    <Separator/>
                     <div className="flex flex-col w-full">
                         <div className="flex gap-1">
                             <InputGroup>
-                                <InputGroupInput />
+                                <InputGroupInput/>
                                 <InputGroupAddon>
                                     <Search />
                                 </InputGroupAddon>
