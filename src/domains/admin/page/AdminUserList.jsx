@@ -9,12 +9,15 @@ import {RadioGroup, RadioGroupItem} from "@/components/ui/radio-group.js";
 import {Label} from "@/components/ui/label.js";
 import {useEffect, useState} from "react";
 import {Empty, EmptyTitle} from "@/components/ui/empty.js";
-import {deleteUser, getUsers} from "@/domains/admin/api/userApi.js";
-import axiosInstance from "@/common/api/axiosInstance.js";
+import {deleteUser, getUsers, getUsersWithFilter} from "@/domains/admin/api/userApi.js";
 
 
 export const AdminUserList = () => {
     const [ users, setUsers ] = useState([]);
+    const [ filter, setFilter ] = useState({
+        type: null,
+        userRole: null
+    });
 
     useEffect(() => {
         const fetchUser = async () => {
@@ -23,6 +26,11 @@ export const AdminUserList = () => {
         }
         fetchUser();
     }, []);
+
+    const filterSearch = async () => {
+        const data = await getUsersWithFilter( filter );
+        setUsers(data)
+    }
 
     const deleteById = async ( id, deletedBy ) => {
         const flag = confirm( "사용자를 삭제하시겠습니까?" )
@@ -52,26 +60,66 @@ export const AdminUserList = () => {
                                 <Search/>
                             </InputGroupAddon>
                         </InputGroup>
-                        <Button className="hover:cursor-pointer" variant="ghost"> 검색 </Button>
+                        <Button className="hover:cursor-pointer"
+                                type="button"
+                                onClick={ () => filterSearch()}
+                                variant="ghost"> 검색 </Button>
+                    </div>
+                    <div className="flex p-2">
+                        <h3 className="pr-3"> 역할 </h3>
+                        <RadioGroup className="flex" defaultValue="all">
+                            <div className="flex items-center gap-3">
+                                <RadioGroupItem
+                                    onClick={ () => setFilter( { ...filter, userRole: null } ) }
+                                    value="all" id="r1"/>
+                                <Label htmlFor="r1"> 전체 </Label>
+                            </div>
+                            <div className="flex items-center gap-3">
+                                <RadioGroupItem
+                                    onClick={ () => setFilter( { ...filter, userRole: "STUDENT" } ) }
+                                    value="student" id="r2"/>
+                                <Label htmlFor="r2"> 학생 </Label>
+                            </div>
+                            <div className="flex items-center gap-3">
+                                <RadioGroupItem
+                                    onClick={ () => setFilter( { ...filter, userRole: "TEACHER" } ) }
+                                    value="teacher" id="r3"/>
+                                <Label htmlFor="r3"> 강사 </Label>
+                            </div>
+                            <div className="flex items-center gap-3">
+                                <RadioGroupItem
+                                    onClick={ () => setFilter( { ...filter, userRole: "ADMIN" } ) }
+                                    value="admin" id="r3"/>
+                                <Label htmlFor="r3"> 관리자 </Label>
+                            </div>
+                        </RadioGroup>
                     </div>
                     <div className="flex p-2">
                         <h3 className="pr-3"> 유형 </h3>
                         <RadioGroup className="flex" defaultValue="all">
                             <div className="flex items-center gap-3">
-                                <RadioGroupItem value="all" id="r1"/>
+                                <RadioGroupItem
+                                    onClick={ () => setFilter( { ...filter, type: null } ) }
+                                    value="all" id="r1"/>
                                 <Label htmlFor="r1"> 전체 </Label>
                             </div>
                             <div className="flex items-center gap-3">
-                                <RadioGroupItem value="student" id="r2"/>
-                                <Label htmlFor="r2"> 학생 </Label>
+                                <RadioGroupItem
+                                    onClick={ () => setFilter( { ...filter, type: 1 } ) }
+                                    value="online" id="r2"/>
+                                <Label htmlFor="r2"> 온라인 </Label>
                             </div>
                             <div className="flex items-center gap-3">
-                                <RadioGroupItem value="teacher" id="r3"/>
-                                <Label htmlFor="r3"> 강사 </Label>
+                                <RadioGroupItem
+                                    onClick={ () => setFilter( { ...filter, type: 2 } ) }
+                                    value="offline" id="r3"/>
+                                <Label htmlFor="r3"> 오프라인 </Label>
                             </div>
                             <div className="flex items-center gap-3">
-                                <RadioGroupItem value="admin" id="r3"/>
-                                <Label htmlFor="r3"> 관리자 </Label>
+                                <RadioGroupItem
+                                    onClick={ () => setFilter( { ...filter, type: 0 } ) }
+                                    value="both" id="r3"/>
+                                <Label htmlFor="r3"> 온/오프라인 </Label>
                             </div>
                         </RadioGroup>
                     </div>

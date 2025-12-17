@@ -4,21 +4,21 @@ import {Fragment} from "react";
 import {Separator} from "@/components/ui/separator.js";
 
 
-export const AdminTodoBoard = () => {
+export const AdminTodoBoard = ( { data, name } ) => {
     return (
-        <Card className="w-full bg-white">
+        <Card className="w-full bg-white hover:cursor-pointer hover:bg-gray-50">
             <CardHeader>
-                <CardTitle className="text-center"> 승인 대기 </CardTitle>
+                <CardTitle className="text-center"> { name } </CardTitle>
+                <Separator className="my-1" />
             </CardHeader>
-            <CardContent>
+            <CardContent className="" >
                 <ScrollArea>
                     <Fragment>
-                        <span className="text-sm"> df </span>
-                        <Separator className="my-1" />
-                    </Fragment>
-                    <Fragment>
-                        <span className="text-sm"> df </span>
-                        <Separator className="my-1" />
+                        <div className="flex">
+                            <p className="text-sm flex-1"> 1 </p>
+                            <p className="text-sm flex-5"> 뭐든지 이름 </p>
+                            <p className="text-sm flex-3"> 2025.12.19 </p>
+                        </div>
                     </Fragment>
                 </ScrollArea>
             </CardContent>

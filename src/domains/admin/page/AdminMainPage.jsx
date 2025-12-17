@@ -17,6 +17,11 @@ import AdminDayPage from "@/domains/admin/page/AdminDayPage.jsx";
 
 export const AdminMainPage = () => {
     const [ selected, setSelected ] = useState(0);
+    const [ judgeOrganization, setJudgeOrganization ] = useState( [] );
+    const [ judgeLecture, setJudgeLecture ] = useState( [] );
+    const [ recentUser, setRecentUser ] = useState( [] );
+    const [ recentLecture, setRecentLecture ] = useState( [] );
+
     return (
       <div className="">
           <SidebarProvider>
@@ -27,11 +32,11 @@ export const AdminMainPage = () => {
                   </div>
                   {
                       selected === 0 ?
-                          <div className="grid grid-cols-3 gap-2">
-                              <AdminTodoBoard />
-                              <AdminTodoBoard />
-                              <AdminTodoBoard />
-                              <AdminTodoBoard />
+                          <div className="grid grid-cols-2 gap-2">
+                              <AdminTodoBoard name={"승인 대기 기관"} data={judgeOrganization} />
+                              <AdminTodoBoard name={"승인 대기 강의"} data={judgeLecture} />
+                              <AdminTodoBoard name={"최근 가입한 사용자"} data={recentUser} />
+                              <AdminTodoBoard name={"최근 추가된 강의"} data={recentLecture} />
                           </div>
                       : selected === 3 ?
                           <AdminOrganizationList />
