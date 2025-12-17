@@ -52,3 +52,8 @@ export const rejectOrganization = async ( id ) => {
     const res = await axiosInstance.post( "/organization/" + id + "/reject" )
     return res.status;
 }
+
+export const getTeacherInOrganization = async ( id ) => {
+    const res = await axiosInstance.get( "/user/teacher/organization/" + id );
+    return res.data;
+}
