@@ -22,7 +22,11 @@ export const getUsersWithFilter = async ( filter ) => {
                 type: filter.type
             }
         });
-    console.log( res )
+    return res.data;
+}
+
+export const getOrganizationTeacher = async () => {
+    const res = await axiosInstance.get( "/user/teacher/organization" );
     return res.data;
 }
 
