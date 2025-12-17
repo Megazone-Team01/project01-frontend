@@ -5,7 +5,7 @@ import {useLocation} from "react-router";
 import SelectBox from "@/domains/lecture/components/common/SelectBox.jsx";
 import {useDispatch, useSelector} from "react-redux";
 import {useState} from "react";
-import {executeSearch} from "@/common/store/lecture/lectureStore.js";
+import {executeSearch} from "@/common/store/lecture/lectureSlice.js";
 
 function SearchBox() {
 

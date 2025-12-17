@@ -1,6 +1,6 @@
 // store/index.js
 import { configureStore } from '@reduxjs/toolkit';
-import lectureReducer from './lecture/lectureStore.js';
+import lectureReducer from './lecture/lectureSlice.js';
 import authReducer from './auth/authSlice.js';
 
 export const store = configureStore({
