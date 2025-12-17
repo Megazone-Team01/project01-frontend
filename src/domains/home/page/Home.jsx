@@ -3,6 +3,7 @@ import LectureCard from "@/components/common/LectureCard.jsx";
 import { useState} from "react";
 import useHomeLectures from "@/domains/home/hook/useHomeLectures.js";
 import {TabButtons} from "@/domains/home/components/TabButtons.jsx";
+import { useSelector } from "react-redux";
 import Loading from "@/components/common/loading.jsx";
 import {Link} from "react-router";
 
@@ -17,6 +18,10 @@ const tabs = [
 export default function Home() {
     const [activeTab, setActiveTab] = useState("online");
     const { lectures, isLoading } = useHomeLectures(activeTab);
+
+    const auth = useSelector((state) => state.auth);
+    console.log("홈 페이지 auth 상태:", auth);
+
 
     return (
         <div>

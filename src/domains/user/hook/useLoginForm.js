@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { useNavigate } from "react-router";
+import { useDispatch } from "react-redux";
 import { login } from "../api/login";
+import { loginSuccess } from "@/auth";
 
 export default function useLoginForm() {
     const [form, setForm] = useState({
@@ -16,6 +18,7 @@ export default function useLoginForm() {
 
     // 로그인 후 홈 화면으로 이동
     const navigate = useNavigate();
+    const dispatch = useDispatch();
 
     const handleChange = (e) => {
         setForm({ ...form, [e.target.name]: e.target.value });
@@ -51,15 +54,35 @@ export default function useLoginForm() {
 
             const result = await login(form);
 
-            // 백엔드 GetLoginResponse가 있으면 로그인 성공
-            if (result?.id) {
+            if (result?.accessToken) {
+                // localStorage 저장 (새로고침 대비)
+                localStorage.setItem("accessToken", result.accessToken);
+
+                // Redux 상태 저장
+                dispatch(
+                    loginSuccess({
+                        user: {
+                            id: result.id,
+                            name: result.name,
+                            email: result.email,
+                        },
+                        accessToken: result.accessToken,
+                    })
+                );
+                // RefreshToken 저장
+                localStorage.setItem("refreshToken", result.refreshToken);
+
                 alert(`로그인 성공! 환영합니다, ${result.name}`);
-                navigate("/"); // 홈화면으로 이동
+
+                console.log("로그인 성공! 액세스토큰:", result.accessToken);
+                console.log("유저 정보:", { id: result.id, email: result.email, name: result.name });
+
+                navigate("/");
+
             } else {
                 setError("로그인에 실패했습니다.");
             }
         } catch (err) {
-            // 서버에서 내려준 메시지가 있으면 표시
             setError(err.response?.data?.message || "서버 오류가 발생했습니다.");
         } finally {
             setLoading(false);
