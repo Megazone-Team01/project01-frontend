@@ -1,5 +1,5 @@
 import { useSelector, useDispatch } from "react-redux";
-import { logout } from "@/auth/authSlice";
+import { logout } from "@/common/store/auth/authSlice";
 import { Link , useNavigate } from "react-router";
 import {
     NavigationMenu,
@@ -125,7 +125,7 @@ export default function Header({isLoggedIn,hasNotifications,hasMessages}) {
     const dispatch = useDispatch();
     const navigate = useNavigate();
 
-    const { isAuthenticated, user } = useSelector((state) => state.auth);
+    const { isAuthenticated, user } = useSelector((state) => state.auth ?? {});
 
     useEffect(() => {
         const handleScroll = () => {

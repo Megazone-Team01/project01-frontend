@@ -16,11 +16,4 @@ createRoot(document.getElementById('root')).render(
             </BrowserRouter>
         </QueryClientProvider>
     </Provider>
-    <QueryClientProvider client={queryClient}>
-        <BrowserRouter>
-            <Provider store={store}>
-                <App/>
-            </Provider>
-        </BrowserRouter>
-    </QueryClientProvider>
 )
