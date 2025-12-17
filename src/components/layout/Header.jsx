@@ -1,5 +1,6 @@
-
-import {Link} from "react-router";
+import { useSelector, useDispatch } from "react-redux";
+import { logout } from "@/auth/authSlice";
+import { Link , useNavigate } from "react-router";
 import {
     NavigationMenu,
     NavigationMenuItem,
@@ -121,6 +122,10 @@ const menus = [
 export default function Header({isLoggedIn,hasNotifications,hasMessages}) {
 
     const [isScrolled, setIsScrolled] = useState(false);
+    const dispatch = useDispatch();
+    const navigate = useNavigate();
+
+    const { isAuthenticated, user } = useSelector((state) => state.auth);
 
     useEffect(() => {
         const handleScroll = () => {
@@ -134,6 +139,12 @@ export default function Header({isLoggedIn,hasNotifications,hasMessages}) {
         window.addEventListener('scroll', handleScroll);
         return () => window.removeEventListener('scroll', handleScroll);
     }, []);
+
+    // 로그아웃
+    const handleLogout = () => {
+        dispatch(logout()); // Redux 상태 초기화 + localStorage 제거
+        navigate("/");      // 홈으로 이동
+    };
 
     return (
         <nav
@@ -187,7 +198,7 @@ export default function Header({isLoggedIn,hasNotifications,hasMessages}) {
                     ))}</NavigationMenuList>
                 </NavigationMenu>
             </div>
-            {!isLoggedIn ?(
+            {isAuthenticated ?(
                 <div className="flex item-center gap-2">
                     <Button size="icon" variant="ghost" asChild className="relative">
                         <Link to="/my/notifications">
@@ -218,7 +229,7 @@ export default function Header({isLoggedIn,hasNotifications,hasMessages}) {
                             <DropdownMenuLabel className="flex flex-col gap-1">
                                 <span className="font-medium">hello</span>
                                 <span className="text-xs text-muted-foreground">
-                    @username
+                    {user.name}
                   </span>
                             </DropdownMenuLabel>
                             <DropdownMenuSeparator/>
@@ -243,11 +254,9 @@ export default function Header({isLoggedIn,hasNotifications,hasMessages}) {
                                 </DropdownMenuItem>
                             </DropdownMenuGroup>
                             <DropdownMenuSeparator/>
-                            <DropdownMenuItem asChild className="cursor-pointer">
-                                <Link to="/auth/logout">
-                                    <LogOutIcon className="size-4 mr-2" />
-                                    Logout
-                                </Link>
+                            <DropdownMenuItem className="cursor-pointer" onClick={handleLogout}>
+                                <LogOutIcon className="size-4 mr-2" />
+                                Logout
                             </DropdownMenuItem>
                         </DropdownMenuContent>
                     </DropdownMenu>
@@ -256,10 +265,10 @@ export default function Header({isLoggedIn,hasNotifications,hasMessages}) {
             ) : (
                 <div className="flex item-center gap-4">
                     <Button variant="outline" asChild>
-                        <Link to="/auth/login">Login</Link>
+                        <Link to="/login">Login</Link>
                     </Button>
                     <Button asChild>
-                        <Link to="/auth/join">Sign Up</Link>
+                        <Link to="/sign">Sign Up</Link>
                     </Button>
                 </div>
             )}
