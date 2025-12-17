@@ -32,6 +32,7 @@ export const AdminUserCreatePage = () => {
     });
     const [ pwMatching, setPwMatching ] = useState(false);
     const [ allowDataCollecting, setAllowDataCollecting ] = useState(false);
+    const [ showPassword, setShowPassword] = useState(false);
 
     console.log( formData )
 
@@ -45,6 +46,10 @@ export const AdminUserCreatePage = () => {
         else setPwMatching(true)
 
         setFormData( { ...formData, password: value } );
+    }
+
+    const displayPassword = () => {
+        setShowPassword(!showPassword);
     }
 
     const validate = async () => {
@@ -130,9 +135,11 @@ export const AdminUserCreatePage = () => {
                                 <InputGroup>
                                     <InputGroupInput
                                         onChange={(e) => checkPasswordConfirm(e.target.value)} value={formData.password}
-                                        type="password"/>
-                                    <InputGroupAddon className="text-gray-400 hover:cursor-pointer hover:text-gray-500"
-                                                     align="inline-end">
+                                        type={ showPassword ? "text" : "password" }/>
+                                    <InputGroupAddon
+                                        onClick={ () => displayPassword() }
+                                        className="text-gray-400 hover:cursor-pointer hover:text-gray-500"
+                                        align="inline-end">
                                         표시
                                     </InputGroupAddon>
                                 </InputGroup>
