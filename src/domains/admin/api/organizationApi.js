@@ -29,3 +29,26 @@ export const createOrganization = async ( data ) => {
     } );
     return res.status;
 }
+
+export const getWaitingOrganizations = async () => {
+    const res = await axiosInstance.get( "/organization", {
+        params: {
+            ownerId: null,
+            statusCode: 0,
+            name: null,
+            isOnline: null
+        }
+    } );
+    console.log( res )
+    return res.data;
+}
+
+export const approveOrganization = async ( id ) => {
+    const res = await axiosInstance.post( "/organization/" + id + "/approve" )
+    return res.status;
+}
+
+export const rejectOrganization = async ( id ) => {
+    const res = await axiosInstance.post( "/organization/" + id + "/reject" )
+    return res.status;
+}
