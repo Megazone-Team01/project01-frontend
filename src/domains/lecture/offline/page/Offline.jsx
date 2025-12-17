@@ -1,6 +1,6 @@
 
 import {useDispatch, useSelector} from "react-redux";
-import {setPage} from "@/common/store/lecture/lectureStore.js";
+import {setPage} from "@/common/store/lecture/lectureSlice.js";
 import useLectures from "@/domains/lecture/hook/useLectures.js";
 import Loading from "@/components/common/loading.jsx";
 import CourseCard from "@/domains/lecture/components/common/CourseCard.jsx";

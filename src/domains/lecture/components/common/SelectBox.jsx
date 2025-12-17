@@ -1,6 +1,6 @@
 import {Button} from "@/components/ui/button.js";
 import {useDispatch, useSelector} from "react-redux";
-import {setSearchType} from "@/common/store/lecture/lectureStore.js";
+import {setSearchType} from "@/common/store/lecture/lectureSlice.js";
 
 
 const SEARCH_TYPES = [
