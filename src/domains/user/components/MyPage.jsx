@@ -2,7 +2,7 @@ import React from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
-import { EyeIcon, EyeSlashIcon } from "@heroicons/react/24/outline";
+import { RadioGroup, RadioGroupItem } from "../../../components/ui/radio-group.js";
 
 export default function MyPage({
     userInfo,
@@ -34,6 +34,24 @@ export default function MyPage({
                 </div>
 
                 <div className="profile-info flex-1 flex flex-col gap-4">
+                {/* 회원 역할 */}
+                <div className="flex flex-col gap-1">
+                    <Label>회원 역할</Label>
+                    <RadioGroup
+                        value={userInfo.role}
+                        onValueChange={(val) => setForm({ ...form, role: val })}
+                        className="flex gap-4"
+                    >
+                        {["STUDENT", "TEACHER"].map((val) => (
+                            <div key={val} className="flex items-center gap-2">
+                                <RadioGroupItem value={val} id={val.toLowerCase()} />
+                                <Label htmlFor={val.toLowerCase()}>
+                                    {val === "STUDENT" ? "학생" : "강사"}
+                                </Label>
+                              </div>
+                            ))}
+                    </RadioGroup>
+                </div>
                     {/* 이름 */}
                     <div className="flex flex-col gap-1">
                         <Label htmlFor="name">이름</Label>
@@ -96,62 +114,37 @@ export default function MyPage({
                         />
                     </div>
 
-                    {/* 비밀번호 */}
-                    <div className="flex flex-col gap-1 relative">
-                        <Label htmlFor="password">비밀번호</Label>
-                        <div className="relative">
-                            <Input
-                                id="password"
-                                name="password"
-                                type={showPassword ? "text" : "password"}
-                                value={userInfo.password}
-                                onChange={handleChange}
-                                placeholder="비밀번호를 입력하세요"
-                                disabled={!isEditing}
-                            />
-                            {isEditing && (
-                                <button
-                                    type="button"
-                                    className="absolute right-2 top-1/2 -translate-y-1/2"
-                                    onClick={() => setShowPassword(!showPassword)}
-                                >
-                                    {showPassword ? (
-                                        <EyeSlashIcon className="w-5 h-5" />
-                                    ) : (
-                                        <EyeIcon className="w-5 h-5" />
-                                    )}
-                                </button>
-                            )}
-                        </div>
+                    {/* 이메일 */}
+                    <div className="flex flex-col gap-1">
+                        <Label htmlFor="email">이메일</Label>
+                        <Input
+                            id="email"
+                            name="email"
+                            value={userInfo.email}
+                            onChange={handleChange}
+                            placeholder="이메일을 입력하세요"
+                            disabled={!isEditing}
+                        />
                     </div>
 
-                    {/* 비밀번호 확인 */}
-                    <div className="flex flex-col gap-1 relative">
-                        <Label htmlFor="passwordConfirm">비밀번호 확인</Label>
-                        <div className="relative">
-                            <Input
-                                id="passwordConfirm"
-                                name="passwordConfirm"
-                                type={showPasswordConfirm ? "text" : "password"}
-                                value={userInfo.passwordConfirm}
-                                onChange={handleChange}
-                                placeholder="비밀번호를 다시 입력하세요"
-                                disabled={!isEditing}
-                            />
-                            {isEditing && (
-                                <button
-                                    type="button"
-                                    className="absolute right-2 top-1/2 -translate-y-1/2"
-                                    onClick={() => setShowPasswordConfirm(!showPasswordConfirm)}
-                                >
-                                    {showPasswordConfirm ? (
-                                        <EyeSlashIcon className="w-5 h-5" />
-                                    ) : (
-                                        <EyeIcon className="w-5 h-5" />
-                                    )}
-                                </button>
-                            )}
-                        </div>
+
+                    {/* 회원 타입 */}
+                    <div className="flex flex-col gap-1">
+                        <Label>회원 타입</Label>
+                        <RadioGroup
+                            value={userInfo.type}
+                            onValueChange={(val) => setForm({ ...form, type: val })}
+                            className="flex gap-4"
+                        >
+                            {["ALL", "ONLINE", "OFFLINE"].map((val) => (
+                                <div key={val} className="flex items-center gap-2">
+                                    <RadioGroupItem value={val} id={val.toLowerCase()} />
+                                    <Label htmlFor={val.toLowerCase()}>
+                                        {val === "ALL" ? "모두" : val === "ONLINE" ? "온라인" : "오프라인"}
+                                    </Label>
+                                </div>
+                            ))}
+                        </RadioGroup>
                     </div>
 
 
