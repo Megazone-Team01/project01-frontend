@@ -13,7 +13,9 @@ export default function ApproveOrganizationPage() {
             <table className="w-full table-fixed border-collapse">
                 <thead>
                     <tr className="bg-gray-100">
-                        <th className="px-4 py-2 w-[150px] text-left whitespace-nowrap">강사 이름</th>
+                        <th className="px-4 py-2 w-[150px] text-left whitespace-nowrap">기관 명</th>
+                        <th className="px-4 py-2 w-[150px] text-left whitespace-nowrap">가입 요청자 명</th>
+                        <th className="px-4 py-2 w-[80px] text-left whitespace-nowrap">역할</th>
                         <th className="px-4 py-2 w-[250px] text-left whitespace-nowrap">이메일</th>
                         <th className="px-4 py-2 w-[150px] text-left whitespace-nowrap">폰번호</th>
                         <th className="px-4 py-2 w-[80px] text-center whitespace-nowrap">승인</th>
@@ -23,7 +25,11 @@ export default function ApproveOrganizationPage() {
                 <tbody>
                     {pendingRequests.map((req) => (
                         <tr key={req.id} className="hover:bg-gray-50">
+                            <td className="px-4 py-2">{req.organizationName}</td>
                             <td className="px-4 py-2">{req.name}</td>
+                            <td className="px-4 py-2">{req.role === "STUDENT" ? "학생" :
+                                                         req.role === "TEACHER" ? "강사" :
+                                                         "알 수 없음"}</td>
                             <td className="px-4 py-2">{req.email}</td>
                             <td className="px-4 py-2">{req.phone}</td>
                             <td className="px-4 py-2 text-center">

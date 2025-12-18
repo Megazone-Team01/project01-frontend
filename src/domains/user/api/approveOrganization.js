@@ -4,6 +4,7 @@ import axiosInstance from "@/common/api/axiosInstance.js";
 export const getPendingJoinRequests = async () => {
     try {
         const { data } = await axiosInstance.get("/v1/user/approveOrganization");
+        console.log(data);
         return data;
     } catch (error) {
         throw error;
