@@ -2,8 +2,25 @@ import axiosInstance from "../../../common/api/axiosInstance.js"
 
 export const getLectures = async () => {
     const res = await axiosInstance.get("/lectures/filter")
-    console.log( res )
     return res.data;
+}
+
+export const getJudgedLectures = async () => {
+    const res = await axiosInstance.get("/lectures/filter", {
+        params: {
+            status: 0
+        }
+    })
+    return res.data;
+}
+
+export const approveLecture = async ( id ) => {
+    const res = await axiosInstance.post("/lectures/approve/" + id )
+    return res.status;
+}
+export const rejectLecture = async ( id ) => {
+    const res = await axiosInstance.post("/lectures/reject/" + id )
+    return res.status;
 }
 
 export const createLecture = async (data) => {
