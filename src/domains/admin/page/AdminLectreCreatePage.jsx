@@ -22,17 +22,21 @@ import {Checkbox} from "@/components/ui/checkbox.js";
 import {Label} from "@/components/ui/label.js";
 import {Button} from "@/components/ui/button.js";
 import {Textarea} from "@/components/ui/textarea.js";
-import {MoreHorizontal, Search} from "lucide-react";
+import {ChevronDownIcon, MoreHorizontal, Search} from "lucide-react";
 import {Dialog, DialogContent, DialogFooter, DialogHeader, DialogTrigger} from "@/components/ui/dialog.js";
 import {useEffect, useState} from "react";
 import {Table, TableBody, TableCell, TableHead, TableHeader, TableRow} from "@/components/ui/table.js";
 import {Separator} from "@/components/ui/separator.js";
 import {ScrollArea} from "@/components/ui/scroll-area.js";
-import {Popover} from "@/components/ui/popover.js";
+import {Popover, PopoverContent} from "@/components/ui/popover.js";
 import {Empty, EmptyTitle} from "@/components/ui/empty.js";
 import {getCategories} from "@/domains/admin/api/categoryApi.js";
 import {getOrganizations, getTeacherInOrganization} from "@/domains/admin/api/organizationApi.js";
 import {getRooms} from "@/domains/admin/api/roomApi.js";
+import {fileUpload} from "@/common/api/fileApi.js";
+import {createLecture} from "@/domains/admin/api/lectureApi.js";
+import {PopoverTrigger} from "@radix-ui/react-popover";
+import {Calendar} from "@/components/ui/calendar.js";
 
 
 export const AdminLectureCreatePage = () => {
@@ -51,6 +55,9 @@ export const AdminLectureCreatePage = () => {
     const [ fourth, setFourth ] = useState([]);
     const [ fifth, setFifth ] = useState([]);
 
+    const [ startAtOpen, setStartAtOpen ] = useState( false  );
+    const [ endAtOpen, setEndAtOpen ] = useState( false  );
+
 
     const [ isOnline, setIsOnline ] = useState( true );
 
@@ -64,7 +71,14 @@ export const AdminLectureCreatePage = () => {
         roomName: '',
         category: '',
         description: '',
-        type: ''
+        type: 1,
+        fileId: '',
+        maxNum: '',
+        startAt: '',
+        endAt: '',
+        startTimeAt: '',
+        endTimeAt: '',
+        day: ''
     })
 
     const changeOnOff = ( isOnline ) => {
@@ -97,7 +111,14 @@ export const AdminLectureCreatePage = () => {
     }
 
     const selectOrganization = async ( organizationId, organizationName ) => {
-        setFormData( { ...formData, organizationId: organizationId, organizationName: organizationName } );
+        setFormData( { ...formData,
+            organizationId: organizationId,
+            organizationName: organizationName,
+            teacherId: '',
+            teacherName: '',
+            roomId: '',
+            roomName: ''
+        } );
 
         await Promise.all([
             loadTeachers( organizationId ),
@@ -122,6 +143,59 @@ export const AdminLectureCreatePage = () => {
     const selectRoom = async ( roomId, roomName ) => {
         setFormData( { ...formData, roomId: roomId, roomName: roomName } );
         setRoomOpen( false )
+    }
+
+    const handleFileChange = async ( e ) => {
+        const selectedFile = e.target.files[0]
+        const data = await fileUpload( selectedFile );
+
+        setFormData( { ...formData, fileId: data.fileId })
+    }
+
+    const submitData = async () => {
+        // Check validate
+        // 시작 - 종료 날짜 체크
+        if( formData.startAt > formData.endAt ) {
+            alert( "종료일이 시작일보다 이후여야 합니다" )
+            return
+        }
+        // 공용 필수값
+        if( 
+            formData.name.length === 0 ||
+            formData.organizationId.length === 0 ||
+            formData.teacherId.length === 0 ||
+            formData.category.length === 0
+        ) {
+            alert("빈 칸이 존재합니다")
+            return
+        }
+        // 온라인 강의 필수값
+        if( formData.type === 1 ){
+            if( formData.fileId.length === 0 ) {
+                alert( "온라인 강의는 파일 업로드가 필수입니다" )
+                return
+            }
+        }
+        // 오프라인 강의 필수값
+        if( formData.type === 2 ){
+            if(
+                formData.maxNum.length === 0 ||
+                formData.roomId.length === 0 ||
+                formData.startTimeAt.length === 0 ||
+                formData.endTimeAt.length === 0 ||
+                formData.day.length === 0
+            ) {
+                alert( "오프라인 강의 필수 값들이 채워지지 않았습니다" )
+                return
+            }
+        }
+
+        const data = await createLecture( formData );
+        if( data === 200 ) {
+            alert( "강의 생성이 완료되었습니다" )
+            window.location.reload()
+        }
+        else alert( "강의 생성에 실패했습니다" )
     }
 
     useEffect(() => {
@@ -201,13 +275,66 @@ export const AdminLectureCreatePage = () => {
                                                 variant="outline"> 카테고리 지정 </Button>
                                     </Field>
                                     <Field>
+                                        <FieldLabel> 강의 기간 </FieldLabel>
+                                        <div className="flex gap-4">
+                                            <div className="flex flex-col">
+                                                <Label className="p-2 text-center"> 시작일 </Label>
+                                                <Popover open={startAtOpen} onOpenChange={setStartAtOpen}>
+                                                    <PopoverTrigger asChild>
+                                                        <Button
+                                                            variant="outline"
+                                                        >
+                                                            {formData.startAt ? formData.startAt.toLocaleDateString() : "개강일"}
+                                                            <ChevronDownIcon/>
+                                                        </Button>
+                                                    </PopoverTrigger>
+                                                    <PopoverContent className="w-auto overflow-hidden p-0">
+                                                        <Calendar
+                                                            mode="single"
+                                                            selected={formData.startAt}
+                                                            captionLayout="dropdown"
+                                                            onSelect={(date) => {
+                                                                setFormData({...formData, startAt: date})
+                                                                setStartAtOpen(false)
+                                                            }}
+                                                        />
+                                                    </PopoverContent>
+                                                </Popover>
+                                            </div>
+                                            <div className="flex flex-col">
+                                                <Label className="p-2 text-center"> 종료일 </Label>
+                                                <Popover open={endAtOpen} onOpenChange={setEndAtOpen}>
+                                                    <PopoverTrigger asChild>
+                                                        <Button
+                                                            variant="outline"
+                                                        >
+                                                            {formData.endAt ? formData.endAt.toLocaleDateString() : "종강일"}
+                                                            <ChevronDownIcon/>
+                                                        </Button>
+                                                    </PopoverTrigger>
+                                                    <PopoverContent className="w-auto overflow-hidden p-0">
+                                                        <Calendar
+                                                            mode="single"
+                                                            selected={formData.endAt}
+                                                            captionLayout="dropdown"
+                                                            onSelect={(date) => {
+                                                                setFormData({...formData, endAt: date})
+                                                                setStartAtOpen(false)
+                                                            }}
+                                                        />
+                                                    </PopoverContent>
+                                                </Popover>
+                                            </div>
+                                        </div>
+                                    </Field>
+                                    <Field>
                                         <FieldLabel htmlFor="feedback"> 소개 </FieldLabel>
                                         <Textarea
                                             id="feedback"
-                                            placeholder="기관에 대해 설명해주세요"
+                                            placeholder="강의에 대해 설명해주세요"
                                             rows={4}
                                             value={formData.description}
-                                            onChange={ (e) => setFormData( { ...formData, description: e.target.value } ) }
+                                            onChange={(e) => setFormData({...formData, description: e.target.value})}
                                         />
                                     </Field>
                                     <div className="w-full max-w-md">
@@ -215,7 +342,7 @@ export const AdminLectureCreatePage = () => {
                                         <RadioGroup className="pt-3 flex" defaultValue="online">
                                             <Field orientation="horizontal">
                                                 <RadioGroupItem
-                                                    onClick={() => changeOnOff( 1 ) }
+                                                    onClick={() => changeOnOff(1)}
                                                     value="online" id="plan-monthly"
                                                 />
                                                 <FieldLabel htmlFor="plan-monthly" className="font-normal">
@@ -224,7 +351,7 @@ export const AdminLectureCreatePage = () => {
                                             </Field>
                                             <Field orientation="horizontal">
                                                 <RadioGroupItem
-                                                    onClick={() => changeOnOff( 2 ) }
+                                                    onClick={() => changeOnOff(2)}
                                                     value="offline" id="plan-monthly"/>
                                                 <FieldLabel htmlFor="plan-monthly" className="font-normal">
                                                     오프라인
@@ -241,7 +368,9 @@ export const AdminLectureCreatePage = () => {
                                             <Field>
                                                 <FieldLabel> 강의 영상 </FieldLabel>
                                                 <Input
-                                                    type="file" />
+                                                    type="file"
+                                                    onChange={(e) => handleFileChange(e) }
+                                                />
                                             </Field>
                                         </div>
                                         :
@@ -366,7 +495,9 @@ export const AdminLectureCreatePage = () => {
                                     </Field>
                                 </FieldSet>
                                 <Field className="justify-center" orientation="horizontal">
-                                    <Button className="bg-green-500" type="submit"> 생성 </Button>
+                                    <Button
+                                        onClick={ () => submitData() }
+                                        className="bg-green-500" type="button"> 생성 </Button>
                                     <Button variant="outline" type="button"> 취소 </Button>
                                 </Field>
                             </FieldGroup>
@@ -532,12 +663,12 @@ export const AdminLectureCreatePage = () => {
                                     teachers.length > 0 ?
                                         teachers.map( (teacher, index) => (
                                             <TableRow key={index} className="hover:bg-white">
-                                                <TableCell> { teacher.id } </TableCell>
+                                                <TableCell> { teacher.userId } </TableCell>
                                                 <TableCell> { teacher.userName } </TableCell>
                                                 <TableCell> { teacher.organizationName } </TableCell>
                                                 <TableCell
                                                     className="hover:cursor-pointer hover:text-gray-400"
-                                                    onClick={() => selectTeacher( teacher.id, teacher.userName )}
+                                                    onClick={() => selectTeacher( teacher.userId, teacher.userName )}
                                                 > 선택 </TableCell>
                                             </TableRow>
                                         ))
