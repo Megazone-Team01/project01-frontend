@@ -2,7 +2,7 @@ import {Sidebar, SidebarHeader, SidebarProvider, SidebarTrigger} from "@/compone
 import AdminSidebar from "@/domains/admin/components/AdminSidebar.jsx";
 import AdminBarChart from "@/domains/admin/components/AdminBarChart.jsx";
 import AdminTodoBoard from "@/domains/admin/components/AdminTodoBoard.jsx";
-import {useState} from "react";
+import {useEffect, useState} from "react";
 import {AdminOrganizationList} from "@/domains/admin/page/AdminOrganizationList.jsx";
 import AdminUserList from "@/domains/admin/page/AdminUserList.jsx";
 import AdminLectureList from "@/domains/admin/page/AdminLectureList.jsx";
@@ -13,14 +13,31 @@ import AdminOrganizationJudgePage from "@/domains/admin/page/AdminOrganizationJu
 import AdminLectureJudgePage from "@/domains/admin/page/AdminLectureJudgePage.jsx";
 import AdminCategoryPage from "@/domains/admin/page/AdminCategoryPage.jsx";
 import AdminDayPage from "@/domains/admin/page/AdminDayPage.jsx";
+import {getWaitingOrganizations} from "@/domains/admin/api/organizationApi.js";
+import {getJudgedLectures} from "@/domains/admin/api/lectureApi.js";
 
 
 export const AdminMainPage = () => {
     const [ selected, setSelected ] = useState(0);
+
     const [ judgeOrganization, setJudgeOrganization ] = useState( [] );
     const [ judgeLecture, setJudgeLecture ] = useState( [] );
     const [ recentUser, setRecentUser ] = useState( [] );
     const [ recentLecture, setRecentLecture ] = useState( [] );
+
+    useEffect(() => {
+        const fetchData = async () => {
+            // 승인 대기 기관
+            const jOrg = await getWaitingOrganizations();
+            // 승인 대기 강의
+            const jLec = await getJudgedLectures()
+
+            // 세팅
+            setJudgeOrganization( jOrg )
+            setJudgeLecture( jLec )
+        }
+        fetchData();
+    }, []);
 
     return (
       <div className="">

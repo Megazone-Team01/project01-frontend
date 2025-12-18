@@ -57,7 +57,9 @@ export const AdminOrganizationCreatePage = () => {
 
     useEffect(() => {
         const fetchData = async () => {
-            const data = await getOrganizationTeacher();
+            const data = await getUsersWithFilter( {
+                userRole: "TEACHER"
+            });
             setTeachers(data);
         }
         fetchData();
@@ -279,7 +281,6 @@ export const AdminOrganizationCreatePage = () => {
                                 <TableRow>
                                     <TableHead className="w-[100px] text-center"> ID </TableHead>
                                     <TableHead className="w-[200px] text-center"> 이름 </TableHead>
-                                    <TableHead className="text-center"> 소속 </TableHead>
                                     <TableHead className="w-[80px] text-center"> 작업 </TableHead>
                                 </TableRow>
                             </TableHeader>
@@ -289,10 +290,9 @@ export const AdminOrganizationCreatePage = () => {
                                         teachers.map( (teacher, index) => (
                                             <TableRow key={index} className="hover:bg-white">
                                                 <TableCell> { teacher.id } </TableCell>
-                                                <TableCell> { teacher.userName } </TableCell>
-                                                <TableCell> { teacher.organizationName } </TableCell>
+                                                <TableCell> { teacher.name } </TableCell>
                                                 <TableCell
-                                                    onClick={ () => selectTeacher( teacher.id, teacher.userName )}
+                                                    onClick={ () => selectTeacher( teacher.id, teacher.name )}
                                                     className="hover:cursor-pointer hover:text-gray-400"> 선택 </TableCell>
                                             </TableRow>
                                         ))

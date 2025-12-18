@@ -39,7 +39,6 @@ export const getWaitingOrganizations = async () => {
             isOnline: null
         }
     } );
-    console.log( res )
     return res.data;
 }
 
