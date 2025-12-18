@@ -1,7 +1,7 @@
 import React from "react";
 
-import useMyForm from "../hook/useMyForm";
-import MyPage from "../components/MyPage";
+import useMyForm from "../hook/useProfileForm";
+import ProfilePage from "../components/ProfilePage";
 
 export default function MyProfilePage() {
     const myForm = useMyForm();
@@ -9,7 +9,7 @@ export default function MyProfilePage() {
     return (
         <div className="my-profile-page">
             <h1 className="text-2xl font-bold mb-6">마이페이지</h1>
-            <MyPage {...myForm} />
+            <ProfilePage {...myForm} />
         </div>
     );
 }

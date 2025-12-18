@@ -17,7 +17,7 @@ import RoomList from "@/domains/room/page/RoomList.jsx";
 import Login from "@/domains/user/page/Login.jsx";
 import PublicRoute from "@/routes/PublicRoute.jsx";
 import PrivateRoute from "@/routes/PrivateRoute.jsx";
-import My from "@/domains/user/page/My.jsx";
+import Profile from "@/domains/user/page/Profile.jsx";
 
 function CommonRouter() {
 
@@ -34,7 +34,7 @@ function CommonRouter() {
                 {/* 로그인 상태면 접근 제한 */}
                 <Route path="/sign" element={<PublicRoute><Sign /></PublicRoute>}/>
                 <Route path="/login" element={<PublicRoute><Login /></PublicRoute>}/>
-                <Route path="/my" element={<PrivateRoute><My /></PrivateRoute>}/>
+                <Route path="/profile" element={<Profile />}/>
                 <Route path="/lecture" element={<LectureLayout/>}>
                     <Route path="offline" element={<Offline />}/>
                     <Route path="offline/:offlineId" element={<OfflineDetail />} />

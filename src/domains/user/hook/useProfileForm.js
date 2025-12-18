@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { getMyInfo, updateMyInfo } from "../api/my";
+import { getMyInfo, updateMyInfo } from "../api/profile";
 
 export default function useMyForm() {
     const [userInfo, setUserInfo] = useState({
