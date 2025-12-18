@@ -54,3 +54,8 @@ export const createUser = async ( data ) => {
     const res = await axiosInstance.post( "/user/signup", formData );
     return res.data;
 }
+
+export const getUserDetail = async ( id ) => {
+    const res = await axiosInstance.get( "/user/" + id );
+    return res.data;
+}
