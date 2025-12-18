@@ -13,6 +13,8 @@ import MyReservation from "@/domains/reservation/page/MyReservation.jsx";
 import RoomList from "@/domains/room/page/RoomList.jsx";
 import Login from "@/domains/user/page/Login.jsx";
 import PublicRoute from "@/routes/PublicRoute.jsx";
+import PrivateRoute from "@/routes/PrivateRoute.jsx";
+import My from "@/domains/user/page/My.jsx";
 
 function CommonRouter() {
 
@@ -25,6 +27,7 @@ function CommonRouter() {
                 {/* 로그인 상태면 접근 제한 */}
                 <Route path="/sign" element={<PublicRoute><Sign /></PublicRoute>}/>
                 <Route path="/login" element={<PublicRoute><Login /></PublicRoute>}/>
+                <Route path="/my" element={<PrivateRoute><My /></PrivateRoute>}/>
                 <Route path="/lecture" element={<LectureLayout/>}>
                     <Route path="offline" element={<Offline />}/>
                     <Route path="offline/:offlineId" element={<OfflineDetail />} />
@@ -37,8 +40,6 @@ function CommonRouter() {
                 <Route path="/reservations/my" element={<MyReservation />} />
                 <Route path="/rooms" element={<RoomList />} />
                 {/* <Route path="/room/:roomId" element={<RoomReserve />} /> */}
-                <Route path="/sign" element={<Sign />} />
-                <Route path="/login" element={<Login />}/>
             </Route>
         </Routes>
     )
