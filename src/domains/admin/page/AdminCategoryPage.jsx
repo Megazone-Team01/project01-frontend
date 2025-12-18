@@ -36,7 +36,7 @@ export const AdminCategoryPage = () => {
         fetchData()
     }, [])
 
-    const refreshCategory = async ( id, name, position ) => {
+    const refreshCategory = async ( id, name, description, code, position ) => {
         const data = await getCategories( id );
         if( position === 1 ){
             setFirst( data );
@@ -65,7 +65,7 @@ export const AdminCategoryPage = () => {
         }
 
         setSelected( id )
-        setFormData( { ...formData, parentId: id, parentName: name, depth: position })
+        setFormData( { ...formData, parentId: id, parentName: name, description: description, code: code, depth: position })
     }
 
     const setRootCategory = () => {
@@ -105,7 +105,7 @@ export const AdminCategoryPage = () => {
                                         key={index + "_1"}>
                                         <div
                                             className={selected === category.id ? "flex gap-1 justify-center text-sm pb-2 hover:cursor-pointer hover:font-bold bg-gray-100" : "flex gap-1 justify-center text-sm pb-2 hover:cursor-pointer hover:font-bold"}
-                                            onClick={() => refreshCategory(category.id, category.name, 2)}
+                                            onClick={() => refreshCategory(category.id, category.name, category.description, category.code,2)}
                                             >
                                             <div>
                                                 {category.name}
@@ -131,7 +131,7 @@ export const AdminCategoryPage = () => {
                                     <Fragment key={index + "_2"}>
                                         <div
                                             className={selected === category.id ? "flex gap-1 justify-center text-sm pb-2 hover:cursor-pointer hover:font-bold bg-gray-100" : "flex gap-1 justify-center text-sm pb-2 hover:cursor-pointer hover:font-bold"}
-                                            onClick={() => refreshCategory(category.id, category.name, 3)}
+                                            onClick={() => refreshCategory(category.id, category.name, category.description, category.code, 3)}
                                         >
                                             <div>
                                                 {category.name}
@@ -157,7 +157,7 @@ export const AdminCategoryPage = () => {
                                     <Fragment key={index + "_3"}>
                                         <div
                                             className={selected === category.id ? "flex gap-1 justify-center text-sm pb-2 hover:cursor-pointer hover:font-bold bg-gray-100" : "flex gap-1 justify-center text-sm pb-2 hover:cursor-pointer hover:font-bold"}
-                                            onClick={() => refreshCategory(category.id, category.name, 4)}
+                                            onClick={() => refreshCategory(category.id, category.name, category.description, category.code, 4)}
                                         >
                                             <div>
                                                 {category.name}
@@ -183,7 +183,7 @@ export const AdminCategoryPage = () => {
                                     <Fragment key={index + "_4"}>
                                         <div
                                             className={selected === category.id ? "flex gap-1 justify-center text-sm pb-2 hover:cursor-pointer hover:font-bold bg-gray-100" : "flex gap-1 justify-center text-sm pb-2 hover:cursor-pointer hover:font-bold"}
-                                            onClick={() => refreshCategory(category.id, category.name, 5)}
+                                            onClick={() => refreshCategory(category.id, category.name, category.description, category.code, 5)}
                                         >
                                             <div>
                                                 {category.name}
@@ -209,7 +209,7 @@ export const AdminCategoryPage = () => {
                                     <Fragment key={index + "_5"}>
                                         <div
                                             className={selected === category.id ? "flex gap-1 justify-center text-sm pb-2 hover:cursor-pointer hover:font-bold bg-gray-100" : "flex gap-1 justify-center text-sm pb-2 hover:cursor-pointer hover:font-bold"}
-                                            onClick={() => refreshCategory(category.id, category.name, 6)}
+                                            onClick={() => refreshCategory(category.id, category.name, category.description, category.code, 6)}
                                         >
                                             <div>
                                                 {category.name}
@@ -267,9 +267,40 @@ export const AdminCategoryPage = () => {
                     </DialogFooter>
                 </DialogContent>
             <Dialog open={updateOpen} onClose={setUpdateOpen}>
-                <DialogContent>
-
-                </DialogContent>
+                <DialogContent className="sm:max-w-md">
+                <DialogHeader>
+                    <DialogTitle> 카테고리 수정 </DialogTitle>
+                </DialogHeader>
+                <div className="flex flex-col w-full">
+                    <FieldSet>
+                        <Field>
+                            <FieldLabel> 이름 </FieldLabel>
+                            <Input
+                                onChange={ (e) => setFormData( { ...formData, name: e.target.value } )}
+                                value={formData.parentName}
+                                type="text" />
+                        </Field>
+                        <Field>
+                            <FieldLabel> 코드 </FieldLabel>
+                            <Input
+                                onChange={ (e) => setFormData( { ...formData, code: e.target.value } ) }
+                                value={formData.code}
+                                type="text" disabled/>
+                        </Field>
+                        <Field>
+                            <FieldLabel> 설명 </FieldLabel>
+                            <Input
+                                onChange={ (e) => setFormData( { ...formData, description: e.target.value } ) }
+                                value={formData.description}
+                                type="text" />
+                        </Field>
+                    </FieldSet>
+                </div>
+                <DialogFooter>
+                    <Button className="bg-green-500" variant="outline"> 추가 </Button>
+                    <Button variant="outline" onClick={() => setUpdateOpen(false) }> 닫기 </Button>
+                </DialogFooter>
+            </DialogContent>
                 <div className="flex justify-end gap-1">
                     <DialogTrigger asChild>
                         <Button
@@ -279,7 +310,7 @@ export const AdminCategoryPage = () => {
                     <DialogTrigger>
                         <Button
                             onClick={ () => setUpdateOpen(true)}
-                            className="bg-gray-500 text-white" variant="default"> 변경 </Button>
+                            className="bg-gray-500 text-white" variant="default"> 수정 </Button>
                     </DialogTrigger>
                     <Button className="bg-red-500 text-white" variant="default"> 삭제 </Button>
                 </div>
