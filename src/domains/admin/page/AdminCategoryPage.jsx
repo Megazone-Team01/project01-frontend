@@ -85,6 +85,11 @@ export const AdminCategoryPage = () => {
             alert("5차 분류에는 하위 분류를 추가할 수 없습니다" )
             return
         }
+        if( formData.code.length !== 1 ){
+            alert("코드는 한 글자만 가능합니다")
+            return
+        }
+
         const data = await createCategory( formData );
         if( data === 200 ) alert( "카테고리가 추가되었습니다" )
         else alert( "카테고리 추가에 실패했습니다" )
