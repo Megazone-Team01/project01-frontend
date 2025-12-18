@@ -9,11 +9,27 @@ import {RadioGroup, RadioGroupItem} from "@/components/ui/radio-group.js";
 import {Label} from "@/components/ui/label.js";
 import {useEffect, useState} from "react";
 import {Empty, EmptyTitle} from "@/components/ui/empty.js";
-import {getLectures} from "@/domains/admin/api/lectureApi.js";
+import {getLectureDetail, getLectures} from "@/domains/admin/api/lectureApi.js";
+import {Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle} from "@/components/ui/dialog.js";
+import {Field, FieldLabel, FieldSet} from "@/components/ui/field.js";
 
 
 export const AdminLectureList = () => {
     const [ lectures, setLectures] = useState([]);
+
+    const [ infoOpen, setInfoOpen ] = useState(false);
+    const [ formData, setFormData ] = useState({
+        createdAt: '',
+        updatedAt: '',
+        deletedAt: ''
+    })
+
+    const displayDetail = async ( id, isOnline ) => {
+        const data = await getLectureDetail( id, isOnline ? 1 : 0 );
+        setFormData( data );
+
+        setInfoOpen( true );
+    }
 
     useEffect(() => {
         const fetchLecture = async () => {
@@ -25,6 +41,7 @@ export const AdminLectureList = () => {
 
     return (
         <Card className="w-full min-h-80 bg-white">
+            <Dialog open={infoOpen} onClose={setInfoOpen}>
             <CardHeader>
                 <CardTitle> 강의 목록 조회 </CardTitle>
                 <Separator className="my-2"/>
@@ -91,6 +108,7 @@ export const AdminLectureList = () => {
                                                     <Button
                                                         className="bg-white text-red-500 hover:bg-white hover:font-bold hover:cursor-pointer"> 삭제 </Button>
                                                     <Button
+                                                        onClick={() => displayDetail( lecture.id, lecture.online )}
                                                         className="bg-white text-black hover:bg-white hover:font-bold hover:cursor-pointer"> 정보 </Button>
                                                 </ButtonGroup>
                                             </TableCell>
@@ -102,8 +120,130 @@ export const AdminLectureList = () => {
                         </Table>
                 }
         </CardContent>
-</Card>
-)
+            <DialogContent className="min-w-4/5">
+                <DialogHeader>
+                    <DialogTitle> 상세 정보 </DialogTitle>
+                </DialogHeader>
+                <div className="overflow-y-auto max-h-[60vh]">
+                    <FieldSet>
+                        <Field>
+                            <div className="flex items-center gap-3">
+                                <div className="flex flex-1 flex-col items-start gap-4 pl-5">
+                                    <div className="flex gap-2 flex-1">
+                                        <Label className="text-md font-bold"> 이름: </Label>
+                                        <Label className="text-md text-gray-500"> {formData.name} </Label>
+                                    </div>
+                                    <div className="flex gap-2 flex-1">
+                                        <Label className="text-md font-bold"> 타입: </Label>
+                                        <Label
+                                            className="text-md text-gray-500"> {formData.online ? "온라인" : "오프라인"} </Label>
+                                    </div>
+                                    <div className="flex gap-2 flex-1">
+                                        <Label className="text-md font-bold"> 제작: </Label>
+                                        <Label className="text-md text-gray-500"> {formData.organizationName} </Label>
+                                    </div>
+                                    <div className="flex gap-2 flex-1">
+                                        <Label className="text-md font-bold"> 강사: </Label>
+                                        <Label
+                                            className="text-md text-gray-500"> {formData.teacherName} </Label>
+                                    </div>
+                                    <div className="flex gap-2 flex-1">
+                                        <Label className="text-md font-bold"> 카테고리: </Label>
+                                        <Label className="text-md text-gray-500"> {formData.category} </Label>
+                                    </div>
+                                </div>
+                                <div className="flex flex-1 flex-col items-start gap-4 pl-5">
+                                    <div className="flex gap-2 flex-1">
+                                        <Label className="text-md font-bold"> 가격: </Label>
+                                        <Label className="text-md text-gray-500"> {formData.price} </Label>
+                                    </div>
+                                    <div className="flex gap-2 flex-1">
+                                        <Label className="text-md font-bold"> 시작일: </Label>
+                                        <Label
+                                            className="text-md text-gray-500"> {formData.startAt} </Label>
+                                    </div>
+                                    <div className="flex gap-2 flex-1">
+                                        <Label className="text-md font-bold"> 종료일: </Label>
+                                        <Label className="text-md text-gray-500"> {formData.endAt} </Label>
+                                    </div>
+                                    <div className="flex gap-2 flex-1">
+                                        <Label className="text-md font-bold"> 설명: </Label>
+                                        <Label
+                                            className="text-md text-gray-500"> {formData.description} </Label>
+                                    </div>
+                                </div>
+                                <div className="flex flex-1 flex-col items-start gap-4 pl-5">
+                                    <div className="flex gap-2 flex-1">
+                                        <Label className="text-md font-bold"> 생성일: </Label>
+                                        <Label
+                                            className="text-md text-gray-500"> {formData.createdAt.substring(0, 10)} </Label>
+                                    </div>
+                                    <div className="flex gap-2 flex-1">
+                                        <Label className="text-md font-bold"> 최종 수정일: </Label>
+                                        <Label
+                                            className="text-md text-gray-500"> {formData.updatedAt !== null ? formData.updatedAt.substring(0, 10) : ""} </Label>
+                                    </div>
+                                    <div className="flex gap-2 flex-1">
+                                        <Label className="text-md font-bold"> 삭제일: </Label>
+                                        <Label
+                                            className="text-md text-gray-500"> {formData.deletedAt !== null ? formData.deletedAt.substring(0, 10) : ""} </Label>
+                                    </div>
+                                </div>
+                            </div>
+                        </Field>
+                        <Separator className="my-2"/>
+                        {
+                            formData.online ?
+                                <Field>
+                                    <div className="flex flex-1 flex-col items-start gap-4 pl-5">
+                                        <div className="flex gap-2 flex-1">
+                                            <Label className="text-md font-bold"> 강의 파일: </Label>
+                                            <Label className="text-md text-gray-500"> {formData.fileUrl} </Label>
+                                        </div>
+                                        <div className="flex gap-2 flex-1">
+                                            <Label className="text-md font-bold"> 상태: </Label>
+                                            <Label
+                                                className="text-md text-gray-500"> {formData.status === 0 ? "대기중" : formData.status === 1 ? "승인" : "반려" } </Label>
+                                        </div>
+                                    </div>
+                                </Field>
+                                :
+                                <Field>
+                                    <div className="flex flex-1 flex-col items-start gap-4 pl-5">
+                                        <div className="flex gap-2 flex-1">
+                                            <Label className="text-md font-bold"> 인원 제한: </Label>
+                                            <Label className="text-md text-gray-500"> {formData.maxNum} </Label>
+                                        </div>
+                                        <div className="flex gap-2 flex-1">
+                                            <Label className="text-md font-bold"> 강의실: </Label>
+                                            <Label
+                                                className="text-md text-gray-500"> {formData.roomName} </Label>
+                                        </div>
+                                        <div className="flex gap-2 flex-1">
+                                            <Label className="text-md font-bold"> 요일: </Label>
+                                            <Label className="text-md text-gray-500"> {formData.day} </Label>
+                                        </div>
+                                        <div className="flex gap-2 flex-1">
+                                            <Label className="text-md font-bold"> 시작 시간: </Label>
+                                            <Label className="text-md text-gray-500"> {formData.startTime} </Label>
+                                        </div>
+                                        <div className="flex gap-2 flex-1">
+                                            <Label className="text-md font-bold"> 종료 시간: </Label>
+                                            <Label
+                                                className="text-md text-gray-500"> {formData.endTime} </Label>
+                                        </div>
+                                    </div>
+                                </Field>
+                        }
+                    </FieldSet>
+                </div>
+                <DialogFooter>
+                    <Button variant="outline" onClick={() => setInfoOpen(false)}> 닫기 </Button>
+                </DialogFooter>
+            </DialogContent>
+            </Dialog>
+        </Card>
+    )
 }
 
 export default AdminLectureList;

@@ -44,3 +44,9 @@ export const createLecture = async (data) => {
     const res = await axiosInstance.post( "/lectures", req );
     return res.status;
 }
+
+export const getLectureDetail = async ( id, isOnline ) => {
+    const res = await axiosInstance.get( "/lectures/" + id + "/" + isOnline );
+    console.log( res.data )
+    return res.data;
+}
