@@ -12,9 +12,11 @@ import {Empty, EmptyTitle} from "@/components/ui/empty.js";
 import {getLectureDetail, getLectures} from "@/domains/admin/api/lectureApi.js";
 import {Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle} from "@/components/ui/dialog.js";
 import {Field, FieldLabel, FieldSet} from "@/components/ui/field.js";
+import {useNavigate} from "react-router";
 
 
 export const AdminLectureList = () => {
+    const navigate = useNavigate();
     const [ lectures, setLectures] = useState([]);
 
     const [ infoOpen, setInfoOpen ] = useState(false);
@@ -198,7 +200,9 @@ export const AdminLectureList = () => {
                                     <div className="flex flex-1 flex-col items-start gap-4 pl-5">
                                         <div className="flex gap-2 flex-1">
                                             <Label className="text-md font-bold"> 강의 파일: </Label>
-                                            <Label className="text-md text-gray-500"> {formData.fileUrl} </Label>
+                                            <Label
+                                                onClick={ () => navigate("/online/" + formData.id ) }
+                                                className="text-md text-gray-500 hover:cursor-pointer hover:text-gray-700"> 강의 파일 재생하기 </Label>
                                         </div>
                                         <div className="flex gap-2 flex-1">
                                             <Label className="text-md font-bold"> 상태: </Label>

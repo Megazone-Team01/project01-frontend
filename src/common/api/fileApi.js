@@ -18,3 +18,13 @@ export const fileUpload = async ( data ) => {
         else console.error( error )
     }
 }
+
+export const loadLectureWithFile = async ( lectureId ) => {
+    try {
+        const res = await axiosInstance.get( "/file/" + lectureId + "/lecture" );
+        return res.data;
+    }
+    catch ( error ) {
+        console.error( error );
+    }
+}

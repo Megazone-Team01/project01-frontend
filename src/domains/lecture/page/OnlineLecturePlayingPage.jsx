@@ -3,16 +3,37 @@ import {Card, CardContent, CardFooter, CardHeader, CardTitle} from "@/components
 import {Field, FieldDescription, FieldSet, FieldTitle} from "@/components/ui/field.js";
 import {Button} from "@/components/ui/button.js";
 import {ArrowLeft} from "lucide-react";
+import {useEffect, useState} from "react";
+import {loadLectureWithFile} from "@/common/api/fileApi.js";
 
 
 export const OnlineLecturePlayingPage = () => {
     const { id } = useParams();
     const navigate = useNavigate();
+    const [ formData, setFormData ] = useState({
+        fileId: '',
+        lectureId: '',
+        originalName: '',
+        url: '',
+        title: '',
+        teacherName: '',
+        description: ''
+    })
+
+    useEffect(() => {
+        const fetchData = async () => {
+            const data = await loadLectureWithFile( id );
+            setFormData(data);
+        }
+        fetchData();
+    }, []);
+
     return (
         <Card className="bg-white w-full">
             <CardHeader>
-                <CardTitle> { id } </CardTitle>
+                <CardTitle> { formData.title } </CardTitle>
             </CardHeader>
+            {/* src={formData.fileUrl } */ }
             <CardContent>
                 <div className="flex">
                     <div className="flex-7 bg-black">
@@ -26,15 +47,15 @@ export const OnlineLecturePlayingPage = () => {
                     <FieldSet>
                         <Field>
                             <FieldTitle> 제목 </FieldTitle>
-                            <FieldDescription> 인라인 강의 </FieldDescription>
+                            <FieldDescription> { formData.title } </FieldDescription>
                         </Field>
                         <Field>
                             <FieldTitle> 강사명 </FieldTitle>
-                            <FieldDescription> 인라인 강의 </FieldDescription>
+                            <FieldDescription> { formData.teacherName } </FieldDescription>
                         </Field>
                         <Field>
                             <FieldTitle> 설명 </FieldTitle>
-                            <FieldDescription> 인라인 강의 </FieldDescription>
+                            <FieldDescription> { formData.description} </FieldDescription>
                         </Field>
                     </FieldSet>
                     </div>
