@@ -6,10 +6,6 @@ export default function ApproveOrganizationPage() {
 
     return (
         <div className="p-6 max-w-4xl mx-auto bg-white shadow rounded flex justify-center">
-{/*         <h2 className="text-xl font-semibold mb-4">가입 요청 승인</h2> */}
-
-{/*          {loading && <p>로딩중...</p>} */}
-{/*          {error && <p className="text-red-500 mb-2">{error}</p>} */}
 
         {pendingRequests.length === 0 && !loading ? (
             <p className="text-gray-500">승인 대기 요청이 없습니다.</p>
@@ -38,7 +34,7 @@ export default function ApproveOrganizationPage() {
                             <td className="px-4 py-2 text-center">
                                 <Button size="sm" variant="destructive" onClick={() => handleUpdateStatus(req.id, -1)}>
                                     거절
-                                    </Button>
+                                </Button>
                             </td>
                         </tr>
                     ))}
