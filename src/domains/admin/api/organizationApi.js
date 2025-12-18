@@ -56,3 +56,8 @@ export const getTeacherInOrganization = async ( id ) => {
     const res = await axiosInstance.get( "/user/teacher/organization/" + id );
     return res.data;
 }
+
+export const getOrganizationDetail = async ( id ) => {
+    const res = await axiosInstance.get( "/organization/" + id + "/detail" );
+    return res.data;
+}
