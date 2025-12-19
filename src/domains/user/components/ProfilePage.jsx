@@ -19,6 +19,7 @@ export default function MyPage({
     setShowPassword,
     showPasswordConfirm,
     setShowPasswordConfirm,
+    handlePhoneChange,
 }) {
     if (loading) return <p>로딩중...</p>;
 
@@ -41,6 +42,7 @@ export default function MyPage({
                         <RadioGroup
                             value={userInfo.roleName}
                             onValueChange={(val) => setUserInfo(prev => ({ ...prev, role: val }))}
+                            disabled={!isEditing}
                             className="flex gap-4"
                         >
                             {["STUDENT", "TEACHER"].map((val) => (
@@ -49,8 +51,8 @@ export default function MyPage({
                                     <Label htmlFor={val.toLowerCase()}>
                                         {val === "STUDENT" ? "학생" : "강사"}
                                     </Label>
-                                  </div>
-                                ))}
+                                </div>
+                            ))}
                         </RadioGroup>
                     </div>
                         {/* 이름 */}
@@ -63,6 +65,7 @@ export default function MyPage({
                                 onChange={handleChange}
                                 placeholder="이름을 입력하세요"
                                 disabled={!isEditing}
+                                className={`${userInfo.name ? "text-black placeholder:text-black" : "placeholder:text-gray-400"}`}
                             />
                         </div>
 
@@ -77,6 +80,7 @@ export default function MyPage({
                                     placeholder="우편번호"
                                     disabled
                                     className="w-32"
+                                    className={`${userInfo.addressCode ? "text-black placeholder:text-black" : "placeholder:text-gray-400"}`}
                                 />
                                 <Input
                                     id="address"
@@ -85,6 +89,7 @@ export default function MyPage({
                                     onChange={handleAddressChange}
                                     placeholder="주소를 입력하세요"
                                     disabled={!isEditing}
+                                    className={`${userInfo.addressDetail ? "text-black placeholder:text-black" : "placeholder:text-gray-400"}`}
                                 />
                                 {isEditing && (
                                     <Button type="button" onClick={openDaumPostcode}>
@@ -99,6 +104,7 @@ export default function MyPage({
                                 onChange={handleChange}
                                 placeholder="상세 주소"
                                 disabled={!isEditing}
+                                className={`${userInfo.detail ? "text-black placeholder:text-black" : "placeholder:text-gray-400"}`}
                             />
                         </div>
 
@@ -109,11 +115,13 @@ export default function MyPage({
                                 id="phone"
                                 name="phone"
                                 value={userInfo.phone}
-                                onChange={handleChange}
+                                onChange={handlePhoneChange}
                                 placeholder="'-' 없이 입력하세요"
                                 disabled={!isEditing}
+                                className={`${userInfo.phone ? "text-black placeholder:text-black" : "placeholder:text-gray-400"}`}
                             />
                         </div>
+
 
                         {/* 이메일 */}
                         <div className="flex flex-col gap-1">
@@ -125,6 +133,7 @@ export default function MyPage({
                                 onChange={handleChange}
                                 placeholder="이메일을 입력하세요"
                                 disabled={!isEditing}
+                                className={`${userInfo.email ? "text-black placeholder:text-black" : "placeholder:text-gray-400"}`}
                             />
                         </div>
 
@@ -135,6 +144,7 @@ export default function MyPage({
                             <RadioGroup
                                 value={userInfo.type}
                                 onValueChange={(val) => setUserInfo(prev => ({ ...prev, type: val }))}
+                                disabled={!isEditing}
                                 className="flex gap-4"
                             >
                                 {["ALL", "ONLINE", "OFFLINE"].map((val) => (

@@ -25,12 +25,23 @@ export default function useMyForm() {
         fetchMyInfo();
     }, []);
 
+    const formatPhoneNumber = (number) => {
+        if (!number) return "";
+        const cleaned = number.replace(/\D/g, "");
+        if (cleaned.length < 4) return cleaned;
+        if (cleaned.length < 7) return cleaned.replace(/(\d{3})(\d+)/, "$1-$2");
+        return cleaned.replace(/(\d{3})(\d{4})(\d+)/, "$1-$2-$3");
+    };
+
     const fetchMyInfo = async () => {
         setLoading(true);
         try {
             const data = await getMyInfo();
-            setUserInfo(prev => ({ ...prev, ...data }));
-        console.log("fetch 후 userInfo:", data);
+
+            // 조회 시점에 전화번호 포맷 적용
+            const formattedPhone = formatPhoneNumber(data.phone || "");
+            setUserInfo(prev => ({ ...prev, ...data, phone: formattedPhone }));
+            console.log("fetch 후 userInfo:", data);
         } catch (err) {
             console.error(err);
         } finally {
@@ -72,12 +83,20 @@ export default function useMyForm() {
     };
 
     // Daum 우편번호 팝업으로 주소 검색
-    const openDaumPostcode = () => {
+    const openDaumPostcode = async () => {
+        // 1. 스크립트가 없으면 동적으로 로드
         if (!window.daum) {
-            console.error("Daum Postcode script not loaded.");
-            return;
+            const script = document.createElement("script");
+            script.src = "https://t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js";
+            script.async = true;
+            document.body.appendChild(script);
+            await new Promise((resolve, reject) => {
+                script.onload = resolve;
+                script.onerror = reject;
+            });
         }
 
+        // 2. 로드 완료 후 우편번호 팝업 열기
         new window.daum.Postcode({
             oncomplete: function (data) {
                 setUserInfo(prev => ({
@@ -88,6 +107,17 @@ export default function useMyForm() {
                 setAddressSearchResults([]);
             },
         }).open();
+    };
+
+    // 전화번호
+    const handlePhoneChange = (e) => {
+        const value = e.target.value.replace(/\D/g, "");
+        let formatted = value;
+        if (value.length < 4) formatted = value;
+        else if (value.length < 7) formatted = value.replace(/(\d{3})(\d+)/, "$1-$2");
+        else formatted = value.replace(/(\d{3})(\d{4})(\d+)/, "$1-$2-$3");
+
+        setUserInfo(prev => ({ ...prev, phone: formatted }));
     };
 
     const handleEditToggle = async () => {
@@ -137,5 +167,6 @@ export default function useMyForm() {
         setShowPassword,
         showPasswordConfirm,
         setShowPasswordConfirm,
+        handlePhoneChange,
     };
 }
