@@ -13,6 +13,7 @@ import {getLectureDetail, getLectures} from "@/domains/admin/api/lectureApi.js";
 import {Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle} from "@/components/ui/dialog.js";
 import {Field, FieldLabel, FieldSet} from "@/components/ui/field.js";
 import {useNavigate} from "react-router";
+import {Breadcrumb, BreadcrumbItem, BreadcrumbList, BreadcrumbSeparator} from "@/components/ui/breadcrumb.js";
 
 
 export const AdminLectureList = () => {
@@ -23,13 +24,15 @@ export const AdminLectureList = () => {
     const [ formData, setFormData ] = useState({
         createdAt: '',
         updatedAt: '',
-        deletedAt: ''
+        deletedAt: '',
+        category: [],
+        startTimeAt: '',
+        endTimeAt: '',
     })
 
     const displayDetail = async ( id, isOnline ) => {
         const data = await getLectureDetail( id, isOnline ? 1 : 0 );
         setFormData( data );
-
         setInfoOpen( true );
     }
 
@@ -151,7 +154,20 @@ export const AdminLectureList = () => {
                                     </div>
                                     <div className="flex gap-2 flex-1">
                                         <Label className="text-md font-bold"> 카테고리: </Label>
-                                        <Label className="text-md text-gray-500"> {formData.category} </Label>
+                                        <Label className="text-md text-gray-500">
+                                            {
+                                                formData.category.length > 1 ?
+                                                formData.category.map( (name, index) => (
+                                                    <BreadcrumbItem>
+                                                        {name} { formData.category.length > 1 ? index !== formData.category.length - 1 ? "  >  " : " " : " " }
+                                                    </BreadcrumbItem>
+                                                ))
+                                                    :
+                                                    <BreadcrumbItem>
+                                                        {formData.category[0]}
+                                                    </BreadcrumbItem>
+                                            }
+                                        </Label>
                                     </div>
                                 </div>
                                 <div className="flex flex-1 flex-col items-start gap-4 pl-5">
@@ -229,12 +245,26 @@ export const AdminLectureList = () => {
                                         </div>
                                         <div className="flex gap-2 flex-1">
                                             <Label className="text-md font-bold"> 시작 시간: </Label>
-                                            <Label className="text-md text-gray-500"> {formData.startTime} </Label>
+                                            <Label className="text-md text-gray-500">
+                                                {
+                                                    formData.startTimeAt.length > 3 ?
+                                                        formData.startTimeAt.substring(0, 2) + " : " + formData.startTimeAt.substring(2, 4)
+                                                        :
+                                                        null
+                                                }
+                                            </Label>
                                         </div>
                                         <div className="flex gap-2 flex-1">
                                             <Label className="text-md font-bold"> 종료 시간: </Label>
                                             <Label
-                                                className="text-md text-gray-500"> {formData.endTime} </Label>
+                                                className="text-md text-gray-500">
+                                                {
+                                                    formData.endTimeAt.length > 3 ?
+                                                        formData.endTimeAt.substring(0, 2) + " : " + formData.endTimeAt.substring(2, 4)
+                                                        :
+                                                        null
+                                                }
+                                            </Label>
                                         </div>
                                     </div>
                                 </Field>
