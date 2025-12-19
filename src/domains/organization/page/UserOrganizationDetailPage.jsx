@@ -10,16 +10,16 @@ import {Card, CardContent, CardHeader} from "@/components/ui/card.js";
 
 export const UserOrganizationDetailPage = () => {
     const { id } = useParams();
-    const [ organization, setOrganization ] = useState([]);
-    const [ loading, setLoading ] = useState(false);
-    const [ error, setError ] = useState(null);
+    const [organization, setOrganization] = useState([]);
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState(null);
 
     useEffect(() => {
         const fetchOrganization = async () => {
             try {
                 setLoading(true);
-                const org = await getOrganization( id );
-                setOrganization( org );
+                const org = await getOrganization(id);
+                setOrganization(org);
             } catch (err) {
                 setError(err.message);
             } finally {
