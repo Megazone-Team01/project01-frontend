@@ -50,3 +50,18 @@ export const getLectureDetail = async ( id, isOnline ) => {
     console.log( res.data )
     return res.data;
 }
+
+export const deleteLecture = async ( id, isOnline ) => {
+    try {
+        const res = await axiosInstance.delete( "/v1/lectures/" + id, {
+            params:
+                {
+                    isOnline: isOnline
+                }
+        });
+        return res;
+    }
+    catch( error ){
+        if( error.status === 401 ) alert( error.response.data.message )
+    }
+}

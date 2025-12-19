@@ -30,13 +30,16 @@ export const getOrganizationTeacher = async () => {
     return res.data;
 }
 
-export const deleteUser = async (id, deletedBy) => {
-    const res = await axiosInstance.delete( "/v1/organization/" + id, {
-        params: {
-            deletedBy: deletedBy
-        }
-    });
-    return res.data;
+export const deleteUser = async (id) => {
+    try{
+        const res = await axiosInstance.delete( "/v1/user/" + id );
+        return res;
+    }
+    catch( error ){
+        if( error.status === 401 ) alert( error.response.data.message )
+    }
+
+
 }
 
 export const createUser = async ( data ) => {

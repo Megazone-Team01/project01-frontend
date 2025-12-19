@@ -5,13 +5,8 @@ export const getOrganizations = async () => {
     return res.data;
 }
 
-export const deleteOrganization = async (id, deletedBy) => {
-    const res = await axiosInstance.delete( "/v1/organization/" + id,
-        {
-            params: {
-                deletedBy: deletedBy
-            }
-        } );
+export const deleteOrganization = async (id) => {
+    const res = await axiosInstance.delete( "/v1/organization/" + id);
     return res.data;
 }
 

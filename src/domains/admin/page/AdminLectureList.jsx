@@ -9,11 +9,12 @@ import {RadioGroup, RadioGroupItem} from "@/components/ui/radio-group.js";
 import {Label} from "@/components/ui/label.js";
 import {useEffect, useState} from "react";
 import {Empty, EmptyTitle} from "@/components/ui/empty.js";
-import {getLectureDetail, getLectures} from "@/domains/admin/api/lectureApi.js";
+import {deleteLecture, getLectureDetail, getLectures} from "@/domains/admin/api/lectureApi.js";
 import {Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle} from "@/components/ui/dialog.js";
 import {Field, FieldLabel, FieldSet} from "@/components/ui/field.js";
 import {useNavigate} from "react-router";
 import {Breadcrumb, BreadcrumbItem, BreadcrumbList, BreadcrumbSeparator} from "@/components/ui/breadcrumb.js";
+import {deleteOrganization, getOrganizations} from "@/domains/admin/api/organizationApi.js";
 
 
 export const AdminLectureList = () => {
@@ -36,6 +37,20 @@ export const AdminLectureList = () => {
         setInfoOpen( true );
     }
 
+    const removeLecture = async ( id, isOnline ) => {
+        const flag = confirm( "이 강의를 삭제하시겠습니까?" )
+        console.log( flag )
+        if( flag ){
+            const data = await deleteLecture( id, isOnline ? 1 : 0 );
+            if( data.status === 200 ){
+                alert( "삭제 되었습니다" )
+
+                const ref = await getLectures();
+                setLectures(ref);
+            }
+        }
+    }
+
     useEffect(() => {
         const fetchLecture = async () => {
             const data = await getLectures();
@@ -43,6 +58,8 @@ export const AdminLectureList = () => {
         }
         fetchLecture();
     }, []);
+
+    console.log( lectures )
 
     return (
         <Card className="w-full min-h-80 bg-white">
@@ -100,22 +117,30 @@ export const AdminLectureList = () => {
                             <TableBody>
                                 {
                                     lectures.map( (lecture, index) => (
-                                        <TableRow key={index} className="hover:bg-white">
+                                        <TableRow key={index}
+                                          className={ lecture.deletedAt != null ? "bg-gray-400 hover:bg-gray-400" : "hover:bg-white"}
+                                        >
                                             <TableCell className="text-center"> { lecture.id } </TableCell>
                                             <TableCell className="text-center"> { lecture.name } </TableCell>
                                             <TableCell className="text-center"> { lecture.organizationName } </TableCell>
                                             <TableCell className="text-center"> { lecture.teacherName } </TableCell>
                                             <TableCell className="text-center"> { lecture.online ? "온라인" : "오프라인" } </TableCell>
                                             <TableCell className="text-center flex justify-center">
-                                                <ButtonGroup>
-                                                    <Button
-                                                        className="bg-white text-green-500 hover:bg-white hover:font-bold hover:cursor-pointer"> 수정 </Button>
-                                                    <Button
-                                                        className="bg-white text-red-500 hover:bg-white hover:font-bold hover:cursor-pointer"> 삭제 </Button>
-                                                    <Button
-                                                        onClick={() => displayDetail( lecture.id, lecture.online )}
-                                                        className="bg-white text-black hover:bg-white hover:font-bold hover:cursor-pointer"> 정보 </Button>
-                                                </ButtonGroup>
+                                                {
+                                                    lecture.deletedAt != null ?
+                                                        <div />
+                                                        :
+                                                        <ButtonGroup>
+                                                            <Button
+                                                                className="bg-white text-green-500 hover:bg-white hover:font-bold hover:cursor-pointer"> 수정 </Button>
+                                                            <Button
+                                                                onClick={ () => removeLecture( lecture.id, lecture.online )}
+                                                                className="bg-white text-red-500 hover:bg-white hover:font-bold hover:cursor-pointer"> 삭제 </Button>
+                                                            <Button
+                                                                onClick={() => displayDetail( lecture.id, lecture.online )}
+                                                                className="bg-white text-black hover:bg-white hover:font-bold hover:cursor-pointer"> 정보 </Button>
+                                                        </ButtonGroup>
+                                                }
                                             </TableCell>
                                         </TableRow>
                                     ))

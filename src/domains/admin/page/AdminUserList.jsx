@@ -55,11 +55,12 @@ export const AdminUserList = () => {
         const flag = confirm( "사용자를 삭제하시겠습니까?" )
         if( flag ) {
             const data = await deleteUser( id, deletedBy );
-            console.log( data )
-            alert( "삭제되었습니다" )
+            if( data.status === 200 ){
+                alert( "삭제되었습니다" )
 
-            const res = await getUsers();
-            setUsers(res);
+                const res = await getUsers();
+                setUsers(res);
+            }
         }
     }
 
@@ -198,7 +199,7 @@ export const AdminUserList = () => {
                                                 <ButtonGroup>
                                                     <Button className="bg-white text-green-500 hover:bg-white hover:font-bold hover:cursor-pointer"> 수정 </Button>
                                                     <Button className="bg-white text-red-500 hover:bg-white hover:font-bold hover:cursor-pointer"
-                                                        onClick={ () => deleteById( user.id, 1 )}
+                                                        onClick={ () => deleteById( user.id )}
                                                     > 삭제 </Button>
                                                     <Button
                                                         onClick={() => openDetail( user.id )}

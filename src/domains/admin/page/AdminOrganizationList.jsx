@@ -27,15 +27,20 @@ export const AdminOrganizationList = () => {
     })
 
     const deleteById = async ( id ) => {
-        const flag = confirm( "이 기관을 삭제하시겠습니까?" )
-        console.log( flag )
-        if( flag ){
-            const data = await deleteOrganization( id, 1 );
-            console.log( data );
-            alert( "삭제 되었습니다" )
+        try {
+            const flag = confirm( "이 기관을 삭제하시겠습니까?" )
+            console.log( flag )
+            if( flag ){
+                const data = await deleteOrganization( id );
+                console.log( data );
+                alert( "삭제 되었습니다" )
 
-            const ref = await getOrganizations();
-            setOrganizations(ref);
+                const ref = await getOrganizations();
+                setOrganizations(ref);
+            }
+        }
+        catch ( error ){
+            if( error.status === 401 ) alert( error.response.data.message )
         }
     }
 
