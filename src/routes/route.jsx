@@ -1,5 +1,6 @@
 import { Routes, Route } from "react-router";
 import MainLayout from "@/components/layout/MainLayout.jsx";
+// import About from "@/routes/About.jsx";
 import UserOrganizationListPage from "../domains/organization/page/UserOrganizationListPage.jsx";
 import UserOrganizationDetailPage from "../domains/organization/page/UserOrganizationDetailPage.jsx";
 import Home from "@/domains/home/page/Home.jsx";
@@ -16,7 +17,11 @@ import MeetingListPage from '@/domains/meeting/page/MeetingListPage.jsx';
 import MyReservation from "@/domains/reservation/page/MyReservation.jsx";
 import RoomList from "@/domains/room/page/RoomList.jsx";
 import Login from "@/domains/user/page/Login.jsx";
+import ApproveOrganization from "@/domains/user/page/ApproveOrganization.jsx";
+
 import PublicRoute from "@/routes/PublicRoute.jsx";
+import PrivateRoute from "@/routes/PrivateRoute.jsx";
+import Profile from "@/domains/user/page/Profile.jsx";
 
 function CommonRouter() {
 
@@ -24,7 +29,6 @@ function CommonRouter() {
     return (
         <Routes>
             <Route element={<MainLayout />}>
-                {/* <Route path="/" element={<CardWithForm />} /> */}
                 <Route path="/organizations" element={<UserOrganizationListPage />} />
                 <Route path="/organization/:id" element={<UserOrganizationDetailPage />} />
                 <Route path="/organization/:id/meetings" element={<MeetingListPage />} />
@@ -32,10 +36,11 @@ function CommonRouter() {
                 <Route path="/" element={<Home />} />
 
                 {/* 로그인 상태면 접근 제한 */}
-                <Route path="/sign" element={<PublicRoute><Sign /></PublicRoute>} />
-                <Route path="/login" element={<PublicRoute><Login /></PublicRoute>} />
-                <Route path="/lecture" element={<LectureLayout />}>
-                    <Route path="offline" element={<Offline />} />
+                <Route path="/sign" element={<PublicRoute><Sign /></PublicRoute>}/>
+                <Route path="/login" element={<PublicRoute><Login /></PublicRoute>}/>
+                <Route path="/profile" element={<Profile />}/>
+                <Route path="/lecture" element={<LectureLayout/>}>
+                    <Route path="offline" element={<Offline />}/>
                     <Route path="offline/:offlineId" element={<OfflineDetail />} />
 
                     <Route path="online" element={<Online />} />
@@ -48,6 +53,7 @@ function CommonRouter() {
                 {/* <Route path="/room/:roomId" element={<RoomReserve />} /> */}
                 <Route path="/sign" element={<Sign />} />
                 <Route path="/login" element={<Login />} />
+                <Route path="/approveOrganization" element={<PrivateRoute><ApproveOrganization /></PrivateRoute>}/>
             </Route>
         </Routes>
     )
