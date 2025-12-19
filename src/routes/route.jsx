@@ -10,6 +10,8 @@ import OfflineDetail from "@/domains/lecture/offline/page/OfflineDetail.jsx";
 import Online from "@/domains/lecture/online/page/Online.jsx";
 import OnlineDetail from "@/domains/lecture/online/page/OnlineDetail.jsx";
 import LectureLayout from "@/domains/lecture/components/Layout/LectureLayout.jsx";
+import MeetingListPage from '@/domains/meeting/page/MeetingListPage.jsx';
+//import MeetingDetailPage from '@/domains/meeting/page/MeetingDetailPage.jsx';
 
 
 import MyReservation from "@/domains/reservation/page/MyReservation.jsx";
@@ -26,12 +28,12 @@ function CommonRouter() {
 
     return (
         <Routes>
-            <Route element={<MainLayout/>}>
-{/* //                 <Route path="/" element={<CardWithForm />}/> */}
-{/* //                 <Route path="/about" element={<About/>}/> */}
+            <Route element={<MainLayout />}>
                 <Route path="/organizations" element={<UserOrganizationListPage />} />
                 <Route path="/organization/:id" element={<UserOrganizationDetailPage />} />
-                <Route path="/" element={<Home />}/>
+                <Route path="/organization/:id/meetings" element={<MeetingListPage />} />
+                {/* <Route path="/organization/:id/meetings/:teacherId" element={<MeetingDetailPage />} /> */}
+                <Route path="/" element={<Home />} />
 
                 {/* 로그인 상태면 접근 제한 */}
                 <Route path="/sign" element={<PublicRoute><Sign /></PublicRoute>}/>
@@ -41,14 +43,16 @@ function CommonRouter() {
                     <Route path="offline" element={<Offline />}/>
                     <Route path="offline/:offlineId" element={<OfflineDetail />} />
 
-                    <Route path="online" element={<Online />}/>
+                    <Route path="online" element={<Online />} />
                     <Route path="online/:onlineId" element={<OnlineDetail />} />
                 </Route>
 
-          
+
                 <Route path="/reservations/my" element={<MyReservation />} />
                 <Route path="/rooms" element={<RoomList />} />
                 {/* <Route path="/room/:roomId" element={<RoomReserve />} /> */}
+                <Route path="/sign" element={<Sign />} />
+                <Route path="/login" element={<Login />} />
                 <Route path="/approveOrganization" element={<PrivateRoute><ApproveOrganization /></PrivateRoute>}/>
             </Route>
         </Routes>
