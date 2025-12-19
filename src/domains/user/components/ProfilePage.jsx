@@ -40,7 +40,7 @@ export default function MyPage({
                         <Label>회원 역할</Label>
                         <RadioGroup
                             value={userInfo.role}
-                            onValueChange={(val) => setForm({ ...form, role: val })}
+                            onValueChange={(val) => setUserInfo({ ...form, role: val })}
                             className="flex gap-4"
                         >
                             {["STUDENT", "TEACHER"].map((val) => (
@@ -134,7 +134,7 @@ export default function MyPage({
                             <Label>회원 타입</Label>
                             <RadioGroup
                                 value={userInfo.type}
-                                onValueChange={(val) => setForm({ ...form, type: val })}
+                                onValueChange={(val) => setUserInfo({ ...form, type: val })}
                                 className="flex gap-4"
                             >
                                 {["ALL", "ONLINE", "OFFLINE"].map((val) => (
