@@ -3,6 +3,9 @@ import LectureCard from "@/components/common/LectureCard.jsx";
 import { useState} from "react";
 import useHomeLectures from "@/domains/home/hook/useHomeLectures.js";
 import {TabButtons} from "@/domains/home/components/TabButtons.jsx";
+import { useSelector } from "react-redux";
+import Loading from "@/components/common/loading.jsx";
+import {Link} from "react-router";
 
 
 
@@ -16,6 +19,8 @@ export default function Home() {
     const [activeTab, setActiveTab] = useState("online");
     const { lectures, isLoading } = useHomeLectures(activeTab);
 
+    const auth = useSelector((state) => state.auth);
+    console.log("홈 페이지 auth 상태:", auth);
 
 
     return (
@@ -36,14 +41,15 @@ export default function Home() {
 
                 <div className="flex flex-col gap-3.5  min-px-24">
                      <div className="w-full lg:w-4xl mx-auto grid lg:grid-cols-3 grid-cols-[repeat(auto-fit,minmax(150px,1fr))] gap-4">
-                        {!isLoading ? lectures.map((lecture, i) => (
-                            <LectureCard
-                                key={i}
-                                imgUrl="https://picsum.photos/400/200"
-                                title={lecture.title}
-                                description={lecture.description}
-                            />
-                        )): <isLoading/>}
+                         {!isLoading ? lectures?.map((lecture) => (
+                             <Link to={`/lecture/${activeTab}/${lecture.id}`} key={lecture.id}>
+                                 <LectureCard
+                                     imgUrl="https://picsum.photos/400/200"
+                                     title={lecture.title}
+                                     description={lecture.description}
+                                 />
+                             </Link>
+                         )): <Loading />}
                     </div>
                 </div>
             </div>
