@@ -7,12 +7,12 @@ import PageNation from "@/domains/lecture/components/common/PageNation.jsx";
 
 function Online() {
     const dispatch = useDispatch();
-    const {searchKeword, searchType, page}= useSelector((state) => state.lecture);
+    const {searchKeyword, searchType, page}= useSelector((state) => state.lecture);
     const {
         data:onlineList,
         isLoading,
         isError
-    } = useLectures("online", searchType, page, searchKeword);
+    } = useLectures("online", searchType, page, searchKeyword);
 
     const handlePageChange = (newPage) => {
         dispatch(setPage(newPage));
