@@ -147,6 +147,23 @@ export const AdminLectureCreatePage = () => {
 
     const handleFileChange = async ( e ) => {
         const selectedFile = e.target.files[0]
+
+        const videoMimeTypes = [
+            'video/mp4',
+            'video/mpeg',
+            'video/quicktime',  // .mov
+            'video/x-msvideo',  // .avi
+            'video/webm',
+            'video/ogg',
+            'video/x-matroska'  // .mkv
+        ];
+
+        if (!videoMimeTypes.includes(selectedFile.type)) {
+            alert('동영상 파일만 업로드 가능합니다.');
+            e.target.value = ''; // input 초기화
+            return;
+        }
+
         const data = await fileUpload( selectedFile );
 
         setFormData( { ...formData, fileId: data.fileId })
@@ -369,6 +386,7 @@ export const AdminLectureCreatePage = () => {
                                                 <FieldLabel> 강의 영상 </FieldLabel>
                                                 <Input
                                                     type="file"
+                                                    accept="video/*"
                                                     onChange={(e) => handleFileChange(e) }
                                                 />
                                             </Field>
