@@ -13,6 +13,7 @@ export const getOrganizations = async () => {
 }
 
 export const getOrganization = async (organizationId) => {
-    const res = await axiosInstance.get("/v1/organization/" + organizationId);
+    const res = await axiosInstance.get("/v1/organization/" + organizationId + "/detail");
+    console.log( res.data )
     return res.data;
 }
