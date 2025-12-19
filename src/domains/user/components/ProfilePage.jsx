@@ -1,0 +1,185 @@
+import React from "react";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Label } from "@/components/ui/label";
+import { RadioGroup, RadioGroupItem } from "../../../components/ui/radio-group.js";
+
+export default function MyPage({
+    userInfo,
+    handleChange,
+    handleAddressChange,
+    handleSelectAddress,
+    addressSearchResults,
+    openDaumPostcode,
+    handleEditToggle,
+    handleDeleteAccount,
+    isEditing,
+    loading,
+    showPassword,
+    setShowPassword,
+    showPasswordConfirm,
+    setShowPasswordConfirm,
+}) {
+    if (loading) return <p>로딩중...</p>;
+
+    return (
+        <div className="flex flex-col gap-4 px-6 max-w-5xl mx-auto">
+            <div className="my-profile-page flex flex-col gap-6">
+                <div className="profile-top flex gap-8">
+                    <div className="profile-image flex-shrink-0">
+                        <img
+                            src={userInfo.profileImg || "https://avatars.githubusercontent.com/u/9919?v=4"}
+                            alt="프로필"
+                            className="w-48 h-48 rounded-full object-cover"
+                        />
+                    </div>
+
+                    <div className="profile-info flex-1 flex flex-col gap-4">
+                    {/* 회원 역할 */}
+                    <div className="flex flex-col gap-1">
+                        <Label>회원 역할</Label>
+                        <RadioGroup
+                            value={userInfo.roleName}
+                            onValueChange={(val) => setUserInfo(prev => ({ ...prev, role: val }))}
+                            className="flex gap-4"
+                        >
+                            {["STUDENT", "TEACHER"].map((val) => (
+                                <div key={val} className="flex items-center gap-2">
+                                    <RadioGroupItem value={val} id={val.toLowerCase()} />
+                                    <Label htmlFor={val.toLowerCase()}>
+                                        {val === "STUDENT" ? "학생" : "강사"}
+                                    </Label>
+                                  </div>
+                                ))}
+                        </RadioGroup>
+                    </div>
+                        {/* 이름 */}
+                        <div className="flex flex-col gap-1">
+                            <Label htmlFor="name">이름</Label>
+                            <Input
+                                id="name"
+                                name="name"
+                                value={userInfo.name}
+                                onChange={handleChange}
+                                placeholder="이름을 입력하세요"
+                                disabled={!isEditing}
+                            />
+                        </div>
+
+                        {/* 주소 */}
+                        <div className="flex flex-col gap-1">
+                            <Label htmlFor="address">주소</Label>
+                            <div className="flex gap-2">
+                                <Input
+                                    id="zipcode"
+                                    name="zipcode"
+                                    value={userInfo.addressCode}
+                                    placeholder="우편번호"
+                                    disabled
+                                    className="w-32"
+                                />
+                                <Input
+                                    id="address"
+                                    name="address"
+                                    value={userInfo.addressDetail}
+                                    onChange={handleAddressChange}
+                                    placeholder="주소를 입력하세요"
+                                    disabled={!isEditing}
+                                />
+                                {isEditing && (
+                                    <Button type="button" onClick={openDaumPostcode}>
+                                        우편번호 검색
+                                    </Button>
+                                )}
+                            </div>
+                            <Input
+                                id="detail"
+                                name="detail"
+                                value={userInfo.detail || ""}
+                                onChange={handleChange}
+                                placeholder="상세 주소"
+                                disabled={!isEditing}
+                            />
+                        </div>
+
+                        {/* 전화번호 */}
+                        <div className="flex flex-col gap-1">
+                            <Label htmlFor="phone">전화번호</Label>
+                            <Input
+                                id="phone"
+                                name="phone"
+                                value={userInfo.phone}
+                                onChange={handleChange}
+                                placeholder="'-' 없이 입력하세요"
+                                disabled={!isEditing}
+                            />
+                        </div>
+
+                        {/* 이메일 */}
+                        <div className="flex flex-col gap-1">
+                            <Label htmlFor="email">이메일</Label>
+                            <Input
+                                id="email"
+                                name="email"
+                                value={userInfo.email}
+                                onChange={handleChange}
+                                placeholder="이메일을 입력하세요"
+                                disabled={!isEditing}
+                            />
+                        </div>
+
+
+                        {/* 회원 타입 */}
+                        <div className="flex flex-col gap-1">
+                            <Label>회원 타입</Label>
+                            <RadioGroup
+                                value={userInfo.type}
+                                onValueChange={(val) => setUserInfo(prev => ({ ...prev, type: val }))}
+                                className="flex gap-4"
+                            >
+                                {["ALL", "ONLINE", "OFFLINE"].map((val) => (
+                                    <div key={val} className="flex items-center gap-2">
+                                        <RadioGroupItem value={val} id={val.toLowerCase()} />
+                                        <Label htmlFor={val.toLowerCase()}>
+                                            {val === "ALL" ? "모두" : val === "ONLINE" ? "온라인" : "오프라인"}
+                                        </Label>
+                                    </div>
+                                ))}
+                            </RadioGroup>
+                        </div>
+
+
+                        <div className="flex justify-end gap-2 mt-4">
+                            {/* 수정 / 저장 버튼 */}
+                            <Button className="w-auto px-4" onClick={handleEditToggle} disabled={loading}>
+                                {isEditing ? "저장" : "수정"}
+                            </Button>
+
+                            <Button
+                                className="w-auto px-4"
+                                variant="destructive"
+                                onClick={handleDeleteAccount}
+                                disabled={loading}
+                            >
+                                회원 탈퇴
+                            </Button>
+                        </div>
+
+
+
+                    </div>
+
+                </div>
+                <div>
+                    <h2 className="text-2xl font-bold mb-6"> 나의 강좌 </h2>
+                    <br/>
+                    <br/>
+                    <br/>
+                </div>
+                <div>
+                    <h2 className="text-2xl font-bold mb-6"> 나의 조직 </h2>
+                </div>
+            </div>
+        </div>
+    );
+}

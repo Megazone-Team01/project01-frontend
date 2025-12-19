@@ -1,6 +1,6 @@
 import { Routes, Route } from "react-router";
 import MainLayout from "@/components/layout/MainLayout.jsx";
-import About from "@/routes/About.jsx";
+// import About from "@/routes/About.jsx";
 import UserOrganizationListPage from "../domains/organization/page/UserOrganizationListPage.jsx";
 import UserOrganizationDetailPage from "../domains/organization/page/UserOrganizationDetailPage.jsx";
 import Home from "@/domains/home/page/Home.jsx";
@@ -19,6 +19,7 @@ import ApproveOrganization from "@/domains/user/page/ApproveOrganization.jsx";
 
 import PublicRoute from "@/routes/PublicRoute.jsx";
 import PrivateRoute from "@/routes/PrivateRoute.jsx";
+import Profile from "@/domains/user/page/Profile.jsx";
 
 function CommonRouter() {
 
@@ -26,8 +27,8 @@ function CommonRouter() {
     return (
         <Routes>
             <Route element={<MainLayout/>}>
-                <Route path="/" element={<CardWithForm />}/>
-                <Route path="/about" element={<About/>}/>
+{/* //                 <Route path="/" element={<CardWithForm />}/> */}
+{/* //                 <Route path="/about" element={<About/>}/> */}
                 <Route path="/organizations" element={<UserOrganizationListPage />} />
                 <Route path="/organization/:id" element={<UserOrganizationDetailPage />} />
                 <Route path="/" element={<Home />}/>
@@ -35,6 +36,7 @@ function CommonRouter() {
                 {/* 로그인 상태면 접근 제한 */}
                 <Route path="/sign" element={<PublicRoute><Sign /></PublicRoute>}/>
                 <Route path="/login" element={<PublicRoute><Login /></PublicRoute>}/>
+                <Route path="/profile" element={<Profile />}/>
                 <Route path="/lecture" element={<LectureLayout/>}>
                     <Route path="offline" element={<Offline />}/>
                     <Route path="offline/:offlineId" element={<OfflineDetail />} />
@@ -47,7 +49,6 @@ function CommonRouter() {
                 <Route path="/reservations/my" element={<MyReservation />} />
                 <Route path="/rooms" element={<RoomList />} />
                 {/* <Route path="/room/:roomId" element={<RoomReserve />} /> */}
-
                 <Route path="/approveOrganization" element={<PrivateRoute><ApproveOrganization /></PrivateRoute>}/>
             </Route>
         </Routes>
