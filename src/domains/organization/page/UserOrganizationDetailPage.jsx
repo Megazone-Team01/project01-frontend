@@ -37,7 +37,9 @@ export const UserOrganizationDetailPage = () => {
         <div className="flex flex-col w-full">
             <div className="flex w-full min-h-80">
                 <div className="flex flex-1 justify-center items-center m-2">
-                    <img src={"../org.jpeg"} alt={id} />
+                    <img
+                        className="aspect-square max-h-72 max-w-full"
+                        src={`/${organization.leadImage}`} alt={id} />
                 </div>
                 <div className="flex flex-1 flex-col justify-start items-center m-2">
                     <h2> {organization.name} </h2>
@@ -58,7 +60,7 @@ export const UserOrganizationDetailPage = () => {
                             </TableRow>
                             <TableRow>
                                 <TableCell className="w-[100px]"> 홈페이지: </TableCell>
-                                <TableCell> {organization.url} </TableCell>
+                                <TableCell> {organization.webpage} </TableCell>
                             </TableRow>
                             <TableRow>
                                 <TableCell className="w-[100px]"> 전화번호: </TableCell>
@@ -71,9 +73,6 @@ export const UserOrganizationDetailPage = () => {
                         </TableBody>
                     </Table>
                 </div>
-            </div>
-            <div className="flex w-full min-h-96 bg-red-100">
-                {organization.description}
             </div>
             <OrganizationServiceSection organizationId={Number(id)} />
         </div>
