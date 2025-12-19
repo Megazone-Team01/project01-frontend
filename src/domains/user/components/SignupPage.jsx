@@ -15,6 +15,7 @@ export default function SignupPage() {
         <form onSubmit={handleSubmit}>
             {error && <p style={{ color: "red" }}>{error}</p>}
             <div className="flex flex-col gap-4">
+
                 {/* 이메일 */}
                 <div className="flex flex-col gap-1">
                     <div className="flex items-center gap-2">
@@ -107,7 +108,24 @@ export default function SignupPage() {
                         </div>
                     )}
                 </div>
-
+                {/* 회원 역할 */}
+                <div className="flex flex-col gap-1">
+                    <Label>회원 역할</Label>
+                    <RadioGroup
+                        value={form.role}
+                        onValueChange={(val) => setForm({ ...form, role: val })}
+                        className="flex gap-4"
+                    >
+                        {["STUDENT", "TEACHER"].map((val) => (
+                            <div key={val} className="flex items-center gap-2">
+                                <RadioGroupItem value={val} id={val.toLowerCase()} />
+                                <Label htmlFor={val.toLowerCase()}>
+                                    {val === "STUDENT" ? "학생" : "강사"}
+                                </Label>
+                              </div>
+                            ))}
+                    </RadioGroup>
+                </div>
                 {/* 이름 */}
                 <div className="flex flex-col gap-1">
                     <Label htmlFor="name">이름</Label>
