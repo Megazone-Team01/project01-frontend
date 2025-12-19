@@ -2,7 +2,7 @@
 import axiosInstance from '@/common/api/axiosInstance';
 
 export const getTeachersByOrganization = async (organizationId) => {
-    const response = await axiosInstance.get('/meetings/teachers', {
+    const response = await axiosInstance.get('v1/meetings/teachers', {
         params: { organizationId }
     });
     return response.data;
@@ -10,13 +10,13 @@ export const getTeachersByOrganization = async (organizationId) => {
 
 
 export const getTeacherDetail = async (teacherId) => {
-    const response = await axiosInstance.get(`/meetings/teachers/${teacherId}`);
+    const response = await axiosInstance.get(`v1/meetings/teachers/${teacherId}`);
     return response.data;
 };
 
 
 export const getMyMeetings = async (type = 'ALL', status = null) => {
-    const response = await axiosInstance.get('/meetings/my', {
+    const response = await axiosInstance.get('v1/meetings/my', {
         params: { type, status }
     });
     return response.data;
