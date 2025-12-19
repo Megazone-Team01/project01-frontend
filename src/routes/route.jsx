@@ -15,7 +15,10 @@ import LectureLayout from "@/domains/lecture/components/Layout/LectureLayout.jsx
 import MyReservation from "@/domains/reservation/page/MyReservation.jsx";
 import RoomList from "@/domains/room/page/RoomList.jsx";
 import Login from "@/domains/user/page/Login.jsx";
+import ApproveOrganization from "@/domains/user/page/ApproveOrganization.jsx";
+
 import PublicRoute from "@/routes/PublicRoute.jsx";
+import PrivateRoute from "@/routes/PrivateRoute.jsx";
 
 function CommonRouter() {
 
@@ -44,8 +47,8 @@ function CommonRouter() {
                 <Route path="/reservations/my" element={<MyReservation />} />
                 <Route path="/rooms" element={<RoomList />} />
                 {/* <Route path="/room/:roomId" element={<RoomReserve />} /> */}
-                <Route path="/sign" element={<Sign />} />
-                <Route path="/login" element={<Login />}/>
+
+                <Route path="/approveOrganization" element={<PrivateRoute><ApproveOrganization /></PrivateRoute>}/>
             </Route>
         </Routes>
     )
