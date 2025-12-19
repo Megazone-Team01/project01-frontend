@@ -1,11 +1,14 @@
 import { useState } from "react";
 import { signup } from "../api/signup";
+import { useNavigate } from "react-router";
 
 export default function useSignupForm() {
     const [form, setForm] = useState({
+
         email: "",
         password: "",
         passwordConfirm: "",
+        role: "STUDENT",
         name: "",
         phone: "",
         type: "ALL",
@@ -13,6 +16,8 @@ export default function useSignupForm() {
 
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
+
+    const navigate = useNavigate();
 
     // 입력에 대한 처리
     const [phoneError, setPhoneError] = useState("");
@@ -105,7 +110,7 @@ export default function useSignupForm() {
     const handleSubmit = async (e) => {
         e.preventDefault();
         setLoading(true);
-
+        console.log("폼 제출 데이터:", form);
         if (!form.email || !form.password || !form.passwordConfirm || !form.name || !form.phone) {
             setError("모든 값을 입력해주세요.");
             setLoading(false);
@@ -122,9 +127,11 @@ export default function useSignupForm() {
             await signup(form);
             alert("회원가입 완료!");
             setForm({
+
                 email: "",
                 password: "",
                 passwordConfirm: "",
+                role: "STUDENT",
                 name: "",
                 phone: "",
                 type: "ALL",
@@ -133,6 +140,8 @@ export default function useSignupForm() {
             setPhoneError("");
             setEmailError("");
             setPasswordConfirmError("");
+
+            navigate("/");
         } catch {
             setError("회원가입 실패");
         } finally {

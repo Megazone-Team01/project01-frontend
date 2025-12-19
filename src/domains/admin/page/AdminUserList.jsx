@@ -1,0 +1,304 @@
+import {Card, CardContent, CardHeader, CardTitle} from "@/components/ui/card.js";
+import {Separator} from "@/components/ui/separator.js";
+import {Table, TableBody, TableCell, TableHead, TableHeader, TableRow} from "@/components/ui/table.js";
+import {ButtonGroup} from "@/components/ui/button-group.js";
+import {Button} from "@/components/ui/button.js";
+import {InputGroup, InputGroupAddon, InputGroupInput} from "@/components/ui/input-group.js";
+import {Search} from "lucide-react";
+import {RadioGroup, RadioGroupItem} from "@/components/ui/radio-group.js";
+import {Label} from "@/components/ui/label.js";
+import {useEffect, useState} from "react";
+import {Empty, EmptyTitle} from "@/components/ui/empty.js";
+import {deleteUser, getUserDetail, getUsers, getUsersWithFilter} from "@/domains/admin/api/userApi.js";
+import {Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle} from "@/components/ui/dialog.js";
+import {Field, FieldLabel, FieldSet} from "@/components/ui/field.js";
+import {Skeleton} from "@/components/ui/skeleton.js";
+
+
+export const AdminUserList = () => {
+    const [ users, setUsers ] = useState([]);
+    const [ filter, setFilter ] = useState({
+        type: null,
+        userRole: null
+    });
+    const [ formData, setFormData ] = useState({
+        name: '',
+        email: '',
+        phone: '',
+        addressCode: '',
+        addressDetail: '',
+        roleName: '',
+        createdAt: '',
+        updatedAt: '',
+        deletedAt: '',
+        profileImage: '',
+        lectures: [],
+        organizations: []
+    })
+
+    const [ infoOpen, setInfoOpen ] = useState(false);
+
+    useEffect(() => {
+        const fetchUser = async () => {
+            const data = await getUsers();
+            setUsers(data);
+        }
+        fetchUser();
+    }, []);
+
+    const filterSearch = async () => {
+        const data = await getUsersWithFilter( filter );
+        setUsers(data)
+    }
+
+    const deleteById = async ( id, deletedBy ) => {
+        const flag = confirm( "사용자를 삭제하시겠습니까?" )
+        if( flag ) {
+            const data = await deleteUser( id, deletedBy );
+            console.log( data )
+            alert( "삭제되었습니다" )
+
+            const res = await getUsers();
+            setUsers(res);
+        }
+    }
+
+    const openDetail = async ( id ) => {
+        const data = await getUserDetail( id );
+        setFormData( {
+            ...formData,
+            name: data.name,
+            email: data.email,
+            phone: data.phone,
+            addressCode: data.addressCode,
+            addressDetail: data.addressDetail,
+            roleName: data.roleName,
+            createdAt: data.createdAt,
+            updatedAt: data.updatedAt,
+            deletedAt: data.deletedAt,
+            lectures: data.lectures,
+            organizations: data.organizations,
+            profileImage: data.profileImage
+        })
+
+        setInfoOpen(true);
+    }
+
+    return (
+        <Card className="w-full min-h-80 bg-white">
+            <Dialog open={infoOpen} onClose={setInfoOpen} >
+            <CardHeader>
+                <CardTitle> 사용자 목록 조회 </CardTitle>
+                <Separator className="my-2" />
+            </CardHeader>
+            <CardContent>
+                <div className="flex flex-col pb-4">
+                    <div className="flex gap-3">
+                        <InputGroup>
+                            <InputGroupInput placeholder="Search..."/>
+                            <InputGroupAddon>
+                                <Search/>
+                            </InputGroupAddon>
+                        </InputGroup>
+                        <Button className="hover:cursor-pointer"
+                                type="button"
+                                onClick={ () => filterSearch()}
+                                variant="ghost"> 검색 </Button>
+                    </div>
+                    <div className="flex p-2">
+                        <h3 className="pr-3"> 역할 </h3>
+                        <RadioGroup className="flex" defaultValue="all">
+                            <div className="flex items-center gap-3">
+                                <RadioGroupItem
+                                    onClick={ () => setFilter( { ...filter, userRole: null } ) }
+                                    value="all" id="r1"/>
+                                <Label htmlFor="r1"> 전체 </Label>
+                            </div>
+                            <div className="flex items-center gap-3">
+                                <RadioGroupItem
+                                    onClick={ () => setFilter( { ...filter, userRole: "STUDENT" } ) }
+                                    value="student" id="r2"/>
+                                <Label htmlFor="r2"> 학생 </Label>
+                            </div>
+                            <div className="flex items-center gap-3">
+                                <RadioGroupItem
+                                    onClick={ () => setFilter( { ...filter, userRole: "TEACHER" } ) }
+                                    value="teacher" id="r3"/>
+                                <Label htmlFor="r3"> 강사 </Label>
+                            </div>
+                            <div className="flex items-center gap-3">
+                                <RadioGroupItem
+                                    onClick={ () => setFilter( { ...filter, userRole: "ADMIN" } ) }
+                                    value="admin" id="r3"/>
+                                <Label htmlFor="r3"> 관리자 </Label>
+                            </div>
+                        </RadioGroup>
+                    </div>
+                    <div className="flex p-2">
+                        <h3 className="pr-3"> 유형 </h3>
+                        <RadioGroup className="flex" defaultValue="all">
+                            <div className="flex items-center gap-3">
+                                <RadioGroupItem
+                                    onClick={ () => setFilter( { ...filter, type: null } ) }
+                                    value="all" id="r1"/>
+                                <Label htmlFor="r1"> 전체 </Label>
+                            </div>
+                            <div className="flex items-center gap-3">
+                                <RadioGroupItem
+                                    onClick={ () => setFilter( { ...filter, type: 1 } ) }
+                                    value="online" id="r2"/>
+                                <Label htmlFor="r2"> 온라인 </Label>
+                            </div>
+                            <div className="flex items-center gap-3">
+                                <RadioGroupItem
+                                    onClick={ () => setFilter( { ...filter, type: 2 } ) }
+                                    value="offline" id="r3"/>
+                                <Label htmlFor="r3"> 오프라인 </Label>
+                            </div>
+                            <div className="flex items-center gap-3">
+                                <RadioGroupItem
+                                    onClick={ () => setFilter( { ...filter, type: 0 } ) }
+                                    value="both" id="r3"/>
+                                <Label htmlFor="r3"> 온/오프라인 </Label>
+                            </div>
+                        </RadioGroup>
+                    </div>
+                </div>
+                {
+                    users.length === 0 ?
+                        <Empty>
+                            <EmptyTitle> 사용자가 존재하지 않습니다 </EmptyTitle>
+                        </Empty>
+                        :
+                        <Table>
+                            <TableHeader>
+                                <TableRow className="hover:bg-white">
+                                    <TableHead className="w-[70px] text-center"> 사용자 ID </TableHead>
+                                    <TableHead className="text-center"> 이름 </TableHead>
+                                    <TableHead className="text-center"> 역할 </TableHead>
+                                    <TableHead className="text-center"> 전화번호 </TableHead>
+                                    <TableHead className="text-center"> 주소 </TableHead>
+                                    <TableHead className="text-center"> 상태 </TableHead>
+                                    <TableHead className="w-[300px] text-center"> 작업 </TableHead>
+                                </TableRow>
+                            </TableHeader>
+                            <TableBody>
+                                {
+                                    users.map((user, index) => (
+                                        <TableRow key={index} className="hover:bg-white">
+                                            <TableCell className="text-center"> {user.id} </TableCell>
+                                            <TableCell className="text-center"> {user.name} </TableCell>
+                                            <TableCell className="text-center">
+                                                {user.roleName}
+                                            </TableCell>
+                                            <TableCell className="text-center"> {user.phone} </TableCell>
+                                            <TableCell className="text-center"> {user.addressCode + " " + user.addressDetail} </TableCell>
+                                            <TableCell className="text-center"> {user.deleted ? "삭제됨" : "활성화"} </TableCell>
+                                            <TableCell className="text-center flex justify-center">
+                                                <ButtonGroup>
+                                                    <Button className="bg-white text-green-500 hover:bg-white hover:font-bold hover:cursor-pointer"> 수정 </Button>
+                                                    <Button className="bg-white text-red-500 hover:bg-white hover:font-bold hover:cursor-pointer"
+                                                        onClick={ () => deleteById( user.id, 1 )}
+                                                    > 삭제 </Button>
+                                                    <Button
+                                                        onClick={() => openDetail( user.id )}
+                                                        className="bg-white text-black hover:bg-white hover:font-bold hover:cursor-pointer"> 정보 </Button>
+                                                </ButtonGroup>
+                                            </TableCell>
+                                        </TableRow>
+                                    ))
+                                }
+                            </TableBody>
+                        </Table>
+                }
+            </CardContent>
+                <DialogContent className="min-w-2/3">
+                    <DialogHeader>
+                        <DialogTitle> 사용자 상세 조회</DialogTitle>
+                        <Separator className="my-2"/>
+                    </DialogHeader>
+                    <div className="overflow-y-auto max-h-[60vh]">
+                        <FieldSet>
+                            <Field>
+                                <div className="flex items-center gap-3">
+                                    {
+                                        formData.profileImage !== null ?
+                                            <img className="flex-1 max-w-1/3" src={formData.profileImage}/>
+                                            :
+                                            <div className="w-1/3 aspect-square bg-gray-50 border" />
+                                    }
+                                    <div className="flex flex-1 flex-col items-start gap-4 pl-5">
+                                        <div className="flex gap-2 flex-1">
+                                            <Label className="text-md font-bold"> 이름: </Label>
+                                            <Label className="text-md text-gray-500"> {formData.name} </Label>
+                                        </div>
+                                        <div className="flex gap-2 flex-1">
+                                            <Label className="text-md font-bold"> 이메일: </Label>
+                                            <Label className="text-md text-gray-500"> {formData.email} </Label>
+                                        </div>
+                                        <div className="flex gap-2 flex-1">
+                                            <Label className="text-md font-bold"> 전화번호: </Label>
+                                            <Label className="text-md text-gray-500"> {formData.phone} </Label>
+                                        </div>
+                                        <div className="flex gap-2 flex-1">
+                                            <Label className="text-md font-bold"> 주소: </Label>
+                                            <Label
+                                                className="text-md text-gray-500"> {formData.addressCode + " " + formData.addressDetail} </Label>
+                                        </div>
+                                        <div className="flex gap-2 flex-1">
+                                            <Label className="text-md font-bold"> 역할: </Label>
+                                            <Label className="text-md text-gray-500"> {formData.roleName} </Label>
+                                        </div>
+                                    </div>
+                                    <div className="flex flex-1 flex-col items-start gap-4 pl-5">
+                                        <div className="flex gap-2 flex-1">
+                                            <Label className="text-md font-bold"> 생성일: </Label>
+                                            <Label className="text-md text-gray-500"> {formData.createdAt.substring(0, 10)} </Label>
+                                        </div>
+                                        <div className="flex gap-2 flex-1">
+                                            <Label className="text-md font-bold"> 최종 수정일: </Label>
+                                            <Label className="text-md text-gray-500"> { formData.updatedAt !== null ? formData.updatedAt.substring(0, 10) : ""} </Label>
+                                        </div>
+                                        <div className="flex gap-2 flex-1">
+                                            <Label className="text-md font-bold"> 삭제일: </Label>
+                                            <Label className="text-md text-gray-500"> { formData.deletedAt !== null ? formData.deletedAt.substring(0, 10) : ""} </Label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </Field>
+                            <Separator className="my-2"/>
+                            <Field>
+                                <FieldLabel className="text-md font-bold"> 소속 기관 </FieldLabel>
+                                <div className="flex flex-col gap-2">
+                                    {
+                                        formData.organizations.map( (name, index) => (
+                                            <Label key={index + "_1"}> { name }</Label>
+                                        ))
+                                    }
+                                </div>
+                            </Field>
+                            <Separator className="my-2"/>
+                            <Field>
+                                <FieldLabel className="text-md font-bold">
+                                    { formData.roleName === "TEACHER" ? "담당 강의" : "수강 강의" }
+                                </FieldLabel>
+                                <div className="flex flex-col gap-2">
+                                    {
+                                        formData.lectures.map( (name, index) => (
+                                            <Label key={index + "_1"}> { name }</Label>
+                                        ))
+                                    }
+                                </div>
+                            </Field>
+                        </FieldSet>
+                    </div>
+                    <DialogFooter>
+                        <Button onClick={() => setInfoOpen(false)} variant="outline"> 닫기 </Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
+        </Card>
+    )
+}
+
+export default AdminUserList;
