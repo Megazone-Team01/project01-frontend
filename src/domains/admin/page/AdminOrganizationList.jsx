@@ -157,7 +157,10 @@ export const AdminOrganizationList = () => {
                                     <div className="flex items-center gap-3">
                                         {
                                             formData.leadImage !== null ?
-                                                <img className="flex-1 max-w-1/3" src={formData.profileImage}/>
+                                                <img className="flex-1 max-w-1/3"
+                                                     src={`/${formData.leadImage}`}
+                                                     alt={formData.leadImage}
+                                                />
                                                 :
                                                 <div className="w-1/3 aspect-square bg-gray-50 border"/>
                                         }
