@@ -18,6 +18,6 @@ export function lectureStatus(startAt, endAt) {
   const end = new Date(endAt);
 
   if (now < start) return '모집중';
-  if (now >= start && now <= end) return '수강중';
+  if (now >= start && now <= end) return '강의중';
   return '강의 종료';
 }

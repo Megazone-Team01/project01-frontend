@@ -1,5 +1,5 @@
 import {useQuery} from "@tanstack/react-query";
-import getLectureApi from "@/domains/lecture/api/getLectureApi.js";
+import {getLectureApi} from "@/domains/lecture/api/getLectureApi.js";
 
 
 function useLectures(lectureTypes, searchTypeCode, page, keyword=''){
