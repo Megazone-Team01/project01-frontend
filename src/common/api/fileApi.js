@@ -6,7 +6,7 @@ export const fileUpload = async ( data ) => {
         formData.append( "file", data )
         formData.append( "uploaderId", 1 )
         console.log( formData )
-        const res = await axiosInstance.post( "/file/upload", formData, {
+        const res = await axiosInstance.post( "/v1/file/upload", formData, {
             headers: {
                 "Content-Type": "multipart/form-data",
             }
@@ -21,7 +21,7 @@ export const fileUpload = async ( data ) => {
 
 export const loadLectureWithFile = async ( lectureId ) => {
     try {
-        const res = await axiosInstance.get( "/file/" + lectureId + "/lecture" );
+        const res = await axiosInstance.get( "/v1/file/" + lectureId + "/lecture" );
         return res.data;
     }
     catch ( error ) {

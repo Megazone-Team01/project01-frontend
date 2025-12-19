@@ -1,12 +1,12 @@
-import axiosInstance from "../../../common/api/axiosInstance.js"
+import axiosInstance from "@/common/api/axiosInstance.js"
 
 export const getLectures = async () => {
-    const res = await axiosInstance.get("/lectures/filter")
+    const res = await axiosInstance.get("/v1/lectures/filter")
     return res.data;
 }
 
 export const getJudgedLectures = async () => {
-    const res = await axiosInstance.get("/lectures/filter", {
+    const res = await axiosInstance.get("/v1/lectures/filter", {
         params: {
             status: 0
         }
@@ -15,11 +15,11 @@ export const getJudgedLectures = async () => {
 }
 
 export const approveLecture = async ( id ) => {
-    const res = await axiosInstance.post("/lectures/approve/" + id )
+    const res = await axiosInstance.post("/v1/lectures/approve/" + id )
     return res.status;
 }
 export const rejectLecture = async ( id ) => {
-    const res = await axiosInstance.post("/lectures/reject/" + id )
+    const res = await axiosInstance.post("/v1/lectures/reject/" + id )
     return res.status;
 }
 
@@ -41,12 +41,12 @@ export const createLecture = async (data) => {
         endAt: data.endAt,
         dayValue: data.day
     }
-    const res = await axiosInstance.post( "/lectures", req );
+    const res = await axiosInstance.post( "/v1/lectures", req );
     return res.status;
 }
 
 export const getLectureDetail = async ( id, isOnline ) => {
-    const res = await axiosInstance.get( "/lectures/" + id + "/" + isOnline );
+    const res = await axiosInstance.get( "/v1/lectures/" + id + "/" + isOnline );
     console.log( res.data )
     return res.data;
 }

@@ -1,12 +1,12 @@
-import axiosInstance from "../../../common/api/axiosInstance.js"
+import axiosInstance from "@/common/api/axiosInstance.js"
 
 export const getOrganizations = async () => {
-    const res = await axiosInstance.get( "/organization" );
+    const res = await axiosInstance.get( "/v1/organization" );
     return res.data;
 }
 
 export const deleteOrganization = async (id, deletedBy) => {
-    const res = await axiosInstance.delete( "/organization/" + id,
+    const res = await axiosInstance.delete( "/v1/organization/" + id,
         {
             params: {
                 deletedBy: deletedBy
@@ -17,7 +17,7 @@ export const deleteOrganization = async (id, deletedBy) => {
 
 export const createOrganization = async ( data ) => {
     console.log( data )
-    const res = await axiosInstance.post( "/organization/create", {
+    const res = await axiosInstance.post( "/v1/organization/create", {
         name: data.name,
         webpage: data.webpage,
         ownerId: data.ownerId,
@@ -31,7 +31,7 @@ export const createOrganization = async ( data ) => {
 }
 
 export const getWaitingOrganizations = async () => {
-    const res = await axiosInstance.get( "/organization", {
+    const res = await axiosInstance.get( "/v1/organization", {
         params: {
             ownerId: null,
             statusCode: 0,
@@ -43,21 +43,21 @@ export const getWaitingOrganizations = async () => {
 }
 
 export const approveOrganization = async ( id ) => {
-    const res = await axiosInstance.post( "/organization/" + id + "/approve" )
+    const res = await axiosInstance.post( "/v1/organization/" + id + "/approve" )
     return res.status;
 }
 
 export const rejectOrganization = async ( id ) => {
-    const res = await axiosInstance.post( "/organization/" + id + "/reject" )
+    const res = await axiosInstance.post( "/v1/organization/" + id + "/reject" )
     return res.status;
 }
 
 export const getTeacherInOrganization = async ( id ) => {
-    const res = await axiosInstance.get( "/user/teacher/organization/" + id );
+    const res = await axiosInstance.get( "/v1/user/teacher/organization/" + id );
     return res.data;
 }
 
 export const getOrganizationDetail = async ( id ) => {
-    const res = await axiosInstance.get( "/organization/" + id + "/detail" );
+    const res = await axiosInstance.get( "/v1/organization/" + id + "/detail" );
     return res.data;
 }

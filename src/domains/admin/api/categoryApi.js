@@ -1,7 +1,7 @@
-import axiosInstance from "../../../common/api/axiosInstance.js"
+import axiosInstance from "@/common/api/axiosInstance.js"
 
 export const getCategories = async ( parentId ) => {
-    const res = await axiosInstance.get("/category", {
+    const res = await axiosInstance.get("/v1/category", {
         params: {
             parentId: parentId
         }
@@ -17,6 +17,6 @@ export const createCategory = async ( data ) => {
         parentId: data.parentId
     }
     console.log( req )
-    const res = await axiosInstance.post("/category", req);
+    const res = await axiosInstance.post("/v1/category", req);
     return res.status;
 }
