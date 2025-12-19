@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { X, Calendar, Info, Video, MapPin, CheckCircle2 } from 'lucide-react';
 import { useAvailableTimes } from '@/domains/meeting/hook/useAvailableTimes';
@@ -154,27 +153,26 @@ const BookingDrawer = ({ open, onClose, target, organizationId, onComplete }) =>
                                 </div>
                             </>
                         ) : (
-              /* 완료 화면 */}
-                        <div className="h-full flex flex-col items-center justify-center text-center space-y-6">
-                            <div className="w-24 h-24 bg-emerald-100 text-emerald-600 rounded-full 
+                            <div className="h-full flex flex-col items-center justify-center text-center space-y-6">
+                                <div className="w-24 h-24 bg-emerald-100 text-emerald-600 rounded-full 
                   flex items-center justify-center">
-                                <CheckCircle2 size={56} />
+                                    <CheckCircle2 size={56} />
+                                </div>
+                                <div>
+                                    <h3 className="text-2xl font-bold mb-2">예약 완료!</h3>
+                                    <p className="text-slate-500">
+                                        {dateString} {selectedTime}<br />
+                                        상담 링크가 전송될 예정입니다.
+                                    </p>
+                                </div>
+                                <button
+                                    className="w-full py-4 bg-slate-900 text-white rounded-2xl font-bold"
+                                    onClick={onComplete}
+                                >
+                                    확인
+                                </button>
                             </div>
-                            <div>
-                                <h3 className="text-2xl font-bold mb-2">예약 완료!</h3>
-                                <p className="text-slate-500">
-                                    {dateString} {selectedTime}<br />
-                                    상담 링크가 전송될 예정입니다.
-                                </p>
-                            </div>
-                            <button
-                                className="w-full py-4 bg-slate-900 text-white rounded-2xl font-bold"
-                                onClick={onComplete}
-                            >
-                                확인
-                            </button>
-                        </div>
-            )}
+                        )}
                     </div>
 
                     {/* 푸터 */}
