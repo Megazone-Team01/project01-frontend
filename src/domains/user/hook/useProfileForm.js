@@ -4,13 +4,15 @@ import { getMyInfo, updateMyInfo } from "../api/profile";
 export default function useMyForm() {
     const [userInfo, setUserInfo] = useState({
         name: "",
-        zipcode: "",
-        address: "",
+        addressCode: "",
+        addressDetail: "",
+        email: "",
         phone: "",
+        roleName: "",
+        type: "",
         profileImg: "",
-        password: "",
-        passwordConfirm: "",
     });
+
     const [loading, setLoading] = useState(false);
     const [isEditing, setIsEditing] = useState(false);
 
@@ -28,6 +30,7 @@ export default function useMyForm() {
         try {
             const data = await getMyInfo();
             setUserInfo(prev => ({ ...prev, ...data }));
+        console.log("fetch 후 userInfo:", data);
         } catch (err) {
             console.error(err);
         } finally {

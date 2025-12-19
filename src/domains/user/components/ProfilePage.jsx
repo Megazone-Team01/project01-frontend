@@ -39,8 +39,8 @@ export default function MyPage({
                     <div className="flex flex-col gap-1">
                         <Label>회원 역할</Label>
                         <RadioGroup
-                            value={userInfo.role}
-                            onValueChange={(val) => setUserInfo({ ...form, role: val })}
+                            value={userInfo.roleName}
+                            onValueChange={(val) => setUserInfo(prev => ({ ...prev, role: val }))}
                             className="flex gap-4"
                         >
                             {["STUDENT", "TEACHER"].map((val) => (
@@ -73,7 +73,7 @@ export default function MyPage({
                                 <Input
                                     id="zipcode"
                                     name="zipcode"
-                                    value={userInfo.zipcode}
+                                    value={userInfo.addressCode}
                                     placeholder="우편번호"
                                     disabled
                                     className="w-32"
@@ -81,7 +81,7 @@ export default function MyPage({
                                 <Input
                                     id="address"
                                     name="address"
-                                    value={userInfo.address}
+                                    value={userInfo.addressDetail}
                                     onChange={handleAddressChange}
                                     placeholder="주소를 입력하세요"
                                     disabled={!isEditing}
@@ -134,7 +134,7 @@ export default function MyPage({
                             <Label>회원 타입</Label>
                             <RadioGroup
                                 value={userInfo.type}
-                                onValueChange={(val) => setUserInfo({ ...form, type: val })}
+                                onValueChange={(val) => setUserInfo(prev => ({ ...prev, type: val }))}
                                 className="flex gap-4"
                             >
                                 {["ALL", "ONLINE", "OFFLINE"].map((val) => (
