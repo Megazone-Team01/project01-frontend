@@ -65,6 +65,7 @@ export default function useLoginForm() {
                             id: result.id,
                             name: result.name,
                             email: result.email,
+                            role: result.role,
                         },
                         accessToken: result.accessToken,
                     })
@@ -75,7 +76,7 @@ export default function useLoginForm() {
                 alert(`로그인 성공! 환영합니다, ${result.name}`);
 
                 console.log("로그인 성공! 액세스토큰:", result.accessToken);
-                console.log("유저 정보:", { id: result.id, email: result.email, name: result.name });
+                console.log("유저 정보:", { id: result.id, email: result.email, name: result.name, role: result.role });
 
                 navigate("/");
 

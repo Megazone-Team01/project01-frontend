@@ -1,9 +1,12 @@
-import { useParams } from "react-router";
-import { Separator } from "../../../components/ui/separator.js";
-import { Table, TableBody, TableCell, TableRow } from "../../../components/ui/table.js";
-import { useEffect, useState } from "react";
-import { getOrganization } from "../api/organizationApi.js";
 import OrganizationServiceSection from "../components/OrganizationServiceSection";
+import {useParams} from "react-router";
+import {Separator} from "@/components/ui/separator.js";
+import {Table, TableBody, TableCell, TableRow} from "@/components/ui/table.js";
+import {useEffect, useState} from "react";
+import {getOrganization} from "../api/organizationApi.js";
+import {Tabs, TabsContent, TabsList, TabsTrigger} from "@/components/ui/tabs.js";
+import {Label} from "@/components/ui/label.js";
+import {Card, CardContent, CardHeader} from "@/components/ui/card.js";
 
 
 export const UserOrganizationDetailPage = () => {
@@ -58,13 +61,13 @@ export const UserOrganizationDetailPage = () => {
                                 <TableCell> {organization.url} </TableCell>
                             </TableRow>
                             <TableRow>
-                                <TableCell className="w-[100px]"> 카테고리: </TableCell>
-                                <TableCell> {organization.category} </TableCell>
+                                <TableCell className="w-[100px]"> 전화번호: </TableCell>
+                                <TableCell> { organization.tel } </TableCell>
                             </TableRow>
                             <TableRow>
-                                <TableCell className="w-[100px]"> 강의 수: </TableCell>
-                                <TableCell> {organization.tel}  </TableCell>
-                            </TableRow>
+                              <TableCell className="w-[100px]"> 소개: </TableCell>
+                              <TableCell> { organization.description }  </TableCell>
+                          </TableRow>
                         </TableBody>
                     </Table>
                 </div>
