@@ -3,7 +3,7 @@ import {Button} from "@/components/ui/button.js";
 import {Input} from "@/components/ui/input.js";
 import {useLocation} from "react-router";
 import SelectBox from "@/domains/lecture/components/common/SelectBox.jsx";
-import {useDispatch, useSelector} from "react-redux";
+import {useDispatch} from "react-redux";
 import {useState} from "react";
 import {executeSearch} from "@/common/store/lecture/lectureSlice.js";
 
@@ -26,7 +26,6 @@ function SearchBox() {
         console.log(keyword);
         dispatch(executeSearch(keyword));
     }
-    console.log(useSelector(state => state.lecture.searchType))
     return (
         <div>
             <Card>
