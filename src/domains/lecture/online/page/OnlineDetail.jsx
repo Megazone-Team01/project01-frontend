@@ -68,7 +68,7 @@ function OnlineDetail() {
                                 <ul className="flex flex-col mb-3">
                                     <li>강사: {data.teacherName}</li>
                                     <li>아카데미: {data.organizationName}</li>
-                                    <li>Price: {data.price}</li>
+                                    <li>가격: {data.price}</li>
                                     <EducationPeriod
                                         startAt={data.startAt}
                                         endAt={data.endAt}
@@ -78,11 +78,24 @@ function OnlineDetail() {
                             </div>
                         </div>
                         <div>
-                            <AlertBox
-                                text={"강의 신청"}
-                                startAt={data.startAt}
-                                endAt={data.endAt}
-                            />
+                            <div className="grid grid-cols-2 gap-5">
+                                <div className="flex gap-2">
+                                    <AlertBox
+                                        text={"강의 신청"}
+                                        startAt={data.startAt}
+                                        endAt={data.endAt}
+                                        lectureId={onlineId}
+                                        onlineType={onlineId}
+                                    />
+                                    <AlertBox
+                                        text={"강의취소"}
+                                        startAt={data.startAt}
+                                        endAt={data.endAt}
+                                        lectureId={onlineId}
+                                        onlineType={onlineId}
+                                    />
+                                </div>
+                            </div>
                         </div>
                     </section>
                 </div>
