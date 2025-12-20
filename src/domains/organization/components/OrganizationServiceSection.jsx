@@ -16,6 +16,7 @@ import {
 } from "lucide-react";
 import { Badge } from '@/components/ui/badge';
 import { useTeachers } from '@/domains/meeting/hook/useTeachers';
+import { getTeacherDetail } from '@/domains/meeting/api/meetingApi';
 // TODO: 회의실 브랜치에서 주석 해제
 // import { useRooms } from '@/domains/room/hook/useRooms';
 
@@ -49,17 +50,23 @@ const OrganizationServiceSection = ({ organizationId }) => {
     ];
 
     // 팝업 핸들러
-    const handleOpenModal = (item) => {
+    const handleOpenModal = async (item) => {
         setSelectedItem(item);
         setIsModalOpen(true);
         setStep('select');
         setSelectedTime(null);
-    };
+
+        if (activeTab === 'meeting') {
+            const detail = await getTeacherDetail(item.teacherId);
+            setSelectedItem(prev => ({ ...prev, ...detail }));
+        };
+    }
 
     const handleCloseModal = () => {
         setIsModalOpen(false);
         setSelectedItem(null);
     };
+
 
     // TODO: API 연동 필요
     const handleConfirm = () => {
@@ -150,7 +157,7 @@ const OrganizationServiceSection = ({ organizationId }) => {
                         ) : (
                             <div className="col-span-full text-center py-32 bg-white border-2 border-dashed border-slate-200 rounded-[40px]">
                                 <Monitor size={48} className="mx-auto mb-4 opacity-20" />
-                                <p className="text-slate-400 font-bold">스터디룸 기능은 현재 준비 중입니다.</p>
+                                <p className="text-slate-400 font-bold">회의실 기능은 현재 준비 중입니다.</p>
                             </div>
                         )}
                     </div>
@@ -173,14 +180,17 @@ const OrganizationServiceSection = ({ organizationId }) => {
                                     </div>
                                     <div>
                                         <h3 className="text-3xl font-black leading-tight">{selectedItem?.name}</h3>
+                                        {selectedItem?.email && (
+                                            <p className="text-white/60 text-sm mt-2">{selectedItem.email}</p>
+                                        )} {/*TODO : 선생님이 강의하는 강의명 리스트 표시 추가 가능*/}
                                         <p className="text-white/70 font-bold mt-4 text-sm leading-relaxed whitespace-pre-wrap">
-                                            {activeTab === 'meeting' ? '선택하신 전문가와의\n1:1 프라이빗 상담 예약입니다.' : '효율적인 학습을 위한\n독립 공간 예약 서비스입니다.'}
+                                            {activeTab === 'meeting' ? '선택하신 강사님과의\n1:1 멘토링 상담 예약입니다.' : '효율적인 학습을 위한\n독립 공간 예약 서비스입니다.'}
                                         </p>
                                     </div>
                                 </div>
-                                <div className="space-y-4 border-t border-white/10 pt-10 font-black text-[11px] opacity-80 uppercase tracking-widest">
-                                    <div className="flex items-center gap-3 text-blue-100"><CheckCircle2 size={16} /> 1시간 단위 고정 슬롯</div>
-                                    <div className="flex items-center gap-3 text-blue-100"><CheckCircle2 size={16} /> 예약 후 관리자 확인 대기</div>
+                                <div className="space-y-4 border-t border-white/10 pt-10 font-black text-[15px] opacity-80 uppercase tracking-widest">
+                                    <div className="flex items-center gap-3 text-blue-100"><CheckCircle2 size={20} /> 1시간 단위 </div>
+                                    <div className="flex items-center gap-3 text-blue-100"><CheckCircle2 size={15} /> 관리자 문의 : 02-123-4567</div>
                                 </div>
                             </div>
 
