@@ -11,7 +11,8 @@ import {
     ChevronRight,
     Monitor,
     UserCheck,
-    Video
+    Video,
+    ArrowRight,
 } from "lucide-react";
 import { Badge } from '@/components/ui/badge';
 import { useTeachers } from '@/domains/meeting/hook/useTeachers';
@@ -318,25 +319,31 @@ const TeacherCard = ({ teacher, onClick }) => (
                 <img
                     src={teacher.profileImage || `https://i.pravatar.cc/150?u=${teacher.teacherId || teacher.id}`}
                     alt={teacher.name}
+
                     className="w-20 h-20 rounded-3xl object-cover ring-4 ring-slate-50 shadow-md group-hover:ring-blue-50 transition-all"
                 />
-                <div className="absolute -bottom-1 -right-1 w-6 h-6 bg-emerald-500 border-4 border-white rounded-full shadow-lg" />
             </div>
-            <div className="flex gap-1 flex-wrap justify-end">
-                {teacher.tags?.map(tag => (
-                    <Badge key={tag} variant="secondary" className="text-[10px] font-bold">{tag}</Badge>
-                )) || <Badge variant="secondary">상담가능</Badge>}
+            <div className="flex gap-2 flex-wrap justify-end">
+                {Array.isArray(teacher.tags) && teacher.tags.length > 0 ? (
+                    teacher.tags.map((tag) => (
+                        <Badge key={tag} className="text-[12px] font-bold px-3 py-1.5 rounded-fullbg-slate-200 text-slate-700">{tag}</Badge>
+                    ))) : (
+                    <div className="px-5 py-2.5 rounded-full bg-blue-100 text-blue-700 text-sm font-extrabold tracking-wide shadow-sm">상담가능</div>
+                )}
             </div>
         </div>
         <div className="z-10">
-            <h3 className="text-2xl font-black mb-1 group-hover:text-blue-600 transition-colors leading-tight">{teacher.name}</h3>
-            <p className="text-sm text-slate-400 font-bold mt-2 leading-relaxed">{teacher.subject || "전문 상담 강사"}</p>
+            <h3 className="text-2xl font-black mb-1 group-hover:text-blue-600 transition-colors leading-tight">{teacher.name}
+                <span> </span>
+                <span className="font-black font-black">강사</span>
+            </h3>
+            <p className="text-sm text-slate-400 font-bold mt-2 leading-relaxed">{teacher.subject || "상담 전문"}</p>
         </div>
         <div className="flex items-center justify-between pt-6 border-t border-slate-50 mt-8 z-10">
-            <span className="text-slate-400 flex items-center gap-1.5 font-bold text-[11px] uppercase tracking-widest leading-none">
-                <Clock size={14} className="text-blue-500" /> Hourly Slot
+            <span className="text-slate-400 flex items-center gap-2 font-bold text-[17px] uppercase tracking-widest leading-none">
+                <Clock size={20} className="text-blue-500" /> 1시간
             </span>
-            <div className="w-12 h-12 rounded-full bg-slate-900 text-white flex items-center justify-center group-hover:scale-110 transition-all shadow-xl">
+            <div className="w-12 h-12 rounded-full  bg-slate-200/70 text-slate-900 flex items-center justify-center group-hover:scale-110 transition-all shadow-xl">
                 <ArrowRight size={20} />
             </div>
         </div>
