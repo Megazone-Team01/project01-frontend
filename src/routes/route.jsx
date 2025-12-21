@@ -21,6 +21,7 @@ import ApproveOrganization from "@/domains/user/page/ApproveOrganization.jsx";
 import PublicRoute from "@/routes/PublicRoute.jsx";
 import PrivateRoute from "@/routes/PrivateRoute.jsx";
 import Profile from "@/domains/user/page/Profile.jsx";
+import Upload from "@/domains/lecture/upload/page/Upload.jsx";
 
 function CommonRouter() {
 
@@ -38,6 +39,7 @@ function CommonRouter() {
                 <Route path="/sign" element={<PublicRoute><Sign /></PublicRoute>} />
                 <Route path="/login" element={<PublicRoute><Login /></PublicRoute>} />
                 <Route path="/profile" element={<Profile />} />
+                <Route path="upload" element={<Upload />} />
                 <Route path="/lecture" element={<LectureLayout />}>
                     <Route path="offline" element={<Offline />} />
                     <Route path="offline/:offlineId" element={<OfflineDetail />} />

@@ -13,7 +13,7 @@ import {
 import {cn} from "@/lib/utils.js";
 import {Button} from "@/components/ui/button.js";
 import {Separator} from "@/components/ui/separator.js";
-import {BarChart3Icon, BellIcon, LogOutIcon, MessageCircleIcon, SettingsIcon, UserIcon} from "lucide-react";
+import {BarChart3Icon, FilePlus, LogOutIcon, MessageCircleIcon, SettingsIcon, UserIcon} from "lucide-react";
 import {
     DropdownMenu,
     DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem,
@@ -201,8 +201,8 @@ export default function Header({isLoggedIn,hasNotifications,hasMessages}) {
             {isAuthenticated ?(
                 <div className="flex item-center gap-2">
                     <Button size="icon" variant="ghost" asChild className="relative">
-                        <Link to="/my/notifications">
-                            <BellIcon className="size-4" />
+                        <Link to="/upload">
+                            <FilePlus className="size-5"/>
                             {hasNotifications && (
                                 <div className="absolute top-1.5 right-1.5 size-2 bg-red-500 rounded-full" />
                             )}

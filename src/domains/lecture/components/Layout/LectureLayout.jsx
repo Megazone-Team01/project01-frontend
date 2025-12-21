@@ -9,13 +9,11 @@ function LectureLayout() {
     return (
         <div className="flex flex-col gap-3.5 max-w-7xl mx-auto">
             <div>
-                <Banner/>
-
                 {!isDetailPage && <SearchBox />}
             </div>
-            {/*<div className="w-full grid grid-cols-2 lg:grid-cols-4 gap-2">*/}
-                <Outlet/>
-            {/*</div>*/}
+
+            <Outlet/>
+
         </div>
     )
 }

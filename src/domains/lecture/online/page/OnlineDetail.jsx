@@ -3,20 +3,25 @@ import {Badge} from "@/components/ui/badge.js";
 import {formatDate, lectureStatus} from "@/lib/utils.js";
 import EducationPeriod from "@/domains/lecture/components/common/EducationPeriod.jsx";
 import {AlertBox} from "@/domains/lecture/components/common/AlertBox.jsx";
-import Loading from "@/components/common/loading.jsx";
 import useLectureDetail from "@/domains/lecture/hook/useLectureDetail.js";
 import {Separator} from "@/components/ui/separator.js";
 import OrganizationCard from "@/domains/lecture/components/common/OrganizationCard.jsx";
+import ErrorPage from "@/components/common/ErrorPage.jsx";
+import LoadingDetail from "@/components/common/LoadingDetail.jsx";
 
 function OnlineDetail() {
     // useParams()로 URL 변수 받기
     const {onlineId} = useParams();
     const location = useLocation();
     const lectureType = location.pathname.includes("/online") ? "online" : "offline";
-    const {data, isLoading} = useLectureDetail(onlineId, lectureType);
+    const {data, isLoading ,isError} = useLectureDetail(onlineId, lectureType);
+
+    if (isError) {
+        return <ErrorPage/>;
+    }
 
     if (isLoading) {
-        return <Loading />;
+        return <LoadingDetail/>
     }
 
     console.log("data", data)

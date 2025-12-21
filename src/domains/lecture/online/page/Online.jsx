@@ -4,6 +4,7 @@ import {setPage} from "@/common/store/lecture/lectureSlice.js";
 import CourseCard from "@/domains/lecture/components/common/CourseCard.jsx";
 import Loading from "@/components/common/loading.jsx";
 import PageNation from "@/domains/lecture/components/common/PageNation.jsx";
+import ErrorPage from "@/components/common/ErrorPage.jsx";
 
 function Online() {
     const dispatch = useDispatch();
@@ -19,7 +20,7 @@ function Online() {
     };
 
     if(isError) {
-        return <div>error</div>
+        return <ErrorPage />
     }
 
     console.log("onlineData: ", onlineList);

@@ -8,16 +8,22 @@ import EducationPeriod from "@/domains/lecture/components/common/EducationPeriod
 import {AlertBox} from "@/domains/lecture/components/common/AlertBox.jsx";
 import OrganizationCard from "@/domains/lecture/components/common/OrganizationCard.jsx";
 import {Separator} from "@/components/ui/separator.js";
+import LoadingDetail from "@/components/common/LoadingDetail.jsx";
+import ErrorPage from "@/components/common/ErrorPage.jsx";
 
 
 function OfflineDetail() {
     const {offlineId} = useParams();
     const location = useLocation();
     const lectureType = location.pathname.includes("/online") ? "online" : "offline";
-    const {data, isLoading} = useLectureDetali(offlineId, lectureType);
+    const {data, isLoading,isError} = useLectureDetali(offlineId, lectureType);
 
     if (isLoading) {
-        return <Loading />;
+        return <LoadingDetail />;
+    }
+
+    if (isError) {
+        return <ErrorPage/>
     }
 
     return (
