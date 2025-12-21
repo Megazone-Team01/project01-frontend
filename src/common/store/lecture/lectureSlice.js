@@ -28,6 +28,9 @@ const lectureSlice = createSlice({
             state.searchKeyword = '';
             state.searchType = 1;
             state.page = 0;
+        },
+        setEnrolled: (state, action) => {
+            state.enrolled = action.payload;
         }
     }
 });
@@ -37,7 +40,8 @@ export const {
     setSearchType,
     setPage,
     executeSearch,
-    resetFilters
+    resetFilters,
+    setEnrolled,
 } = lectureSlice.actions;
 
 export default lectureSlice.reducer;
