@@ -21,14 +21,16 @@ export const getRecentCreatedLectures = async () => {
     })
     return res.data;
 }
-export const getLecturesByType = async ( type ) => {
+export const getLectureByFilter = async ( filter ) => {
     const res = await axiosInstance.get("/v1/lectures/filter", {
         params: {
-            isOnline: type
+            isOnline: filter.type,
+            searchString: filter.searchString,
         }
     })
     return res.data;
 }
+
 
 export const approveLecture = async ( id ) => {
     const res = await axiosInstance.post("/v1/lectures/approve/" + id )

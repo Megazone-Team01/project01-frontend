@@ -21,7 +21,8 @@ export const AdminUserList = () => {
     const [ users, setUsers ] = useState([]);
     const [ filter, setFilter ] = useState({
         type: null,
-        userRole: null
+        userRole: null,
+        searchString: null
     });
     const [ formData, setFormData ] = useState({
         name: '',
@@ -56,11 +57,6 @@ export const AdminUserList = () => {
         }
         fetchUser();
     }, [ filter ]);
-
-    const filterSearch = async () => {
-        const data = await getUsersWithFilter( filter );
-        setUsers(data)
-    }
 
     const deleteById = async ( id, deletedBy ) => {
         const flag = confirm( "사용자를 삭제하시겠습니까?" )
@@ -157,14 +153,15 @@ export const AdminUserList = () => {
                 <div className="flex flex-col pb-4">
                     <div className="flex gap-3">
                         <InputGroup>
-                            <InputGroupInput placeholder="Search..."/>
+                            <InputGroupInput
+                                onChange={ (e) => setFilter({ ...filter, searchString: e.target.value } ) }
+                                placeholder="Search..."/>
                             <InputGroupAddon>
                                 <Search/>
                             </InputGroupAddon>
                         </InputGroup>
                         <Button className="hover:cursor-pointer"
                                 type="button"
-                                onClick={ () => filterSearch()}
                                 variant="ghost"> 검색 </Button>
                     </div>
                     <div className="flex p-2">

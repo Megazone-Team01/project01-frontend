@@ -36,7 +36,8 @@ export const AdminOrganizationList = () => {
     })
 
     const [ filter, setFilter ] = useState({
-        type: null
+        type: null,
+        searchString: null
     })
 
     const deleteById = async ( id ) => {
@@ -125,7 +126,9 @@ export const AdminOrganizationList = () => {
                 <div className="flex flex-col pb-4">
                     <div className="flex gap-3">
                         <InputGroup>
-                            <InputGroupInput placeholder="Search..."/>
+                            <InputGroupInput
+                                onChange={(e) => setFilter( { ...filter, searchString: e.target.value } )}
+                                placeholder="Search..."/>
                             <InputGroupAddon>
                                 <Search/>
                             </InputGroupAddon>
@@ -137,25 +140,25 @@ export const AdminOrganizationList = () => {
                         <RadioGroup className="flex" defaultValue="default">
                             <div className="flex items-center gap-3">
                                 <RadioGroupItem
-                                    onClick={ () => setFilter( { isOnline: null } )}
+                                    onClick={ () => setFilter( { ...filter, isOnline: null } )}
                                     value="default" id="r1"/>
                                 <Label htmlFor="r1"> 전체 </Label>
                             </div>
                             <div className="flex items-center gap-3">
                                 <RadioGroupItem
-                                    onClick={ () => setFilter( { isOnline: 1 } )}
+                                    onClick={ () => setFilter( { ...filter, isOnline: 1 } )}
                                     value="online" id="r2"/>
                                 <Label htmlFor="r2"> 온라인 </Label>
                             </div>
                             <div className="flex items-center gap-3">
                                 <RadioGroupItem
-                                    onClick={ () => setFilter( { isOnline: 2 } )}
+                                    onClick={ () => setFilter( { ...filter, isOnline: 2 } )}
                                     value="offline" id="r3"/>
                                 <Label htmlFor="r3"> 오프라인 </Label>
                             </div>
                             <div className="flex items-center gap-3">
                                 <RadioGroupItem
-                                    onClick={ () => setFilter( { isOnline: 0 } )}
+                                    onClick={ () => setFilter( { ...filter, isOnline: 0 } )}
                                     value="all" id="r3"/>
                                 <Label htmlFor="r3"> 온/오프라인 </Label>
                             </div>

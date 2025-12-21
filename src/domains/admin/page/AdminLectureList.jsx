@@ -10,10 +10,9 @@ import {Label} from "@/components/ui/label.js";
 import {useEffect, useState} from "react";
 import {Empty, EmptyTitle} from "@/components/ui/empty.js";
 import {
-    deleteLecture,
+    deleteLecture, getLectureByFilter,
     getLectureDetail,
     getLectures,
-    getLecturesByType,
     updateLecture
 } from "@/domains/admin/api/lectureApi.js";
 import {Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle} from "@/components/ui/dialog.js";
@@ -44,7 +43,8 @@ export const AdminLectureList = () => {
         day: []
     })
     const [ filter, setFilter ] = useState({
-        type: null
+        type: null,
+        searchString: null
     })
 
     const [ startOpen, setStartOpen ] = useState(false);
@@ -130,7 +130,7 @@ export const AdminLectureList = () => {
 
     useEffect(() => {
         const fetchLecture = async () => {
-            const data = await getLecturesByType( filter.type );
+            const data = await getLectureByFilter( filter );
             setLectures(data);
         }
         fetchLecture();
@@ -147,7 +147,9 @@ export const AdminLectureList = () => {
                 <div className="flex flex-col pb-4">
                     <div className="flex gap-3">
                         <InputGroup>
-                            <InputGroupInput placeholder="Search..."/>
+                            <InputGroupInput
+                                onChange={ (e) => setFilter( { ...filter, searchString: e.target.value })}
+                                placeholder="Search..."/>
                             <InputGroupAddon>
                                 <Search/>
                             </InputGroupAddon>

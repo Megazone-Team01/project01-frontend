@@ -17,7 +17,7 @@ export const getUsersWithFilter = async ( filter ) => {
     const res = await axiosInstance.get( "/v1/user",
         {
             params: {
-                searchString: null,
+                searchString: filter.searchString,
                 userRole: filter.userRole,
                 type: filter.type,
                 sortBy: filter.sortBy,

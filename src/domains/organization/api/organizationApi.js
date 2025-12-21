@@ -16,12 +16,10 @@ export const getOrganizationsWithFilter = async ( filter ) => {
     const res = await axiosInstance.get( "/v1/organization", {
         params: filter
     } );
-    console.log( res );
     return res.data;
 }
 
 export const getOrganization = async (organizationId) => {
     const res = await axiosInstance.get("/v1/organization/" + organizationId + "/detail");
-    console.log( res.data )
     return res.data;
 }
