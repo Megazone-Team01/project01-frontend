@@ -8,12 +8,10 @@ export const getTeachersByOrganization = async (organizationId) => {
     return response.data;
 };
 
-
 export const getTeacherDetail = async (teacherId) => {
     const response = await axiosInstance.get(`v1/meetings/teachers/${teacherId}`);
     return response.data;
 };
-
 
 export const getMyMeetings = async (type = 'ALL', status = null) => {
     const response = await axiosInstance.get('v1/meetings/my', {
