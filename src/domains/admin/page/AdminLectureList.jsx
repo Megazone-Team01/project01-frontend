@@ -9,12 +9,15 @@ import {RadioGroup, RadioGroupItem} from "@/components/ui/radio-group.js";
 import {Label} from "@/components/ui/label.js";
 import {useEffect, useState} from "react";
 import {Empty, EmptyTitle} from "@/components/ui/empty.js";
-import {deleteLecture, getLectureDetail, getLectures} from "@/domains/admin/api/lectureApi.js";
+import {deleteLecture, getLectureDetail, getLectures, updateLecture} from "@/domains/admin/api/lectureApi.js";
 import {Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle} from "@/components/ui/dialog.js";
 import {Field, FieldLabel, FieldSet} from "@/components/ui/field.js";
 import {useNavigate} from "react-router";
 import {Breadcrumb, BreadcrumbItem, BreadcrumbList, BreadcrumbSeparator} from "@/components/ui/breadcrumb.js";
-import {deleteOrganization, getOrganizations} from "@/domains/admin/api/organizationApi.js";
+import {Input} from "@/components/ui/input.js";
+import {Popover, PopoverContent, PopoverTrigger} from "@/components/ui/popover.js";
+import {Calendar} from "@/components/ui/calendar.js";
+import {Checkbox} from "@/components/ui/checkbox.js";
 
 
 export const AdminLectureList = () => {
@@ -22,6 +25,7 @@ export const AdminLectureList = () => {
     const [ lectures, setLectures] = useState([]);
 
     const [ infoOpen, setInfoOpen ] = useState(false);
+    const [ isUpdating, setUpdating ] = useState(false);
     const [ formData, setFormData ] = useState({
         createdAt: '',
         updatedAt: '',
@@ -29,7 +33,15 @@ export const AdminLectureList = () => {
         category: [],
         startTimeAt: '',
         endTimeAt: '',
+        startAt: '',
+        endAt: '',
+        day: []
     })
+
+    const [ startOpen, setStartOpen ] = useState(false);
+    const [ endOpen, setEndOpen ] = useState(false);
+
+    const [ selectedDays, setSelectedDays ] = useState([]);
 
     const displayDetail = async ( id, isOnline ) => {
         const data = await getLectureDetail( id, isOnline ? 1 : 0 );
@@ -51,6 +63,54 @@ export const AdminLectureList = () => {
         }
     }
 
+    const checkDay = (dayName, isChecked) => {
+        const updatedSelectedDays = isChecked
+            ? [...selectedDays, dayName]
+            : selectedDays.filter(day => day !== dayName);
+
+        setSelectedDays(updatedSelectedDays);
+
+        setFormData(prev => ({
+            ...prev,
+            day: updatedSelectedDays
+        }));
+    }
+
+    const openUpdateModal = async (id, isOnline) => {
+        const data = await getLectureDetail( id, isOnline ? 1 : 0 );
+
+        setSelectedDays(data.day || []);
+
+        setFormData( { ...data, id: id, isOnline: isOnline } );
+        setUpdating(true);
+        setInfoOpen( true );
+    }
+    const closeModal = () => {
+        setUpdating(false);
+        setInfoOpen( false );
+    }
+    const submitUpdate = async () => {
+        // validate
+        if( formData.name.length === 0 ||
+            formData.price < 10000 ||
+            formData.startAt.length === 0 ||
+            formData.endAt.length === 0
+        ){
+            alert( "필수 정보를 입력해주세요" )
+            return
+        }
+
+        // update
+        const res = await updateLecture( {
+            ...formData,
+            day: selectedDays
+        } );
+        if( res === 200 ){
+            alert( "강의 수정이 완료되었습니다" )
+            window.location.reload();
+        }
+    }
+
     useEffect(() => {
         const fetchLecture = async () => {
             const data = await getLectures();
@@ -59,7 +119,7 @@ export const AdminLectureList = () => {
         fetchLecture();
     }, []);
 
-    console.log( lectures )
+    console.log( formData )
 
     return (
         <Card className="w-full min-h-80 bg-white">
@@ -132,6 +192,7 @@ export const AdminLectureList = () => {
                                                         :
                                                         <ButtonGroup>
                                                             <Button
+                                                                onClick={ () => openUpdateModal( lecture.id, lecture.online )}
                                                                 className="bg-white text-green-500 hover:bg-white hover:font-bold hover:cursor-pointer"> 수정 </Button>
                                                             <Button
                                                                 onClick={ () => removeLecture( lecture.id, lecture.online )}
@@ -159,79 +220,158 @@ export const AdminLectureList = () => {
                         <Field>
                             <div className="flex items-center gap-3">
                                 <div className="flex flex-1 flex-col items-start gap-4 pl-5">
-                                    <div className="flex gap-2 flex-1">
-                                        <Label className="text-md font-bold"> 이름: </Label>
-                                        <Label className="text-md text-gray-500"> {formData.name} </Label>
+                                    <div className="flex gap-2 w-full flex-1 items-center">
+                                        <Label className="flex-1 text-md font-bold"> 이름: </Label>
+                                        {
+                                            isUpdating ?
+                                                <Input
+                                                    type="text"
+                                                    className="flex-5 rounded-none"
+                                                    value={formData.name} />
+                                                :
+                                                <Label
+                                                    className="flex-5 text-md text-gray-500"> {formData.name} </Label>
+                                        }
                                     </div>
-                                    <div className="flex gap-2 flex-1">
-                                        <Label className="text-md font-bold"> 타입: </Label>
+                                    <div className="flex gap-2 flex-1 w-full">
+                                        <Label className="text-md font-bold flex-1"> 타입: </Label>
                                         <Label
-                                            className="text-md text-gray-500"> {formData.online ? "온라인" : "오프라인"} </Label>
+                                            className="text-md text-gray-500 flex-5"> {formData.online ? "온라인" : "오프라인"} </Label>
                                     </div>
-                                    <div className="flex gap-2 flex-1">
-                                        <Label className="text-md font-bold"> 제작: </Label>
-                                        <Label className="text-md text-gray-500"> {formData.organizationName} </Label>
-                                    </div>
-                                    <div className="flex gap-2 flex-1">
-                                        <Label className="text-md font-bold"> 강사: </Label>
+                                    <div className="flex gap-2 flex-1 w-full">
+                                        <Label className="text-md font-bold flex-1"> 제작: </Label>
                                         <Label
-                                            className="text-md text-gray-500"> {formData.teacherName} </Label>
+                                            className="text-md text-gray-500 flex-5"> {formData.organizationName} </Label>
                                     </div>
-                                    <div className="flex gap-2 flex-1">
-                                        <Label className="text-md font-bold"> 카테고리: </Label>
-                                        <Label className="text-md text-gray-500">
-                                            {
-                                                formData.category.length > 1 ?
-                                                formData.category.map( (name, index) => (
+                                    <div className="flex gap-2 flex-1 w-full">
+                                        <Label className="text-md font-bold flex-1"> 강사: </Label>
+                                        <Label
+                                            className="text-md text-gray-500 flex-5"> {formData.teacherName} </Label>
+                                    </div>
+                                </div>
+                                <div className="flex flex-1 flex-col items-start gap-4 pl-5">
+                                    <div className="flex gap-2 flex-1 w-full items-center">
+                                        <Label className="text-md font-bold flex-2"> 가격: </Label>
+                                        {
+                                            isUpdating ?
+                                                <Input
+                                                type="number"
+                                                className="flex-5 rounded-none"
+                                                value={formData.price}
+                                                />
+                                                :
+                                                <Label className="flex-5 text-md text-gray-500"> {formData.price} </Label>
+                                        }
+                                    </div>
+                                    <div className="flex gap-2 flex-1 w-full items-center">
+                                        <Label className="text-md font-bold flex-2"> 시작일: </Label>
+                                        {
+                                            isUpdating ?
+                                                <Popover open={startOpen} onOpenChange={setStartOpen}>
+                                                    <PopoverTrigger asChild>
+                                                        <Button
+                                                            className="flex-5 rounded-none"
+                                                            variant="outline" id="startDate"> { formData.startAt.substring(0, 10) } </Button>
+                                                    </PopoverTrigger>
+                                                    <PopoverContent className="min-w-[150px] overflow-y-hidden p-1">
+                                                        <Calendar
+                                                            mode="single"
+                                                            className="w-full"
+                                                            selected={formData.startAt}
+                                                            captionLayout="dropdown"
+                                                            onSelect={ (date) => {
+                                                                date = new Date(date.getTime() - date.getTimezoneOffset() * 60000);
+                                                                setFormData( { ...formData, startAt: date.toISOString() })
+                                                                setEndOpen(false)
+                                                            }}
+                                                        />
+                                                    </PopoverContent>
+                                                </Popover>
+                                                :
+                                                <Label
+                                                    className="text-md text-gray-500 flex-5"> {formData.startAt.substring(0, 10)} </Label>
+                                        }
+                                    </div>
+                                    <div className="flex gap-2 flex-1 w-full items-center">
+                                        <Label className="text-md font-bold flex-2"> 종료일: </Label>
+                                        {
+                                            isUpdating ?
+                                                <Popover open={endOpen} onOpenChange={setEndOpen}>
+                                                    <PopoverTrigger asChild>
+                                                        <Button
+                                                            className="flex-5 rounded-none"
+                                                            variant="outline" id="endDate"> { formData.endAt.substring(0, 10) } </Button>
+                                                    </PopoverTrigger>
+                                                    <PopoverContent className="min-w-[150px] overflow-y-hidden p-1">
+                                                        <Calendar
+                                                            mode="single"
+                                                            className="w-full"
+                                                            selected={formData.endAt}
+                                                            captionLayout="dropdown"
+                                                            onSelect={ (date) => {
+                                                                date = new Date(date.getTime() - date.getTimezoneOffset() * 60000);
+                                                                setFormData( { ...formData, endAt: date.toISOString() })
+                                                                setEndOpen(false)
+                                                            }}
+                                                        />
+                                                    </PopoverContent>
+                                                </Popover>
+                                                :
+                                                <Label className="text-md text-gray-500 flex-5"> {formData.endAt.substring(0, 10)} </Label>
+                                        }
+                                    </div>
+                                    <div className="flex gap-2 flex-1 w-full items-center">
+                                        <Label className="text-md font-bold flex-2"> 설명: </Label>
+                                        {
+                                            isUpdating ?
+                                                <Input
+                                                    value={formData.description}
+                                                    type="text"
+                                                    className="flex-5 rounded-none"
+                                                />
+                                                :
+                                                <Label
+                                                    className="text-md text-gray-500 flex-5"> {formData.description} </Label>
+                                        }
+                                    </div>
+                                </div>
+                                <div className="flex flex-1 flex-col items-start gap-4 pl-5">
+                                    <div className="flex gap-2 flex-1 w-full items-center">
+                                        <Label className="text-md font-bold flex-1"> 생성일: </Label>
+                                        <Label
+                                            className="text-md text-gray-500 flex-5"> {formData.createdAt.substring(0, 10)} </Label>
+                                    </div>
+                                    <div className="flex gap-2 flex-1 w-full items-center">
+                                        <Label className="text-md font-bold flex-1"> 수정일: </Label>
+                                        <Label
+                                            className="text-md text-gray-500 flex-5"> {formData.updatedAt !== null ? formData.updatedAt.substring(0, 10) : ""} </Label>
+                                    </div>
+                                    <div className="flex gap-2 flex-1 w-full items-center">
+                                        <Label className="text-md font-bold flex-1"> 삭제일: </Label>
+                                        <Label
+                                            className="text-md text-gray-500 flex-5"> {formData.deletedAt !== null ? formData.deletedAt.substring(0, 10) : ""} </Label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="flex items-center gap-3">
+                                <div className="flex-1 flex">
+                                    <Label className="flex-1 text-md font-bold"> 카테고리: </Label>
+                                    <Label className="flex-5 text-md text-gray-500">
+                                        {
+                                            formData.category.length > 1 ?
+                                                formData.category.map((name, index) => (
                                                     <BreadcrumbItem>
-                                                        {name} { formData.category.length > 1 ? index !== formData.category.length - 1 ? "  >  " : " " : " " }
+                                                        {name} {formData.category.length > 1 ? index !== formData.category.length - 1 ? "  >  " : " " : " "}
                                                     </BreadcrumbItem>
                                                 ))
-                                                    :
-                                                    <BreadcrumbItem>
-                                                        {formData.category[0]}
-                                                    </BreadcrumbItem>
-                                            }
-                                        </Label>
-                                    </div>
+                                                :
+                                                <BreadcrumbItem>
+                                                    {formData.category[0]}
+                                                </BreadcrumbItem>
+                                        }
+                                    </Label>
                                 </div>
-                                <div className="flex flex-1 flex-col items-start gap-4 pl-5">
-                                    <div className="flex gap-2 flex-1">
-                                        <Label className="text-md font-bold"> 가격: </Label>
-                                        <Label className="text-md text-gray-500"> {formData.price} </Label>
-                                    </div>
-                                    <div className="flex gap-2 flex-1">
-                                        <Label className="text-md font-bold"> 시작일: </Label>
-                                        <Label
-                                            className="text-md text-gray-500"> {formData.startAt} </Label>
-                                    </div>
-                                    <div className="flex gap-2 flex-1">
-                                        <Label className="text-md font-bold"> 종료일: </Label>
-                                        <Label className="text-md text-gray-500"> {formData.endAt} </Label>
-                                    </div>
-                                    <div className="flex gap-2 flex-1">
-                                        <Label className="text-md font-bold"> 설명: </Label>
-                                        <Label
-                                            className="text-md text-gray-500"> {formData.description} </Label>
-                                    </div>
-                                </div>
-                                <div className="flex flex-1 flex-col items-start gap-4 pl-5">
-                                    <div className="flex gap-2 flex-1">
-                                        <Label className="text-md font-bold"> 생성일: </Label>
-                                        <Label
-                                            className="text-md text-gray-500"> {formData.createdAt.substring(0, 10)} </Label>
-                                    </div>
-                                    <div className="flex gap-2 flex-1">
-                                        <Label className="text-md font-bold"> 최종 수정일: </Label>
-                                        <Label
-                                            className="text-md text-gray-500"> {formData.updatedAt !== null ? formData.updatedAt.substring(0, 10) : ""} </Label>
-                                    </div>
-                                    <div className="flex gap-2 flex-1">
-                                        <Label className="text-md font-bold"> 삭제일: </Label>
-                                        <Label
-                                            className="text-md text-gray-500"> {formData.deletedAt !== null ? formData.deletedAt.substring(0, 10) : ""} </Label>
-                                    </div>
-                                </div>
+                                <div className="flex-1" />
                             </div>
                         </Field>
                         <Separator className="my-2"/>
@@ -242,35 +382,118 @@ export const AdminLectureList = () => {
                                         <div className="flex gap-2 flex-1">
                                             <Label className="text-md font-bold"> 강의 파일: </Label>
                                             <Label
-                                                onClick={ () => navigate("/online/" + formData.id ) }
-                                                className="text-md text-gray-500 hover:cursor-pointer hover:text-gray-700"> 강의 파일 재생하기 </Label>
+                                                onClick={() => navigate("/online/" + formData.id)}
+                                                className="text-md text-gray-500 hover:cursor-pointer hover:text-gray-700"> 강의
+                                                파일 재생하기 </Label>
                                         </div>
                                         <div className="flex gap-2 flex-1">
                                             <Label className="text-md font-bold"> 상태: </Label>
                                             <Label
-                                                className="text-md text-gray-500"> {formData.status === 0 ? "대기중" : formData.status === 1 ? "승인" : "반려" } </Label>
+                                                className="text-md text-gray-500"> {formData.status === 0 ? "대기중" : formData.status === 1 ? "승인" : "반려"} </Label>
                                         </div>
                                     </div>
                                 </Field>
                                 :
                                 <Field>
                                     <div className="flex flex-1 flex-col items-start gap-4 pl-5">
-                                        <div className="flex gap-2 flex-1">
-                                            <Label className="text-md font-bold"> 인원 제한: </Label>
-                                            <Label className="text-md text-gray-500"> {formData.maxNum} </Label>
+                                        <div className="flex gap-2 flex-1 items-center w-full">
+                                            <Label className="text-md font-bold flex-1"> 인원 제한: </Label>
+                                            {
+                                                isUpdating ?
+                                                    <Input
+                                                        type="number"
+                                                        min={1}
+                                                        className="rounded-none flex-5"
+                                                        onChange={ (e) => setFormData( { ...formData, maxNum: e.target.value })}
+                                                        value={formData.maxNum} />
+                                                    :
+                                                    <Label className="text-md text-gray-500"> {formData.maxNum} </Label>
+                                            }
                                         </div>
-                                        <div className="flex gap-2 flex-1">
-                                            <Label className="text-md font-bold"> 강의실: </Label>
+                                        <div className="flex gap-2 flex-1 w-full items-center">
+                                            <Label className="text-md font-bold flex-1"> 강의실: </Label>
                                             <Label
-                                                className="text-md text-gray-500"> {formData.roomName} </Label>
+                                                className="text-md text-gray-500 flex-5"> {formData.roomName} </Label>
                                         </div>
-                                        <div className="flex gap-2 flex-1">
-                                            <Label className="text-md font-bold"> 요일: </Label>
-                                            <Label className="text-md text-gray-500"> {formData.day} </Label>
+                                        <div className="flex gap-2 flex-1 w-full items-center">
+                                            <Label className="text-md font-bold flex-1"> 요일: </Label>
+                                            {
+                                                isUpdating ?
+                                                    <div className="flex flex-5 gap-8">
+                                                        <div className="flex gap-1">
+                                                            <Checkbox
+                                                                defaultChecked={formData.day.includes("월")}
+                                                                onCheckedChange={(checked) => {
+                                                                    checkDay( "월", checked )
+                                                                }}
+                                                            />
+                                                            <Label> 월 </Label>
+                                                        </div>
+                                                        <div className="flex gap-1">
+                                                            <Checkbox
+                                                                defaultChecked={formData.day.includes("화")}
+                                                                onCheckedChange={(checked) => {
+                                                                    checkDay( "화", checked )
+                                                                }}
+                                                            />
+                                                            <Label> 화 </Label>
+                                                        </div>
+                                                        <div className="flex gap-1">
+                                                            <Checkbox
+                                                                defaultChecked={formData.day.includes("수")}
+                                                                onCheckedChange={(checked) => {
+                                                                    checkDay( "수", checked )
+                                                                }}
+                                                            />
+                                                            <Label> 수 </Label>
+                                                        </div>
+                                                        <div className="flex gap-1">
+                                                            <Checkbox
+                                                                defaultChecked={formData.day.includes("목")}
+                                                                onCheckedChange={(checked) => {
+                                                                    checkDay( "목", checked )
+                                                                }}
+                                                            />
+                                                            <Label> 목 </Label>
+                                                        </div>
+                                                        <div className="flex gap-1">
+                                                            <Checkbox
+                                                                defaultChecked={formData.day.includes("금")}
+                                                                onCheckedChange={(checked) => {
+                                                                    checkDay( "금", checked )
+                                                                }}
+                                                            />
+                                                            <Label> 금 </Label>
+                                                        </div>
+                                                        <div className="flex gap-1">
+                                                            <Checkbox
+                                                                defaultChecked={formData.day.includes("토")}
+                                                                onCheckedChange={(checked) => {
+                                                                    checkDay( "토", checked )
+                                                                }}
+                                                            />
+                                                            <Label> 토 </Label>
+                                                        </div>
+                                                        <div className="flex gap-1">
+                                                            <Checkbox
+                                                                defaultChecked={formData.day.includes("일")}
+                                                                onCheckedChange={(checked) => {
+                                                                    checkDay( "일", checked )
+                                                                }}
+                                                            />
+                                                            <Label> 일 </Label>
+                                                        </div>
+                                                    </div>
+                                                    :
+                                                    <Label
+                                                        className="text-md text-gray-500 flex-5">
+                                                        {formData.day.map( day => day + " ")}
+                                                    </Label>
+                                            }
                                         </div>
-                                        <div className="flex gap-2 flex-1">
-                                            <Label className="text-md font-bold"> 시작 시간: </Label>
-                                            <Label className="text-md text-gray-500">
+                                        <div className="flex gap-2 flex-1 w-full items-center">
+                                            <Label className="text-md font-bold flex-1"> 시작 시간: </Label>
+                                            <Label className="text-md text-gray-500 flex-5">
                                                 {
                                                     formData.startTimeAt.length > 3 ?
                                                         formData.startTimeAt.substring(0, 2) + " : " + formData.startTimeAt.substring(2, 4)
@@ -279,10 +502,10 @@ export const AdminLectureList = () => {
                                                 }
                                             </Label>
                                         </div>
-                                        <div className="flex gap-2 flex-1">
-                                            <Label className="text-md font-bold"> 종료 시간: </Label>
+                                        <div className="flex gap-2 flex-1 w-full items-center">
+                                            <Label className="text-md font-bold flex-1"> 종료 시간: </Label>
                                             <Label
-                                                className="text-md text-gray-500">
+                                                className="text-md text-gray-500 flex-5">
                                                 {
                                                     formData.endTimeAt.length > 3 ?
                                                         formData.endTimeAt.substring(0, 2) + " : " + formData.endTimeAt.substring(2, 4)
@@ -297,7 +520,13 @@ export const AdminLectureList = () => {
                     </FieldSet>
                 </div>
                 <DialogFooter>
-                    <Button variant="outline" onClick={() => setInfoOpen(false)}> 닫기 </Button>
+                    {
+                        isUpdating ?
+                            <Button className="border-green-500 text-green-500 hover:bg-green-200 hover:text-green-700" variant="outline" onClick={() => submitUpdate()}> 수정 </Button>
+                            :
+                            ""
+                    }
+                    <Button variant="outline" onClick={() => closeModal()}> 닫기 </Button>
                 </DialogFooter>
             </DialogContent>
             </Dialog>

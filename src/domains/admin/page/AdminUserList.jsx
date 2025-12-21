@@ -13,6 +13,8 @@ import {deleteUser, getUserDetail, getUsers, getUsersWithFilter} from "@/domains
 import {Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle} from "@/components/ui/dialog.js";
 import {Field, FieldLabel, FieldSet} from "@/components/ui/field.js";
 import {Skeleton} from "@/components/ui/skeleton.js";
+import {Input} from "@/components/ui/input.js";
+import axiosInstance from "@/common/api/axiosInstance.js";
 
 
 export const AdminUserList = () => {
@@ -37,6 +39,7 @@ export const AdminUserList = () => {
     })
 
     const [ infoOpen, setInfoOpen ] = useState(false);
+    const [ isUpdating, setUpdating ] = useState(false);
 
     useEffect(() => {
         const fetchUser = async () => {
@@ -64,6 +67,56 @@ export const AdminUserList = () => {
         }
     }
 
+    const openUpdate = async ( id ) => {
+        const data = await getUserDetail( id );
+        setFormData( {
+            ...formData,
+            name: data.name,
+            email: data.email,
+            phone: data.phone,
+            addressCode: data.addressCode,
+            addressDetail: data.addressDetail,
+            roleName: data.roleName,
+            createdAt: data.createdAt,
+            updatedAt: data.updatedAt,
+            deletedAt: data.deletedAt,
+            lectures: data.lectures,
+            organizations: data.organizations,
+            profileImage: data.profileImage
+        })
+        setUpdating(true);
+        setInfoOpen(true);
+    }
+    const submitUpdate = async () => {
+        const data = {
+            name: formData.name,
+            phone: formData.phone,
+            address: formData.address,
+            addressDetail: formData.addressDetail
+        };
+        if( data.name.length === 0 || data.phone.length !== 11 ){
+            alert( "이름과 전화번호는 필수입니다. 형식에 맞게 입력해주세요" )
+            return
+        }
+
+        const res = await axiosInstance.post( "/v1/user/update", data );
+        if( res === 200 ){
+            alert( "수정되었습니다" )
+            window.location.reload();
+        }
+    }
+    const closeModal = () => {
+        setFormData( {
+            ...formData,
+            name: '',
+            phone: '',
+            addressCode: '',
+            addressDetail: ''
+        })
+        setInfoOpen(false);
+        setUpdating(false);
+    }
+
     const openDetail = async ( id ) => {
         const data = await getUserDetail( id );
         setFormData( {
@@ -81,7 +134,7 @@ export const AdminUserList = () => {
             organizations: data.organizations,
             profileImage: data.profileImage
         })
-
+        setUpdating(false);
         setInfoOpen(true);
     }
 
@@ -197,7 +250,9 @@ export const AdminUserList = () => {
                                             <TableCell className="text-center"> {user.deleted ? "삭제됨" : "활성화"} </TableCell>
                                             <TableCell className="text-center flex justify-center">
                                                 <ButtonGroup>
-                                                    <Button className="bg-white text-green-500 hover:bg-white hover:font-bold hover:cursor-pointer"> 수정 </Button>
+                                                    <Button className="bg-white text-green-500 hover:bg-white hover:font-bold hover:cursor-pointer"
+                                                        onClick={ () => openUpdate( user.id ) }
+                                                    > 수정 </Button>
                                                     <Button className="bg-white text-red-500 hover:bg-white hover:font-bold hover:cursor-pointer"
                                                         onClick={ () => deleteById( user.id )}
                                                     > 삭제 </Button>
@@ -221,59 +276,105 @@ export const AdminUserList = () => {
                     <div className="overflow-y-auto max-h-[60vh]">
                         <FieldSet>
                             <Field>
-                                <div className="flex items-center gap-3">
+                                <div className="flex items-center gap-3 pr-5">
                                     {
                                         formData.profileImage !== null ?
                                             <img className="flex-1 max-w-1/3" src={formData.profileImage}/>
                                             :
-                                            <div className="w-1/3 aspect-square bg-gray-50 border" />
+                                            <div className="flex-1 max-w-1/3 aspect-square bg-gray-100 border" />
                                     }
                                     <div className="flex flex-1 flex-col items-start gap-4 pl-5">
-                                        <div className="flex gap-2 flex-1">
-                                            <Label className="text-md font-bold"> 이름: </Label>
-                                            <Label className="text-md text-gray-500"> {formData.name} </Label>
+                                        <div className="flex gap-2 w-full flex-1 items-center">
+                                            <Label className="flex-2 text-md font-bold"> 이름: </Label>
+                                            {
+                                                isUpdating ?
+                                                    <Input
+                                                        value={formData.name}
+                                                        className="flex-5 rounded-none"
+                                                    />
+                                                    :
+                                                    <Label
+                                                        className="flex-5 text-md text-gray-500"> {formData.name} </Label>
+                                            }
                                         </div>
-                                        <div className="flex gap-2 flex-1">
-                                            <Label className="text-md font-bold"> 이메일: </Label>
-                                            <Label className="text-md text-gray-500"> {formData.email} </Label>
+                                        <div className="flex gap-2 w-full flex-1 items-center">
+                                            <Label className="flex-2 text-md font-bold"> 이메일: </Label>
+                                            <Label className="flex-5 text-gray-500"> {formData.email} </Label>
                                         </div>
-                                        <div className="flex gap-2 flex-1">
-                                            <Label className="text-md font-bold"> 전화번호: </Label>
-                                            <Label className="text-md text-gray-500"> {formData.phone} </Label>
+                                        <div className="flex gap-2 w-full flex-1 items-center">
+                                            <Label className="flex-2 text-md font-bold"> 전화번호: </Label>
+                                            {
+                                                isUpdating ?
+                                                    <Input
+                                                        value={formData.phone}
+                                                        className="flex-5 rounded-none"
+                                                    />
+                                                    :
+                                                    <Label
+                                                        className="flex-5 text-md text-gray-500"> {formData.phone}  </Label>
+                                            }
                                         </div>
-                                        <div className="flex gap-2 flex-1">
-                                            <Label className="text-md font-bold"> 주소: </Label>
-                                            <Label
-                                                className="text-md text-gray-500"> {formData.addressCode + " " + formData.addressDetail} </Label>
+
+                                        <div className="flex gap-2 w-full flex-1 items-center">
+                                            <Label className="flex-2 text-md font-bold"> 역할: </Label>
+                                            <Label className="flex-5 text-md text-gray-500"> {formData.roleName} </Label>
                                         </div>
-                                        <div className="flex gap-2 flex-1">
-                                            <Label className="text-md font-bold"> 역할: </Label>
-                                            <Label className="text-md text-gray-500"> {formData.roleName} </Label>
+                                        <div className="flex gap-2 w-full flex-1 items-center">
+                                            <Label className="flex-2 text-md font-bold"> 주소: </Label>
+                                            {
+                                                isUpdating ?
+                                                    <div className="flex flex-5 flex-col gap-2">
+                                                        <Input
+                                                            value={formData.addressCode}
+                                                            className="flex-5 rounded-none"
+                                                        />
+                                                        <Input
+                                                            value={formData.addressDetail}
+                                                            className="flex-5 rounded-none"
+                                                        />
+                                                    </div>
+                                                    :
+                                                    <div className="flex flex-5 flex-col gap-2">
+                                                        <Label
+                                                            className="text-md text-gray-500"> {formData.addressCode} </Label>
+                                                        <Label
+                                                            className="text-md text-gray-500"> {formData.addressDetail} </Label>
+                                                    </div>
+                                            }
                                         </div>
                                     </div>
-                                    <div className="flex flex-1 flex-col items-start gap-4 pl-5">
-                                        <div className="flex gap-2 flex-1">
-                                            <Label className="text-md font-bold"> 생성일: </Label>
-                                            <Label className="text-md text-gray-500"> {formData.createdAt.substring(0, 10)} </Label>
-                                        </div>
-                                        <div className="flex gap-2 flex-1">
-                                            <Label className="text-md font-bold"> 최종 수정일: </Label>
-                                            <Label className="text-md text-gray-500"> { formData.updatedAt !== null ? formData.updatedAt.substring(0, 10) : ""} </Label>
-                                        </div>
-                                        <div className="flex gap-2 flex-1">
-                                            <Label className="text-md font-bold"> 삭제일: </Label>
-                                            <Label className="text-md text-gray-500"> { formData.deletedAt !== null ? formData.deletedAt.substring(0, 10) : ""} </Label>
-                                        </div>
-                                    </div>
+
                                 </div>
+                                <Field>
+                                    <div className="flex items-center gap-3 pr-5">
+                                        <div className="flex-1 max-w-1/3"/>
+                                        <div className="flex flex-1 flex-col items-start gap-4 pl-5">
+                                            <div className="flex gap-2 w-full flex-1 items-center">
+                                                <Label className="flex-2 text-md font-bold"> 생성일: </Label>
+                                                <Label
+                                                    className="flex-5 text-md text-gray-500"> {formData.createdAt.substring(0, 10)} </Label>
+                                            </div>
+                                            <div className="flex w-full gap-2 flex-1 items-center">
+                                                <Label className="flex-2 text-md font-bold"> 최종 수정일: </Label>
+                                                <Label
+                                                    className="flex-5 text-md text-gray-500"> {formData.updatedAt !== null ? formData.updatedAt.substring(0, 10) : ""} </Label>
+                                            </div>
+                                            <div className="flex w-full gap-2 flex-1 items-center">
+                                                <Label className="flex-2 text-md font-bold"> 삭제일: </Label>
+                                                <Label
+                                                    className="flex-5 text-md text-gray-500"> {formData.deletedAt !== null ? formData.deletedAt.substring(0, 10) : ""} </Label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </Field>
                             </Field>
                             <Separator className="my-2"/>
                             <Field>
                                 <FieldLabel className="text-md font-bold"> 소속 기관 </FieldLabel>
                                 <div className="flex flex-col gap-2">
                                     {
-                                        formData.organizations.map( (name, index) => (
-                                            <Label key={index + "_1"}> { name }</Label>
+                                        formData.organizations.map((name, index) => (
+                                            <Label key={index + "_1"}> {name}</Label>
                                         ))
                                     }
                                 </div>
@@ -281,12 +382,12 @@ export const AdminUserList = () => {
                             <Separator className="my-2"/>
                             <Field>
                                 <FieldLabel className="text-md font-bold">
-                                    { formData.roleName === "TEACHER" ? "담당 강의" : "수강 강의" }
+                                    {formData.roleName === "TEACHER" ? "담당 강의" : "수강 강의"}
                                 </FieldLabel>
                                 <div className="flex flex-col gap-2">
                                     {
-                                        formData.lectures.map( (name, index) => (
-                                            <Label key={index + "_1"}> { name }</Label>
+                                        formData.lectures.map((name, index) => (
+                                            <Label key={index + "_1"}> {name}</Label>
                                         ))
                                     }
                                 </div>
@@ -294,7 +395,11 @@ export const AdminUserList = () => {
                         </FieldSet>
                     </div>
                     <DialogFooter>
-                        <Button onClick={() => setInfoOpen(false)} variant="outline"> 닫기 </Button>
+                        {
+                            isUpdating ? <Button onClick={() => submitUpdate()}
+                                                 variant="outline" className="border-green-500 text-green-500 hover:text-green-700 hover:bg-green-100"> 수정 </Button> : ""
+                        }
+                        <Button onClick={() => closeModal()} variant="outline"> 닫기 </Button>
                     </DialogFooter>
                 </DialogContent>
             </Dialog>

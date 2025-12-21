@@ -56,3 +56,8 @@ export const getOrganizationDetail = async ( id ) => {
     const res = await axiosInstance.get( "/v1/organization/" + id + "/detail" );
     return res.data;
 }
+
+export const updateOrganization = async ( id, data ) => {
+    const res = await axiosInstance.patch( "/v1/organization/" + id, data );
+    return res.status;
+}

@@ -24,7 +24,6 @@ export const rejectLecture = async ( id ) => {
 }
 
 export const createLecture = async (data) => {
-    console.log( data );
     const req = {
         name: data.name,
         organizationId: data.organizationId,
@@ -64,4 +63,22 @@ export const deleteLecture = async ( id, isOnline ) => {
     catch( error ){
         if( error.status === 401 ) alert( error.response.data.message )
     }
+}
+
+export const updateLecture = async ( data ) => {
+    const id = data.id;
+    const req = {
+        isOnline : data.isOnline,
+        name : data.name,
+        price: data.price,
+        startAt: data.startAt,
+        endAt: data.endAt,
+        description: data.description,
+        maxNum: data.maxNum,
+        days: data.day,
+        startTimeAt: data.startTimeAt,
+        endTimeAt: data.endTimeAt
+    }
+    const res = await axiosInstance.patch( "/v1/lectures/" + id , req );
+    return res.status;
 }
