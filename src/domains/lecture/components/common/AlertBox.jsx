@@ -2,7 +2,7 @@ import {
     AlertDialog,
     AlertDialogAction,
     AlertDialogCancel,
-    AlertDialogContent,
+    AlertDialogContent, AlertDialogDescription,
     AlertDialogFooter,
     AlertDialogHeader,
     AlertDialogTitle,
@@ -34,7 +34,7 @@ export function AlertBox({text,startAt,endAt, lectureType, lectureId}) {
                         className={`
                     w-full
                     ${lectureStatus(startAt, endAt) === "강의 종료"||
-                        lectureStatus(startAt, endAt) === "수강중"
+                        lectureStatus(startAt, endAt) === "강의중"
                             ? "pointer-events-none opacity-50" : ""}
                      p-2 border-1 border-black `}
                         variant="outline">{text}
@@ -59,6 +59,7 @@ export function AlertBox({text,startAt,endAt, lectureType, lectureId}) {
                 <AlertDialogHeader>
                     {isApply ? <AlertDialogTitle>수강 신청하시겠습니까?</AlertDialogTitle>
                         : <AlertDialogTitle>수강 취소하시겠습니까?</AlertDialogTitle>}
+                    <AlertDialogDescription/>
 
                 </AlertDialogHeader>
                 <AlertDialogFooter>

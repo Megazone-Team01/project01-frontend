@@ -15,8 +15,7 @@ export default function useLectureRegister() {
         },
         onError: (error) => {
             console.error('강의 신청 실패:', error);
-            const errorMessage = error.response?.data?.message || '강의 신청에 실패했습니다.';
-            alert(errorMessage);
+            console.log("status : ", error.response?.status);
         }
     });
 }

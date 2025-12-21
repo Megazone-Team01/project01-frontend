@@ -15,6 +15,8 @@ function OnlineDetail() {
     const lectureType = location.pathname.includes("/online") ? "online" : "offline";
     const {data, isLoading} = useLectureDetail(onlineId, lectureType);
 
+
+
     if (isLoading) {
         return <Loading />;
     }
@@ -85,14 +87,14 @@ function OnlineDetail() {
                                         startAt={data.startAt}
                                         endAt={data.endAt}
                                         lectureId={onlineId}
-                                        onlineType={onlineId}
+                                        lectureType={lectureType}
                                     />
                                     <AlertBox
                                         text={"강의취소"}
                                         startAt={data.startAt}
                                         endAt={data.endAt}
                                         lectureId={onlineId}
-                                        onlineType={onlineId}
+                                        lectureType={lectureType}
                                     />
                                 </div>
                             </div>
