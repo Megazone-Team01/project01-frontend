@@ -1,6 +1,5 @@
 import {useLocation, useParams} from "react-router";
 import useLectureDetali from "@/domains/lecture/hook/useLectureDetail.js";
-import Loading from "@/components/common/loading.jsx";
 import {Badge} from "@/components/ui/badge.js";
 import {formatDate, lectureStatus} from "@/lib/utils.js";
 import EducationPeriod from "@/domains/lecture/components/common/EducationPeriod.jsx";

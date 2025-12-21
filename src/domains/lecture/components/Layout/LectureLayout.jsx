@@ -1,5 +1,4 @@
 import {Outlet, useParams} from "react-router";
-import Banner from "@/domains/lecture/components/common/Banner.jsx";
 import SearchBox from "@/domains/lecture/components/common/SearchBox.jsx";
 
 function LectureLayout() {
