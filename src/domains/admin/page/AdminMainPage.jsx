@@ -14,7 +14,8 @@ import AdminLectureJudgePage from "@/domains/admin/page/AdminLectureJudgePage.js
 import AdminCategoryPage from "@/domains/admin/page/AdminCategoryPage.jsx";
 import AdminDayPage from "@/domains/admin/page/AdminDayPage.jsx";
 import {getWaitingOrganizations} from "@/domains/admin/api/organizationApi.js";
-import {getJudgedLectures} from "@/domains/admin/api/lectureApi.js";
+import {getJudgedLectures, getRecentCreatedLectures} from "@/domains/admin/api/lectureApi.js";
+import {getUsersWithFilter} from "@/domains/admin/api/userApi.js";
 
 
 export const AdminMainPage = () => {
@@ -31,10 +32,16 @@ export const AdminMainPage = () => {
             const jOrg = await getWaitingOrganizations();
             // 승인 대기 강의
             const jLec = await getJudgedLectures()
+            // 최근 가입 사용자
+            const rUser = await getUsersWithFilter( { sortBy: "RECENT" } )
+            // 최근 추가된 강의
+            const rLecture = await getRecentCreatedLectures()
 
             // 세팅
             setJudgeOrganization( jOrg )
             setJudgeLecture( jLec )
+            setRecentUser( rUser )
+            setRecentLecture( rLecture )
         }
         fetchData();
     }, []);
@@ -50,10 +57,10 @@ export const AdminMainPage = () => {
                   {
                       selected === 0 ?
                           <div className="grid grid-cols-2 gap-2">
-                              <AdminTodoBoard name={"승인 대기 기관"} data={judgeOrganization} />
-                              <AdminTodoBoard name={"승인 대기 강의"} data={judgeLecture} />
-                              <AdminTodoBoard name={"최근 가입한 사용자"} data={recentUser} />
-                              <AdminTodoBoard name={"최근 추가된 강의"} data={recentLecture} />
+                              <AdminTodoBoard onClick={() => setSelected(5)} name={"승인 대기 기관"} data={judgeOrganization} />
+                              <AdminTodoBoard onClick={() => setSelected(8)} name={"승인 대기 강의"} data={judgeLecture} />
+                              <AdminTodoBoard onClick={() => setSelected(1)} name={"최근 가입한 사용자"} data={recentUser} />
+                              <AdminTodoBoard onClick={() => setSelected(6)} name={"최근 추가된 강의"} data={recentLecture} />
                           </div>
                       : selected === 3 ?
                           <AdminOrganizationList />

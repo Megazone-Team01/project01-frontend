@@ -19,7 +19,8 @@ export const getUsersWithFilter = async ( filter ) => {
             params: {
                 searchString: null,
                 userRole: filter.userRole,
-                type: filter.type
+                type: filter.type,
+                sortBy: filter.sortBy,
             }
         });
     return res.data;

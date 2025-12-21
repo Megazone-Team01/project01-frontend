@@ -9,7 +9,13 @@ import {RadioGroup, RadioGroupItem} from "@/components/ui/radio-group.js";
 import {Label} from "@/components/ui/label.js";
 import {useEffect, useState} from "react";
 import {Empty, EmptyTitle} from "@/components/ui/empty.js";
-import {deleteLecture, getLectureDetail, getLectures, updateLecture} from "@/domains/admin/api/lectureApi.js";
+import {
+    deleteLecture,
+    getLectureDetail,
+    getLectures,
+    getLecturesByType,
+    updateLecture
+} from "@/domains/admin/api/lectureApi.js";
 import {Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle} from "@/components/ui/dialog.js";
 import {Field, FieldLabel, FieldSet} from "@/components/ui/field.js";
 import {useNavigate} from "react-router";
@@ -36,6 +42,9 @@ export const AdminLectureList = () => {
         startAt: '',
         endAt: '',
         day: []
+    })
+    const [ filter, setFilter ] = useState({
+        type: null
     })
 
     const [ startOpen, setStartOpen ] = useState(false);
@@ -119,7 +128,13 @@ export const AdminLectureList = () => {
         fetchLecture();
     }, []);
 
-    console.log( formData )
+    useEffect(() => {
+        const fetchLecture = async () => {
+            const data = await getLecturesByType( filter.type );
+            setLectures(data);
+        }
+        fetchLecture();
+    }, [ filter ]);
 
     return (
         <Card className="w-full min-h-80 bg-white">
@@ -143,15 +158,21 @@ export const AdminLectureList = () => {
                         <h3 className="pr-3"> 유형 </h3>
                         <RadioGroup className="flex" defaultValue="all">
                             <div className="flex items-center gap-3">
-                                <RadioGroupItem value="all" id="r1"/>
+                                <RadioGroupItem
+                                    onClick={ () => setFilter( { type: 0 } )}
+                                    value="all" id="r1"/>
                                 <Label htmlFor="r1"> 전체 </Label>
                             </div>
                             <div className="flex items-center gap-3">
-                                <RadioGroupItem value="online" id="r2"/>
+                                <RadioGroupItem
+                                    onClick={ () => setFilter( { type: 1 } )}
+                                    value="online" id="r2"/>
                                 <Label htmlFor="r2"> 온라인 </Label>
                             </div>
                             <div className="flex items-center gap-3">
-                                <RadioGroupItem value="offline" id="r3"/>
+                                <RadioGroupItem
+                                    onClick={ () => setFilter( { type: 2 } )}
+                                    value="offline" id="r3"/>
                                 <Label htmlFor="r3"> 오프라인 </Label>
                             </div>
                         </RadioGroup>

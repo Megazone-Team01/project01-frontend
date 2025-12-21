@@ -49,6 +49,14 @@ export const AdminUserList = () => {
         fetchUser();
     }, []);
 
+    useEffect(() => {
+        const fetchUser = async () => {
+            const data = await getUsersWithFilter(  filter );
+            setUsers(data);
+        }
+        fetchUser();
+    }, [ filter ]);
+
     const filterSearch = async () => {
         const data = await getUsersWithFilter( filter );
         setUsers(data)
