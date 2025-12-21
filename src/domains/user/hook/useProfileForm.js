@@ -1,7 +1,10 @@
 import { useState, useEffect } from "react";
-import { getMyInfo, updateMyInfo } from "../api/profile";
+import { useSelector } from "react-redux";
+import { getProfileInfo, updateProfileInfo } from "../api/profile";
+import {fileUpload} from "@/common/api/fileApi.js";
+import axios from "axios";
 
-export default function useMyForm() {
+export default function useProfileForm() {
     const [userInfo, setUserInfo] = useState({
         name: "",
         addressCode: "",
@@ -10,9 +13,12 @@ export default function useMyForm() {
         phone: "",
         roleName: "",
         type: "",
-        profileImg: "",
+        profileImage: "",
+        lectures: [],
+        organizations: [],
+        fileId: '',
     });
-
+    const { user, accessToken } = useSelector((state) => state.auth);
     const [loading, setLoading] = useState(false);
     const [isEditing, setIsEditing] = useState(false);
 
@@ -22,7 +28,7 @@ export default function useMyForm() {
     const [addressSearchResults, setAddressSearchResults] = useState([]);
 
     useEffect(() => {
-        fetchMyInfo();
+        fetchProfileInfo();
     }, []);
 
     const formatPhoneNumber = (number) => {
@@ -33,10 +39,11 @@ export default function useMyForm() {
         return cleaned.replace(/(\d{3})(\d{4})(\d+)/, "$1-$2-$3");
     };
 
-    const fetchMyInfo = async () => {
+    // 마이페이지 조회
+    const fetchProfileInfo = async () => {
         setLoading(true);
         try {
-            const data = await getMyInfo();
+            const data = await getProfileInfo();
 
             // 조회 시점에 전화번호 포맷 적용
             const formattedPhone = formatPhoneNumber(data.phone || "");
@@ -77,35 +84,35 @@ export default function useMyForm() {
         setUserInfo(prev => ({
             ...prev,
             address: selected.address,
-            zipcode: selected.zipcode
+            addressCode: selected.zipcode
         }));
         setAddressSearchResults([]);
     };
 
     // Daum 우편번호 팝업으로 주소 검색
     const openDaumPostcode = async () => {
-        // 1. 스크립트가 없으면 동적으로 로드
         if (!window.daum) {
             const script = document.createElement("script");
             script.src = "https://t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js";
             script.async = true;
             document.body.appendChild(script);
+
             await new Promise((resolve, reject) => {
-                script.onload = resolve;
-                script.onerror = reject;
+              script.onload = resolve;
+              script.onerror = reject;
             });
         }
 
-        // 2. 로드 완료 후 우편번호 팝업 열기
         new window.daum.Postcode({
-            oncomplete: function (data) {
-                setUserInfo(prev => ({
-                    ...prev,
-                    address: data.address,
-                    zipcode: data.zonecode,
-                }));
-                setAddressSearchResults([]);
-            },
+            oncomplete: function(data) {
+              console.log(data); // 선택한 주소 정보
+              // 예: 상태 업데이트
+              setUserInfo(prev => ({
+                ...prev,
+                address: data.roadAddress,
+                addressCode: data.zonecode,
+              }));
+            }
         }).open();
     };
 
@@ -120,12 +127,14 @@ export default function useMyForm() {
         setUserInfo(prev => ({ ...prev, phone: formatted }));
     };
 
+    // 수정, 저장 버튼
     const handleEditToggle = async () => {
         if (isEditing) {
             // 저장
             setLoading(true);
             try {
-                await updateMyInfo(userInfo);
+                console.log("ㅎㅎ",userInfo);
+                await updateProfileInfo(userInfo);
                 alert("정보가 저장되었습니다.");
             } catch (err) {
                 console.error(err);
@@ -136,12 +145,13 @@ export default function useMyForm() {
         setIsEditing(!isEditing);
     };
 
+    // 탈퇴 버튼
     const handleDeleteAccount = async () => {
         if (!window.confirm("정말로 탈퇴하시겠습니까?")) return;
 
         setLoading(true);
         try {
-            await deleteMyAccount(); // API 함수 필요
+            await deleteProfileAccount(); // API 함수 필요
             alert("회원 탈퇴가 완료되었습니다.");
             // 로그아웃 또는 페이지 이동
         } catch (err) {
@@ -151,6 +161,51 @@ export default function useMyForm() {
             setLoading(false);
         }
     };
+
+    // 마이페이지 이미지
+//    const handleFileChange = async ( e ) => {
+//        const selectedFile = e.target.files[0];
+//        const data = await fileUpload( selectedFile );
+//        setUserInfo( { ...userInfo, fileId: data.fileId })
+//    }
+
+
+    const handleFileChange = async (e) => {
+      const selectedFile = e.target.files[0];
+      if (!selectedFile) return;
+
+
+      if (!user || !accessToken) {
+        alert("로그인이 필요합니다!");
+        return;
+      }
+
+      const uploaderId = user.id;
+
+      const formData = new FormData();
+      formData.append("file", selectedFile);
+      formData.append("uploaderId", uploaderId);
+
+      try {
+        const response = await axios.post(
+          "http://localhost:8080/api/v1/file/upload",
+          formData,
+          {
+            headers: {
+              "Content-Type": "multipart/form-data",
+              Authorization: `Bearer ${accessToken}`,
+            },
+          }
+        );
+
+        setUserInfo((prev) => ({ ...prev, fileId: response.data.fileId }));
+        console.log("업로드 성공!", response.data);
+      } catch (err) {
+        console.error("파일 업로드 실패:", err);
+        alert("파일 업로드 실패: " + err.response?.data?.message || err.message);
+      }
+    };
+
 
     return {
         userInfo,
@@ -168,5 +223,6 @@ export default function useMyForm() {
         showPasswordConfirm,
         setShowPasswordConfirm,
         handlePhoneChange,
+        handleFileChange,
     };
 }
