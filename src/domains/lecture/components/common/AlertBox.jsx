@@ -13,7 +13,7 @@ import {lectureStatus} from "@/lib/utils.js";
 import useLectureRegister from "@/domains/lecture/hook/useLectureRegister.js";
 import useLectureCancel from "@/domains/lecture/hook/useLectureCancel.js";
 
-export function AlertBox({text,startAt,endAt, lectureType, lectureId}) {
+export function AlertBox({ text, startAt, endAt, lectureType, lectureId}) {
     const register = useLectureRegister();
     const cancel = useLectureCancel();
     const isApply = text === "강의 신청";

@@ -7,6 +7,7 @@ import Loading from "@/components/common/loading.jsx";
 import useLectureDetail from "@/domains/lecture/hook/useLectureDetail.js";
 import {Separator} from "@/components/ui/separator.js";
 import OrganizationCard from "@/domains/lecture/components/common/OrganizationCard.jsx";
+import {useSelector} from "react-redux";
 
 function OnlineDetail() {
     // useParams()로 URL 변수 받기
@@ -14,9 +15,8 @@ function OnlineDetail() {
     const location = useLocation();
     const lectureType = location.pathname.includes("/online") ? "online" : "offline";
     const {data, isLoading} = useLectureDetail(onlineId, lectureType);
-
-
-
+    const enrolled = useSelector(state => state.lecture.enrolled);
+    
     if (isLoading) {
         return <Loading />;
     }
@@ -82,20 +82,20 @@ function OnlineDetail() {
                         <div>
                             <div className="grid grid-cols-2 gap-5">
                                 <div className="flex gap-2">
-                                    <AlertBox
+                                    {!enrolled ? <AlertBox
                                         text={"강의 신청"}
                                         startAt={data.startAt}
                                         endAt={data.endAt}
                                         lectureId={onlineId}
                                         lectureType={lectureType}
-                                    />
+                                    />:
                                     <AlertBox
                                         text={"강의취소"}
                                         startAt={data.startAt}
                                         endAt={data.endAt}
                                         lectureId={onlineId}
                                         lectureType={lectureType}
-                                    />
+                                    />}
                                 </div>
                             </div>
                         </div>

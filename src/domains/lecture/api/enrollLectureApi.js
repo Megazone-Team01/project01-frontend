@@ -1,7 +1,6 @@
 import axiosInstance from "@/common/api/axiosInstance.js";
 
 export async function enrollLectureApi(lectureType,lectureId){
-
     const url = `/v1/lecture/${lectureType}/${lectureId}`;
     console.log("📍 실제 요청 URL:", url);
     console.log("📍 lectureType:", lectureType, "타입:", typeof lectureType);

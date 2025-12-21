@@ -1,16 +1,20 @@
 import {useMutation, useQueryClient} from "@tanstack/react-query";
 import cancelLectureApi from "@/domains/lecture/api/cancelLectureApi.js";
+import {setEnrolled} from "@/common/store/lecture/lectureSlice.js";
+import {useDispatch} from "react-redux";
 
 
 export default function useLectureCancel () {
     const queryClient = useQueryClient();
+    const dispatch = useDispatch();
 
     return useMutation({
         mutationFn: ({lectureId, lectureType}) =>{
-            cancelLectureApi(lectureId, lectureType)
+           return cancelLectureApi(lectureId, lectureType)
         },
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: [`lecture cancel`] });
+            dispatch(setEnrolled(false));
             alert("강의 신청이 취소되었습니다.");
         },
         onError: (error) => {

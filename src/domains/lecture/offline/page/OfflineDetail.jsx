@@ -1,5 +1,4 @@
 import {useLocation, useParams} from "react-router";
-import useLectureDetali from "@/domains/lecture/hook/useLectureDetail.js";
 import Loading from "@/components/common/loading.jsx";
 import {Badge} from "@/components/ui/badge.js";
 import {formatDate, lectureStatus} from "@/lib/utils.js";
@@ -8,18 +7,23 @@ import EducationPeriod from "@/domains/lecture/components/common/EducationPeriod
 import {AlertBox} from "@/domains/lecture/components/common/AlertBox.jsx";
 import OrganizationCard from "@/domains/lecture/components/common/OrganizationCard.jsx";
 import {Separator} from "@/components/ui/separator.js";
+import useLectureDetail from "@/domains/lecture/hook/useLectureDetail.js";
+import { useSelector} from "react-redux";
 
 
 function OfflineDetail() {
     const {offlineId} = useParams();
     const location = useLocation();
     const lectureType = location.pathname.includes("/online") ? "online" : "offline";
-    const {data, isLoading} = useLectureDetali(offlineId, lectureType);
+    const {data, isLoading} = useLectureDetail(offlineId, lectureType);
+
+    const enrolled = useSelector(state => state.lecture.enrolled);
 
     if (isLoading) {
         return <Loading />;
     }
 
+    console.log("asdfa data: ", data)
     return (
         <div className="max-w-screen-lg mx-auto p-2">
             <div className="flex flex-col gap-5 sm:grid sm:grid-cols-[1fr_2fr]">
@@ -73,20 +77,20 @@ function OfflineDetail() {
                         </div>
                         <div className="grid grid-cols-2 gap-5">
                                 <div className="flex gap-2">
-                                    <AlertBox
+                                    {!enrolled ? <AlertBox
                                         text={"강의 신청"}
                                         startAt={data.startAt}
                                         endAt={data.endAt}
                                         lectureId={offlineId}
                                         lectureType={lectureType}
-                                    />
+                                    />:
                                     <AlertBox
                                         text={"강의 취소"}
                                         startAt={data.startAt}
                                         endAt={data.endAt}
                                         lectureId={offlineId}
                                         lectureType={lectureType}
-                                    />
+                                    />}
                                 </div>
                             </div>
                     </section>
