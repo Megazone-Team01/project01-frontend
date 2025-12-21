@@ -1,5 +1,6 @@
 import { Routes, Route } from "react-router";
 import MainLayout from "@/components/layout/MainLayout.jsx";
+import About from "@/routes/About.jsx";
 import UserOrganizationListPage from "../domains/organization/page/UserOrganizationListPage.jsx";
 import UserOrganizationDetailPage from "../domains/organization/page/UserOrganizationDetailPage.jsx";
 import Home from "@/domains/home/page/Home.jsx";
