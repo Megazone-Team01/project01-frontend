@@ -21,6 +21,7 @@ import ApproveOrganization from "@/domains/user/page/ApproveOrganization.jsx";
 import PublicRoute from "@/routes/PublicRoute.jsx";
 import PrivateRoute from "@/routes/PrivateRoute.jsx";
 import Profile from "@/domains/user/page/Profile.jsx";
+import AdminRoute from "@/routes/AdminRoute.js";
 
 function CommonRouter() {
 
@@ -31,7 +32,7 @@ function CommonRouter() {
                 <Route path="/organizations" element={<UserOrganizationListPage />} />
                 <Route path="/organization/:id" element={<UserOrganizationDetailPage />} />
                 <Route path="/" element={<Home />} />
-                <Route path="/admin" element={<AdminMainPage />} />
+                <Route path="/admin" element={<AdminRoute><AdminMainPage /></AdminRoute>} />
                 <Route path="/online/:id" element={<OnlineLecturePlayingPage />} />
 
                 {/* 로그인 상태면 접근 제한 */}

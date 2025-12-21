@@ -23,3 +23,13 @@ export const getOrganization = async (organizationId) => {
     const res = await axiosInstance.get("/v1/organization/" + organizationId + "/detail");
     return res.data;
 }
+
+export const getOrganizationTeacher = async ( id ) => {
+    const res = await axiosInstance.get( "/v1/user/teacher/organization/" + id );
+    return res.data;
+}
+
+export const getOrganizationLecture = async ( id ) => {
+    const res = await axiosInstance.get( "/v1/organization/" + id + "/lectures" );
+    return res.data;
+}
