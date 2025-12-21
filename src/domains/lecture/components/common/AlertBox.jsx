@@ -11,9 +11,11 @@ import {
 import { Button } from "@/components/ui/button"
 import {lectureStatus} from "@/lib/utils.js";
 import useLectureRegister from "@/domains/lecture/hook/useLectureRegister.js";
+import useLectureCancel from "@/domains/lecture/hook/useLectureCancel.js";
 
 export function AlertBox({text,startAt,endAt, lectureType, lectureId}) {
     const register = useLectureRegister();
+    const cancel = useLectureCancel();
     const isApply = text === "강의 신청";
 
     const handleRegister = () =>{
@@ -23,7 +25,10 @@ export function AlertBox({text,startAt,endAt, lectureType, lectureId}) {
         });
     }
     const handleCancel = () => {
-        console.log("취소");
+        cancel.mutate({
+            lectureType: lectureType,
+            lectureId: lectureId
+        })
     }
 
 
