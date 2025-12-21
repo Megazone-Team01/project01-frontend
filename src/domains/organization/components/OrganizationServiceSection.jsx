@@ -11,17 +11,19 @@ import {
     ChevronRight,
     Monitor,
     UserCheck,
-    Video
+    Video,
+    ArrowRight,
 } from "lucide-react";
 import { Badge } from '@/components/ui/badge';
 import { useTeachers } from '@/domains/meeting/hook/useTeachers';
+import { getTeacherDetail } from '@/domains/meeting/api/meetingApi';
 // TODO: 회의실 브랜치에서 주석 해제
 // import { useRooms } from '@/domains/room/hook/useRooms';
 
 const OrganizationServiceSection = ({ organizationId }) => {
 
     const [activeTab, setActiveTab] = useState('meeting');
-    const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+    const [isModalOpen, setIsModalOpen] = useState(false);
     const [selectedItem, setSelectedItem] = useState(null);
     const [step, setStep] = useState('select');
 
@@ -29,7 +31,7 @@ const OrganizationServiceSection = ({ organizationId }) => {
     const [selectedTime, setSelectedTime] = useState(null);
     const [bookingType, setBookingType] = useState('ONLINE');
 
-    const { teachers, loading: teachersLoading } = useTeachers(organizationId);
+    const { teachers, loading: teachersLoading, error } = useTeachers(organizationId);
 
     // TODO: 회의실 브랜치에서 주석 해제
     // const { rooms, loading: roomsLoading } = useRooms(organizationId);
@@ -47,18 +49,24 @@ const OrganizationServiceSection = ({ organizationId }) => {
         { time: '17:00', status: 'available' },
     ];
 
-    // 이벤트 핸들러
-    const handleOpenDrawer = (item) => {
+    // 팝업 핸들러
+    const handleOpenModal = async (item) => {
         setSelectedItem(item);
-        setIsDrawerOpen(true);
+        setIsModalOpen(true);
         setStep('select');
         setSelectedTime(null);
-    };
 
-    const closeDrawer = () => {
-        setIsDrawerOpen(false);
+        if (activeTab === 'meeting') {
+            const detail = await getTeacherDetail(item.teacherId);
+            setSelectedItem(prev => ({ ...prev, ...detail }));
+        };
+    }
+
+    const handleCloseModal = () => {
+        setIsModalOpen(false);
         setSelectedItem(null);
     };
+
 
     // TODO: API 연동 필요
     const handleConfirm = () => {
@@ -96,216 +104,138 @@ const OrganizationServiceSection = ({ organizationId }) => {
             <div className="relative overflow-hidden w-full min-h-[900px]">
                 <div className="max-w-7xl mx-auto px-6 py-16 space-y-12">
 
-                    {/* 헤더 + 탭 */}
-                    <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-8 border-b border-slate-200 pb-8">
-                        <div className="space-y-2">
-                            <h2 className="text-3xl font-black text-slate-900 tracking-tight">
-                                이용 가능한 서비스
-                            </h2>
-                            <p className="text-slate-500 text-lg">
-                                원하는 서비스를 선택하여 일정을 예약하세요.
+                    <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-8 border-b border-slate-200 pb-10">
+                        <div className="space-y-3">
+                            <h2 className="text-4xl font-black text-slate-900 tracking-tighter">이용 가능한 서비스</h2>
+                            <p className="text-slate-500 text-lg font-medium italic">
+                                원하는 서비스를 선택하여 일정을 예약하세요
                             </p>
                         </div>
 
-                        {/* 탭 토글 */}
-                        <div className="flex bg-slate-200/60 p-1.5 rounded-2xl w-fit shadow-inner">
+                        <div className="flex bg-slate-200/60 p-1.5 rounded-3xl w-fit shadow-inner border-slate-200">
                             <button
-                                onClick={() => { setActiveTab('meeting'); closeDrawer(); }}
-                                className={`flex items-center gap-2 px-6 py-3 rounded-xl text-sm font-bold transition-all
-                                    ${activeTab === 'meeting'
-                                        ? 'bg-white text-blue-600 shadow-lg'
-                                        : 'text-slate-500 hover:text-slate-700'}`}
+                                onClick={() => setActiveTab('meeting')}
+                                className={`flex items-center gap-2.5 px-8 py-3 rounded-3xl text-lg font-black transition-all
+                                ${activeTab === 'meeting' ? 'bg-white text-gray-600 shadow-xl scale-100' : 'text-slate-500 hover:text-slate-700'}`}
                             >
-                                <UserCheck size={18} /> 전문가 상담
+                                <UserCheck size={25} />
+                                <span>멘토 강사 상담</span>
                             </button>
-                            {/* TODO: 회의실 브랜치에서 주석 해제 */}
-                            {/*
+
                             <button
-                                onClick={() => { setActiveTab('room'); closeDrawer(); }}
-                                className={`flex items-center gap-2 px-6 py-3 rounded-xl text-sm font-bold transition-all
-                                    ${activeTab === 'room'
-                                        ? 'bg-white text-indigo-600 shadow-lg'
-                                        : 'text-slate-500 hover:text-slate-700'}`}
+                                onClick={() => setActiveTab('room')}
+                                className={`flex items-center gap-2.5 px-10 py-4 rounded-3xl text-xl font-black transition-all
+                                ${activeTab === 'room' ? 'bg-white text-gray-600 shadow-lg scale-100' : 'text-slate-500 hover:text-slate-700'}`}
                             >
-                                <Monitor size={18} /> 스터디룸
+                                <Monitor size={26} />
+                                <span>회의실</span>
                             </button>
-                            */}
                         </div>
                     </div>
 
                     {/* 카드 그리드 */}
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                         {activeTab === 'meeting' ? (
-                            // 상담 탭
                             teachersLoading ? (
                                 Array.from({ length: 3 }).map((_, i) => (
-                                    <div key={i} className="h-56 bg-slate-100 rounded-3xl animate-pulse" />
+                                    <div key={i} className="h-64 bg-slate-100 rounded-[40px] animate-pulse" />
                                 ))
                             ) : teachers.length === 0 ? (
-                                <div className="col-span-full text-center py-20 text-slate-400">
-                                    <UserCheck size={48} className="mx-auto mb-4 opacity-50" />
-                                    <p>등록된 상담 선생님이 없습니다.</p>
+                                <div className="col-span-full text-center py-32 bg-white border-2 border-dashed border-slate-200 rounded-[40px]">
+                                    <UserCheck size={48} className="mx-auto mb-4 opacity-20" />
+                                    <p className="text-slate-400 font-bold">등록된 상담 전문가가 없습니다.</p>
                                 </div>
                             ) : (
                                 teachers.map(teacher => (
                                     <TeacherCard
-                                        key={teacher.id}
+                                        key={teacher.teacherId || teacher.id}
                                         teacher={teacher}
-                                        onClick={() => handleOpenDrawer(teacher)}
+                                        onClick={() => handleOpenModal(teacher)}
                                     />
                                 ))
                             )
                         ) : (
-                            // TODO: 회의실 브랜치에서 실제 로직으로 교체
-                            // 현재는 빈 상태만 표시
-                            <div className="col-span-full text-center py-20 text-slate-400">
-                                <Monitor size={48} className="mx-auto mb-4 opacity-50" />
-                                <p>스터디룸 기능 준비 중입니다.</p>
+                            <div className="col-span-full text-center py-32 bg-white border-2 border-dashed border-slate-200 rounded-[40px]">
+                                <Monitor size={48} className="mx-auto mb-4 opacity-20" />
+                                <p className="text-slate-400 font-bold">회의실 기능은 현재 준비 중입니다.</p>
                             </div>
-                            /* 회의실 브랜치에서 아래 코드로 교체:
-                            roomsLoading ? (
-                                Array.from({ length: 3 }).map((_, i) => (
-                                    <div key={i} className="h-64 bg-slate-100 rounded-3xl animate-pulse" />
-                                ))
-                            ) : rooms.length === 0 ? (
-                                <div className="col-span-full text-center py-20 text-slate-400">
-                                    <Monitor size={48} className="mx-auto mb-4 opacity-50" />
-                                    <p>등록된 스터디룸이 없습니다.</p>
-                                </div>
-                            ) : (
-                                rooms.map(room => (
-                                    <RoomCard
-                                        key={room.id}
-                                        room={room}
-                                        onClick={() => handleOpenDrawer(room)}
-                                    />
-                                ))
-                            )
-                            */
                         )}
                     </div>
                 </div>
 
-                {/* drawer 오버레이 */}
-                {isDrawerOpen && (
-                    <div
-                        className="absolute inset-0 bg-slate-900/20 backdrop-blur-[2px] z-20 
-                            transition-opacity duration-300"
-                        onClick={closeDrawer}
-                    />
-                )}
+                {/* 예약 팝업 모달 */}
+                {isModalOpen && (
+                    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+                        {/* 오버레이 */}
+                        <div className="absolute inset-0 bg-slate-900/70 backdrop-blur-md animate-in fade-in duration-500" onClick={handleCloseModal} />
 
-                {/* drawer 패널 */}
-                <div
-                    className={`absolute top-0 right-0 h-full bg-white z-30 
-                        shadow-[-20px_0_60px_rgba(0,0,0,0.08)] 
-                        transition-transform duration-500 ease-out
-                        w-full sm:w-[500px] flex flex-col border-l border-slate-100
-                        ${isDrawerOpen ? 'translate-x-0' : 'translate-x-full'}`}
-                >
-                    {selectedItem && (
-                        <>
-                            {/* drawer 헤더 */}
-                            <div className="px-8 py-8 flex items-center justify-between border-b border-slate-100">
-                                <div className="flex items-center gap-4">
-                                    <div className={`w-12 h-12 rounded-2xl flex items-center justify-center text-white shadow-lg
-                                        ${activeTab === 'meeting' ? 'bg-blue-600' : 'bg-indigo-600'}`}>
-                                        {activeTab === 'meeting' ? <Users size={24} /> : <MapPin size={24} />}
+                        {/* 모달 박스 */}
+                        <div className="relative bg-white w-full max-w-3xl rounded-[48px] shadow-2xl overflow-hidden animate-in zoom-in-95 duration-500 flex flex-col md:flex-row max-h-[95vh]">
+
+                            {/* 좌측 정보 바 */}
+                            <div className={`hidden md:flex flex-col justify-between p-12 w-80 text-white ${activeTab === 'meeting' ? 'bg-blue-600' : 'bg-indigo-600'}`}>
+                                <div className="space-y-8">
+                                    <div className="w-16 h-16 bg-white/20 rounded-3xl flex items-center justify-center backdrop-blur-xl border border-white/20">
+                                        {activeTab === 'meeting' ? <UserCheck size={32} /> : <Monitor size={32} />}
                                     </div>
                                     <div>
-                                        <h4 className="text-xl font-bold text-slate-900">{selectedItem.name}</h4>
-                                        <p className="text-xs text-slate-400 font-semibold uppercase tracking-wider mt-1">
-                                            {activeTab === 'meeting' ? '상담 예약' : '공간 예약'}
+                                        <h3 className="text-3xl font-black leading-tight">{selectedItem?.name}</h3>
+                                        {selectedItem?.email && (
+                                            <p className="text-white/60 text-sm mt-2">{selectedItem.email}</p>
+                                        )} {/*TODO : 선생님이 강의하는 강의명 리스트 표시 추가 가능*/}
+                                        <p className="text-white/70 font-bold mt-4 text-sm leading-relaxed whitespace-pre-wrap">
+                                            {activeTab === 'meeting' ? '선택하신 강사님과의\n1:1 멘토링 상담 예약입니다.' : '효율적인 학습을 위한\n독립 공간 예약 서비스입니다.'}
                                         </p>
                                     </div>
                                 </div>
-                                <button
-                                    onClick={closeDrawer}
-                                    className="p-2 hover:bg-slate-100 rounded-full transition-colors"
-                                >
-                                    <X size={24} className="text-slate-400" />
-                                </button>
+                                <div className="space-y-4 border-t border-white/10 pt-10 font-black text-[15px] opacity-80 uppercase tracking-widest">
+                                    <div className="flex items-center gap-3 text-blue-100"><CheckCircle2 size={20} /> 1시간 단위 </div>
+                                    <div className="flex items-center gap-3 text-blue-100"><CheckCircle2 size={15} /> 관리자 문의 : 02-123-4567</div>
+                                </div>
                             </div>
 
-                            {/* drawer 본문 */}
-                            <div className="flex-1 overflow-y-auto px-8 py-8 space-y-8 custom-scrollbar">
-                                {step === 'select' ? (
-                                    <>
-                                        {/* 선택된 대상 정보 */}
-                                        <div className="flex items-center gap-4 p-4 bg-slate-50 rounded-2xl">
-                                            <img
-                                                src={selectedItem.profileImage || `https://i.pravatar.cc/150?u=${selectedItem.id}`}
-                                                className="w-14 h-14 rounded-xl object-cover"
-                                                alt=""
-                                            />
-                                            <div>
-                                                <h5 className="font-bold text-slate-900">{selectedItem.name}</h5>
-                                                <p className="text-sm text-slate-500">
-                                                    {selectedItem.subject || selectedItem.location || '전문 상담'}
-                                                </p>
-                                            </div>
-                                        </div>
+                            {/* 우측 조작 영역 */}
+                            <div className="flex-1 flex flex-col bg-white overflow-hidden">
+                                <div className="px-10 py-8 border-b border-slate-50 flex items-center justify-between sticky top-0 bg-white z-10">
+                                    <h4 className="font-black text-slate-800 text-xl tracking-tighter uppercase italic">Step. Schedule</h4>
+                                    <button onClick={handleCloseModal} className="p-3 hover:bg-slate-100 rounded-full text-slate-300 transition-colors"><X size={28} /></button>
+                                </div>
 
-                                        {/* 상담 방식 선택 (상담 탭일 때만) */}
-                                        {activeTab === 'meeting' && (
-                                            <div className="space-y-4">
-                                                <h5 className="text-xs font-bold text-slate-400 uppercase tracking-wider flex items-center gap-2">
-                                                    <Info size={14} /> 1. 상담 방식
-                                                </h5>
-                                                <div className="grid grid-cols-2 gap-3">
-                                                    <button
-                                                        onClick={() => setBookingType('ONLINE')}
-                                                        className={`p-4 rounded-xl border-2 flex items-center justify-center gap-2 font-semibold transition-all
-                                                            ${bookingType === 'ONLINE'
-                                                                ? 'border-blue-500 bg-blue-50 text-blue-700'
-                                                                : 'border-slate-100 hover:border-slate-200 text-slate-600'}`}
-                                                    >
-                                                        <Video size={18} /> 온라인
-                                                    </button>
-                                                    <button
-                                                        onClick={() => setBookingType('OFFLINE')}
-                                                        className={`p-4 rounded-xl border-2 flex items-center justify-center gap-2 font-semibold transition-all
-                                                            ${bookingType === 'OFFLINE'
-                                                                ? 'border-blue-500 bg-blue-50 text-blue-700'
-                                                                : 'border-slate-100 hover:border-slate-200 text-slate-600'}`}
-                                                    >
-                                                        <MapPin size={18} /> 오프라인
-                                                    </button>
+                                <div className="flex-1 overflow-y-auto px-10 py-10 space-y-12 custom-scrollbar">
+                                    {step === 'select' ? (
+                                        <>
+                                            {/* 1. 상담 방식 선택 (상담 전용) */}
+                                            {activeTab === 'meeting' && (
+                                                <div className="space-y-6">
+                                                    <h5 className="text-[11px] font-black text-slate-400 uppercase tracking-[0.2em] flex items-center gap-2"><Video size={14} className="text-blue-500" /> 01. 상담 방식 선택</h5>
+                                                    <div className="flex gap-4">
+                                                        {['ONLINE', 'OFFLINE'].map(mode => (
+                                                            <button
+                                                                key={mode}
+                                                                onClick={() => setBookingType(mode)}
+                                                                className={`flex-1 py-4 rounded-[20px] border-2 text-sm font-black transition-all
+                                                                ${bookingType === mode ? 'border-slate-900 bg-slate-900 text-white shadow-xl' : 'border-slate-100 text-slate-400 hover:bg-slate-50'}`}
+                                                            >
+                                                                {mode === 'ONLINE' ? '화상(Zoom)' : '대면(현장)'}
+                                                            </button>
+                                                        ))}
+                                                    </div>
                                                 </div>
-                                            </div>
-                                        )}
+                                            )}
 
-                                        {/* 날짜 선택 */}
-                                        <div className="space-y-4">
-                                            <h5 className="text-xs font-bold text-slate-400 uppercase tracking-wider flex items-center gap-2">
-                                                <CalendarIcon size={14} />
-                                                {activeTab === 'meeting' ? '2' : '1'}. 날짜 선택
-                                            </h5>
-                                            <div className="bg-slate-50 p-4 rounded-2xl border border-slate-100">
-                                                <div className="grid grid-cols-7 gap-1 mb-2">
-                                                    {weekDays.map(d => (
-                                                        <div key={d} className="text-center text-[10px] text-slate-400 font-bold py-1">
-                                                            {d}
-                                                        </div>
-                                                    ))}
-                                                </div>
-                                                <div className="grid grid-cols-7 gap-1">
+                                            {/* 2. 날짜 선택 */}
+                                            <div className="space-y-6">
+                                                <h5 className="text-[11px] font-black text-slate-400 uppercase tracking-[0.2em] flex items-center gap-2"><CalendarIcon size={14} className="text-blue-500" /> 02. 날짜 선택</h5>
+                                                <div className="grid grid-cols-7 gap-2 bg-slate-50 p-6 rounded-[32px] border border-slate-100 shadow-inner text-center">
+                                                    {weekDays.map(d => <span key={d} className="text-[10px] text-slate-300 font-black">{d}</span>)}
                                                     {dates.map((date, i) => {
                                                         const isSelected = date.toDateString() === selectedDate.toDateString();
-                                                        const isToday = date.toDateString() === new Date().toDateString();
                                                         return (
                                                             <button
                                                                 key={i}
-                                                                onClick={() => {
-                                                                    setSelectedDate(date);
-                                                                    setSelectedTime(null);
-                                                                }}
-                                                                className={`aspect-square rounded-xl text-sm font-semibold transition-all
-                                                                    ${isSelected
-                                                                        ? 'bg-slate-900 text-white shadow-lg'
-                                                                        : isToday
-                                                                            ? 'bg-blue-100 text-blue-700'
-                                                                            : 'hover:bg-white text-slate-600'}`}
+                                                                onClick={() => setSelectedDate(date)}
+                                                                className={`aspect-square flex items-center justify-center rounded-2xl text-sm font-black transition-all
+                                                                ${isSelected ? 'bg-slate-900 text-white shadow-2xl scale-110' : 'hover:bg-white text-slate-600'}`}
                                                             >
                                                                 {date.getDate()}
                                                             </button>
@@ -313,181 +243,123 @@ const OrganizationServiceSection = ({ organizationId }) => {
                                                     })}
                                                 </div>
                                             </div>
-                                        </div>
 
-                                        {/* 시간 선택 */}
-                                        <div className="space-y-4">
-                                            <h5 className="text-xs font-bold text-slate-400 uppercase tracking-wider flex items-center gap-2">
-                                                <Clock size={14} />
-                                                {activeTab === 'meeting' ? '3' : '2'}. 시간 선택 (1시간)
-                                            </h5>
-                                            <div className="grid grid-cols-3 gap-3">
-                                                {timeSlots.map(slot => (
-                                                    <button
-                                                        key={slot.time}
-                                                        disabled={slot.status === 'booked'}
-                                                        onClick={() => setSelectedTime(slot.time)}
-                                                        className={`py-4 rounded-xl text-sm font-bold transition-all
-                                                            ${slot.status === 'booked'
-                                                                ? 'bg-slate-50 text-slate-300 cursor-not-allowed line-through'
-                                                                : selectedTime === slot.time
-                                                                    ? 'bg-blue-600 text-white shadow-lg shadow-blue-200'
-                                                                    : 'bg-white border-2 border-slate-100 hover:border-blue-300 text-slate-600'
-                                                            }`}
-                                                    >
-                                                        {slot.time}
-                                                    </button>
-                                                ))}
+                                            {/* 3. 시간 선택 */}
+                                            <div className="space-y-6">
+                                                <h5 className="text-[11px] font-black text-slate-400 uppercase tracking-[0.2em] flex items-center gap-2"><Clock size={14} className="text-blue-500" /> 03. 시작 시간 (1시간 단위)</h5>
+                                                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                                                    {timeSlots.map(slot => (
+                                                        <button
+                                                            key={slot.time}
+                                                            disabled={slot.status === 'booked'}
+                                                            onClick={() => setSelectedTime(slot.time)}
+                                                            className={`py-4 rounded-[20px] border-2 text-xs font-black transition-all 
+                                                            ${slot.status === 'booked' ? 'bg-slate-50 text-slate-300 cursor-not-allowed line-through' :
+                                                                    selectedTime === slot.time ? 'border-blue-600 bg-blue-50 text-blue-600 ring-4 ring-blue-50' :
+                                                                        'border-slate-50 bg-slate-50 text-slate-500 hover:border-slate-200'}`}
+                                                        >
+                                                            {slot.time}
+                                                        </button>
+                                                    ))}
+                                                </div>
+                                            </div>
+                                        </>
+                                    ) : (
+                                        /* 팝업 완료 화면 */
+                                        <div className="h-full flex flex-col items-center justify-center text-center space-y-8 py-20 animate-in zoom-in-95 duration-700">
+                                            <div className="relative">
+                                                <div className="w-28 h-28 bg-emerald-50 text-emerald-500 rounded-full flex items-center justify-center shadow-inner relative">
+                                                    <CheckCircle2 size={56} />
+                                                    <div className="absolute -inset-4 bg-emerald-100 rounded-full -z-10 animate-ping opacity-20" />
+                                                </div>
+                                            </div>
+                                            <div className="space-y-4">
+                                                <h3 className="text-4xl font-black text-slate-900 tracking-tighter uppercase">Success.</h3>
+                                                <p className="text-slate-400 font-bold text-base leading-relaxed">
+                                                    신청이 성공적으로 완료되었습니다.<br />
+                                                    관리자 확인 후 최종 확정 알림톡이 발송됩니다.
+                                                </p>
                                             </div>
                                         </div>
+                                    )}
+                                </div>
 
-                                        {/* 안내 문구 */}
-                                        <div className="p-4 bg-slate-900 rounded-2xl flex items-start gap-3 text-white">
-                                            <Info size={18} className="text-blue-400 shrink-0 mt-0.5" />
-                                            <p className="text-xs leading-relaxed opacity-80">
-                                                {activeTab === 'meeting'
-                                                    ? '같은 선생님과의 상담은 하루 1회만 가능합니다. 신청 후 승인 여부가 안내됩니다.'
-                                                    : '스터디룸은 최대 3시간까지 연속 예약 가능합니다.'}
-                                            </p>
-                                        </div>
-                                    </>
-                                ) : (
-                                    /* 완료 화면 */
-                                    <div className="h-full flex flex-col items-center justify-center text-center space-y-6 py-10">
-                                        <div className="w-24 h-24 bg-emerald-100 text-emerald-500 rounded-full 
-                                            flex items-center justify-center">
-                                            <CheckCircle2 size={56} />
-                                        </div>
-                                        <div>
-                                            <h3 className="text-2xl font-bold text-slate-900 mb-2">신청 완료!</h3>
-                                            <p className="text-slate-500">
-                                                {formatDate(selectedDate)} {selectedTime}<br />
-                                                {activeTab === 'meeting'
-                                                    ? '승인 후 안내 문자가 발송됩니다.'
-                                                    : '예약이 확정되었습니다.'}
-                                            </p>
-                                        </div>
-                                    </div>
-                                )}
+                                {/* 팝업 푸터 버튼 */}
+                                <div className="p-10 border-t border-slate-50 bg-slate-50/50 mt-auto">
+                                    {step === 'select' ? (
+                                        <button
+                                            disabled={!selectedTime}
+                                            onClick={handleConfirm}
+                                            className="w-full py-6 bg-slate-900 hover:bg-black disabled:bg-slate-200 disabled:text-slate-400 text-white rounded-[28px] font-black text-xl transition-all active:scale-95 shadow-2xl"
+                                        >
+                                            {selectedTime ? `${selectedTime}에 예약하기` : '시간을 선택해 주세요'}
+                                        </button>
+                                    ) : (
+                                        <button
+                                            onClick={handleCloseModal}
+                                            className="w-full py-6 bg-white border-2 border-slate-900 text-slate-900 rounded-[28px] font-black text-xl hover:bg-slate-50 transition-all shadow-md"
+                                        >
+                                            확인했습니다
+                                        </button>
+                                    )}
+                                </div>
                             </div>
+                        </div>
+                    </div>
+                )}
 
-                            {/* 드로어 푸터 */}
-                            <div className="p-8 border-t border-slate-100 bg-slate-50/50">
-                                {step === 'select' ? (
-                                    <button
-                                        disabled={!selectedTime}
-                                        onClick={handleConfirm}
-                                        className={`w-full py-5 rounded-2xl font-bold text-lg transition-all active:scale-[0.98]
-                                            ${selectedTime
-                                                ? 'bg-blue-600 hover:bg-blue-700 text-white shadow-xl shadow-blue-500/20'
-                                                : 'bg-slate-100 text-slate-400 cursor-not-allowed'}`}
-                                    >
-                                        {selectedTime ? `${selectedTime} 신청하기` : '시간을 선택해 주세요'}
-                                    </button>
-                                ) : (
-                                    <button
-                                        onClick={closeDrawer}
-                                        className="w-full py-5 bg-slate-900 text-white rounded-2xl font-bold text-lg 
-                                            hover:bg-slate-800 transition-all"
-                                    >
-                                        확인했습니다
-                                    </button>
-                                )}
-                            </div>
-                        </>
-                    )}
-                </div>
-            </div>
-
-            <style>{`
+                <style>{`
                 .custom-scrollbar::-webkit-scrollbar { width: 4px; }
                 .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
-                .custom-scrollbar::-webkit-scrollbar-thumb { background: #e2e8f0; border-radius: 10px; }
+                .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
             `}</style>
+            </div>
         </section>
     );
 };
 
-// ========== 선생님 카드 ==========
+// ========== 선생님 카드 UI 컴포넌트 ==========
 const TeacherCard = ({ teacher, onClick }) => (
     <div
         onClick={onClick}
-        className="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm 
-            hover:shadow-xl hover:border-blue-300 transition-all cursor-pointer group"
+        className="group relative bg-white border border-slate-200 rounded-[40px] p-8 transition-all duration-300 hover:border-blue-400 hover:shadow-2xl hover:shadow-blue-500/10 cursor-pointer flex flex-col justify-between min-h-[280px] overflow-hidden"
     >
-        <div className="flex justify-between items-start mb-6">
+        <div className="flex justify-between items-start mb-6 z-10">
             <div className="relative">
                 <img
-                    src={teacher.profileImage || `https://i.pravatar.cc/150?u=${teacher.id}`}
-                    className="w-16 h-16 rounded-2xl object-cover"
+                    src={teacher.profileImage || `https://i.pravatar.cc/150?u=${teacher.teacherId || teacher.id}`}
                     alt={teacher.name}
-                />
-                <div className="absolute -bottom-1 -right-1 w-5 h-5 bg-emerald-500 border-4 border-white rounded-full" />
-            </div>
-            <Badge variant="secondary" className="bg-blue-50 text-blue-600 border-blue-100">
-                상담가능
-            </Badge>
-        </div>
-        <div className="mb-6">
-            <h4 className="text-xl font-bold text-slate-900 group-hover:text-blue-600 transition-colors">
-                {teacher.name}
-            </h4>
-            <p className="text-sm text-slate-400 font-medium mt-1">
-                {teacher.subject || '전문 상담'}
-            </p>
-        </div>
-        <div className="flex items-center justify-between pt-4 border-t border-slate-50">
-            <span className="text-xs text-slate-400 flex items-center gap-1">
-                <Clock size={14} /> 1시간 단위
-            </span>
-            <div className="w-9 h-9 rounded-full bg-slate-50 flex items-center justify-center 
-                group-hover:bg-blue-600 group-hover:text-white transition-all">
-                <ChevronRight size={18} />
-            </div>
-        </div>
-    </div>
-);
 
-// ========== 회의실 카드 (회의실 브랜치에서 사용) ==========
-// TODO: 회의실 브랜치에서 주석 해제
-/*
-const RoomCard = ({ room, onClick }) => (
-    <div
-        onClick={onClick}
-        className="bg-white rounded-3xl overflow-hidden border border-slate-100 shadow-sm 
-            hover:shadow-xl hover:border-indigo-300 transition-all cursor-pointer group"
-    >
-        <div className="h-36 overflow-hidden relative bg-slate-200">
-            <img
-                src={room.image || 'https://images.unsplash.com/photo-1497366216548-37526070297c?w=400'}
-                className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-                alt={room.name}
-            />
-            <div className="absolute top-3 left-3">
-                <Badge variant="secondary" className="bg-white/90 text-slate-700">
-                    {room.location}
-                </Badge>
+                    className="w-20 h-20 rounded-3xl object-cover ring-4 ring-slate-50 shadow-md group-hover:ring-blue-50 transition-all"
+                />
+            </div>
+            <div className="flex gap-2 flex-wrap justify-end">
+                {Array.isArray(teacher.tags) && teacher.tags.length > 0 ? (
+                    teacher.tags.map((tag) => (
+                        <Badge key={tag} className="text-[12px] font-bold px-3 py-1.5 rounded-fullbg-slate-200 text-slate-700">{tag}</Badge>
+                    ))) : (
+                    <div className="px-5 py-2.5 rounded-full bg-blue-100 text-blue-700 text-sm font-extrabold tracking-wide shadow-sm">상담가능</div>
+                )}
             </div>
         </div>
-        <div className="p-5">
-            <div className="flex justify-between items-center mb-3">
-                <h4 className="text-lg font-bold text-slate-900 group-hover:text-indigo-600 transition-colors">
-                    {room.name}
-                </h4>
-                <span className="text-xs text-slate-400 flex items-center gap-1">
-                    <Users size={14} /> {room.maxNum || room.capacity}인
-                </span>
-            </div>
-            <div className="flex items-center justify-between pt-3 border-t border-slate-50">
-                <span className="text-xs text-slate-400">즉시 이용 가능</span>
-                <div className="w-9 h-9 rounded-full bg-slate-50 flex items-center justify-center 
-                    group-hover:bg-indigo-600 group-hover:text-white transition-all">
-                    <ChevronRight size={18} />
-                </div>
+        <div className="z-10">
+            <h3 className="text-2xl font-black mb-1 group-hover:text-blue-600 transition-colors leading-tight">{teacher.name}
+                <span> </span>
+                <span className="font-black font-black">강사</span>
+            </h3>
+            <p className="text-sm text-slate-400 font-bold mt-2 leading-relaxed">{teacher.subject || "상담 전문"}</p>
+        </div>
+        <div className="flex items-center justify-between pt-6 border-t border-slate-50 mt-8 z-10">
+            <span className="text-slate-400 flex items-center gap-2 font-bold text-[17px] uppercase tracking-widest leading-none">
+                <Clock size={20} className="text-blue-500" /> 1시간
+            </span>
+            <div className="w-12 h-12 rounded-full  bg-slate-200/70 text-slate-900 flex items-center justify-center group-hover:scale-110 transition-all shadow-xl">
+                <ArrowRight size={20} />
             </div>
         </div>
+        {/* 배경 데코레이션 */}
+        <div className="absolute -right-10 -bottom-10 w-32 h-32 bg-blue-50/50 rounded-full blur-3xl group-hover:bg-blue-100/50 transition-colors" />
     </div>
 );
-*/
 
 export default OrganizationServiceSection;
