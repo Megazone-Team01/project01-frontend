@@ -6,6 +6,7 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group.js";
 import {Separator} from "@/components/ui/separator.js";
 import {Field, FieldLabel, FieldSet} from "@/components/ui/field.js";
 import {fileUpload} from "@/common/api/fileApi.js";
+import.meta.env.VITE_FILE_URL_HEADER
 
 export default function ProfilePage({
     userInfo,
@@ -35,11 +36,15 @@ export default function ProfilePage({
                 <div className="profile-top flex gap-8">
                     <div className="profile-image flex-shrink-0">
                         <img
-                            src={
-                                previewUrl ? previewUrl : fileUrl ? encodeURI(fileUrl)  : "https://avatars.githubusercontent.com/u/9919?v=4"
-                            }
-                            alt="프로필"
-                            className="w-48 h-48 rounded-full object-cover"
+                          src={
+                            previewUrl
+                              ? previewUrl
+                              : fileUrl
+                              ? `${import.meta.env.VITE_FILE_URL_HEADER}${encodeURIComponent(fileUrl)}`
+                              : "https://avatars.githubusercontent.com/u/9919?v=4"
+                          }
+                          alt="프로필"
+                          className="w-48 h-48 rounded-full object-cover"
                         />
                         <br/>
                         <Input
@@ -117,14 +122,6 @@ export default function ProfilePage({
                         <div className="flex flex-col gap-1">
                             <Label htmlFor="address">주소</Label>
                                 <div className="flex gap-2">
-{/*                                     <Input */}
-{/*                                         id="zipcode" */}
-{/*                                         name="zipcode" */}
-{/*                                         value={userInfo.addressCode} */}
-{/*                                         placeholder="우편번호" */}
-{/*                                         disabled */}
-{/*                                         className={`${userInfo.addressCode ? "text-black placeholder:text-black" : "placeholder:text-gray-400"}`} */}
-{/*                                     /> */}
                                     <Input
                                         id="address"
                                         name="address"
