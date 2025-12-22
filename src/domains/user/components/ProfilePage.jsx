@@ -39,7 +39,7 @@ export default function ProfilePage({
                                 previewUrl ? previewUrl : fileUrl ? encodeURI(fileUrl)  : "https://avatars.githubusercontent.com/u/9919?v=4"
                             }
                             alt="프로필"
-//                             className="w-48 h-48 rounded-full object-cover"
+                            className="w-48 h-48 rounded-full object-cover"
                         />
                         <br/>
                         <Input
