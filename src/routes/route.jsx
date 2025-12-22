@@ -12,8 +12,8 @@ import Online from "@/domains/lecture/online/page/Online.jsx";
 import OnlineDetail from "@/domains/lecture/online/page/OnlineDetail.jsx";
 import LectureLayout from "@/domains/lecture/components/Layout/LectureLayout.jsx";
 
-
-import MyReservation from "@/domains/reservation/page/MyReservation.jsx";
+import MyReservationPage from "@/domains/reservation/page/MyReservationPage";
+import TeacherDashboard from "@/domains/meeting/page/TeacherDashboard";
 import RoomList from "@/domains/room/page/RoomList.jsx";
 import Login from "@/domains/user/page/Login.jsx";
 import ApproveOrganization from "@/domains/user/page/ApproveOrganization.jsx";
@@ -50,7 +50,8 @@ function CommonRouter() {
                 </Route>
 
 
-                <Route path="/reservations/my" element={<MyReservation />} />
+                <Route path="/teacher/dashboard" element={<TeacherDashboard />} />
+                <Route path="/reservations/my" element={<MyReservationPage />} />
                 <Route path="/rooms" element={<RoomList />} />
                 {/* <Route path="/room/:roomId" element={<RoomReserve />} /> */}
                 <Route path="/approveOrganization" element={<PrivateRoute><ApproveOrganization /></PrivateRoute>} />

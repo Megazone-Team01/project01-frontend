@@ -21,7 +21,12 @@ export const getMyMeetings = async (type = 'ALL', status = null) => {
 };
 
 export const createMeeting = async (meetingData) => {
-    const response = await axiosInstance.post('/v1/meetings', meetingData);
+    const response = await axiosInstance.post('/v1/meetings', meetingData, {
+        headers: {
+            'Authorization': `Bearer ${localStorage.getItem('accessToken')}`,
+            'Content-Type': 'application/json'
+        }
+    });
     return response.data;
 };
 
@@ -58,5 +63,12 @@ export const getAvailableTimes = async (teacherId, date) => {
         `/v1/meetings/teachers/${teacherId}/available-times`,
         { params: { date } }
     );
+    return response.data;
+};
+
+export const getTeacherMeetings = async (type = 'ALL', status = null) => {
+    const response = await axiosInstance.get('v1/meetings/teacher/my', {
+        params: { type, status }
+    });
     return response.data;
 };
