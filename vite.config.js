@@ -7,6 +7,11 @@ import path from 'path'   // ← 이거 추가해야 함!
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [react(), tailwindcss()],
+  server: {
+    headers: {
+      'Content-Security-Policy': "img-src 'self' data: https://* http://localhost:* blob:"
+    }
+  },
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),

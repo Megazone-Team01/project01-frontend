@@ -7,6 +7,7 @@ import {getOrganization} from "../api/organizationApi.js";
 import {Tabs, TabsContent, TabsList, TabsTrigger} from "@/components/ui/tabs.js";
 import {Label} from "@/components/ui/label.js";
 import {Card, CardContent, CardHeader} from "@/components/ui/card.js";
+import {ImageIcon} from "lucide-react";
 
 
 export const UserOrganizationDetailPage = () => {
@@ -37,9 +38,16 @@ export const UserOrganizationDetailPage = () => {
         <div className="flex flex-col w-full">
             <div className="flex w-full min-h-80">
                 <div className="flex flex-1 justify-center items-center m-2">
-                    <img
-                        className="aspect-square max-h-72 max-w-full"
-                        src={`/${organization.leadImage}`} alt={id} />
+                    {
+                        organization.leadImage !== null ?
+                        <img
+                            className="aspect-square max-h-72 max-w-full"
+                            src={`${import.meta.env.VITE_FILE_URL_HEADER}${organization.leadImage}`}
+                            alt={id}/>
+                            : <div
+                                className="aspect-square max-h-72 flex justify-center items-center w-full bg-gray-50"
+                            > <ImageIcon className="text-gray-400" size={25} /></div>
+                    }
                 </div>
                 <div className="flex flex-1 flex-col justify-start items-center m-2">
                     <h2> {organization.name} </h2>
@@ -54,7 +62,7 @@ export const UserOrganizationDetailPage = () => {
                             </TableRow>
                             <TableRow>
                                 <TableCell className="w-[100px]"> 주소: </TableCell>
-                                <TableCell> {organization.addressCode + " " + organization.addressDetail} </TableCell>
+                                <TableCell> {organization.address + " " + organization.addressDetail} </TableCell>
                             </TableRow>
                             <TableRow>
                                 <TableCell className="w-[100px]"> 홈페이지: </TableCell>

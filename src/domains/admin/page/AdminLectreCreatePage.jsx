@@ -82,8 +82,8 @@ export const AdminLectureCreatePage = () => {
         day: []
     })
 
-    const changeOnOff = ( isOnline ) => {
-        setFormData( { ...formData, type: isOnline } );
+    const changeOnOff = ( online ) => {
+        setFormData( { ...formData, type: online } );
         setIsOnline( isOnline === 1 );
     }
 
@@ -218,11 +218,12 @@ export const AdminLectureCreatePage = () => {
                 alert( "오프라인 강의 필수 값들이 채워지지 않았습니다" )
                 return
             }
+            if( formData.day.length === 0 ){
+                alert( "최소 하루의 요일은 선택해야 합니다" )
+                return
+            }
         }
-        if( formData.day.length === 0 ){
-            alert( "최소 하루의 요일은 선택해야 합니다" )
-            return
-        }
+        console.log( formData.type )
 
         const data = await createLecture( formData );
         if( data === 200 ) {
@@ -331,9 +332,10 @@ export const AdminLectureCreatePage = () => {
                                                             <ChevronDownIcon/>
                                                         </Button>
                                                     </PopoverTrigger>
-                                                    <PopoverContent className="w-auto overflow-hidden p-0">
+                                                    <PopoverContent className="w-[200px] overflow-hidden p-0">
                                                         <Calendar
                                                             mode="single"
+                                                            className="w-full"
                                                             selected={formData.startAt}
                                                             captionLayout="dropdown"
                                                             onSelect={(date) => {
@@ -355,9 +357,10 @@ export const AdminLectureCreatePage = () => {
                                                             <ChevronDownIcon/>
                                                         </Button>
                                                     </PopoverTrigger>
-                                                    <PopoverContent className="w-auto overflow-hidden p-0">
+                                                    <PopoverContent className="w-[200px] overflow-hidden p-0">
                                                         <Calendar
                                                             mode="single"
+                                                            className="w-full"
                                                             selected={formData.endAt}
                                                             captionLayout="dropdown"
                                                             onSelect={(date) => {

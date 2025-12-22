@@ -136,6 +136,8 @@ export const AdminLectureList = () => {
         fetchLecture();
     }, [ filter ]);
 
+    console.log( lectures )
+
     return (
         <Card className="w-full min-h-80 bg-white">
             <Dialog open={infoOpen} onClose={setInfoOpen}>
@@ -207,7 +209,7 @@ export const AdminLectureList = () => {
                                             <TableCell className="text-center"> { lecture.name } </TableCell>
                                             <TableCell className="text-center"> { lecture.organizationName } </TableCell>
                                             <TableCell className="text-center"> { lecture.teacherName } </TableCell>
-                                            <TableCell className="text-center"> { lecture.online ? "온라인" : "오프라인" } </TableCell>
+                                            <TableCell className="text-center"> { lecture.isOnline ? "온라인" : "오프라인" } </TableCell>
                                             <TableCell className="text-center flex justify-center">
                                                 {
                                                     lecture.deletedAt != null ?
@@ -215,13 +217,13 @@ export const AdminLectureList = () => {
                                                         :
                                                         <ButtonGroup>
                                                             <Button
-                                                                onClick={ () => openUpdateModal( lecture.id, lecture.online )}
+                                                                onClick={ () => openUpdateModal( lecture.id, lecture.isOnline )}
                                                                 className="bg-white text-green-500 hover:bg-white hover:font-bold hover:cursor-pointer"> 수정 </Button>
                                                             <Button
-                                                                onClick={ () => removeLecture( lecture.id, lecture.online )}
+                                                                onClick={ () => removeLecture( lecture.id, lecture.isOnline )}
                                                                 className="bg-white text-red-500 hover:bg-white hover:font-bold hover:cursor-pointer"> 삭제 </Button>
                                                             <Button
-                                                                onClick={() => displayDetail( lecture.id, lecture.online )}
+                                                                onClick={() => displayDetail( lecture.id, lecture.isOnline )}
                                                                 className="bg-white text-black hover:bg-white hover:font-bold hover:cursor-pointer"> 정보 </Button>
                                                         </ButtonGroup>
                                                 }
@@ -250,6 +252,7 @@ export const AdminLectureList = () => {
                                                 <Input
                                                     type="text"
                                                     className="flex-5 rounded-none"
+                                                    onChange={ (e) => setFormData( { ...formData, name: e.target.value })}
                                                     value={formData.name} />
                                                 :
                                                 <Label
@@ -280,6 +283,7 @@ export const AdminLectureList = () => {
                                                 <Input
                                                 type="number"
                                                 className="flex-5 rounded-none"
+                                                onChange={ (e) => setFormData( { ...formData, price: e.target.value })}
                                                 value={formData.price}
                                                 />
                                                 :
@@ -349,6 +353,7 @@ export const AdminLectureList = () => {
                                             isUpdating ?
                                                 <Input
                                                     value={formData.description}
+                                                    onChange={ (e) => setFormData( { ...formData, description: e.target.value })}
                                                     type="text"
                                                     className="flex-5 rounded-none"
                                                 />
@@ -430,7 +435,7 @@ export const AdminLectureList = () => {
                                                         onChange={ (e) => setFormData( { ...formData, maxNum: e.target.value })}
                                                         value={formData.maxNum} />
                                                     :
-                                                    <Label className="text-md text-gray-500"> {formData.maxNum} </Label>
+                                                    <Label className="text-md flex-5 text-gray-500"> {formData.maxNum} </Label>
                                             }
                                         </div>
                                         <div className="flex gap-2 flex-1 w-full items-center">

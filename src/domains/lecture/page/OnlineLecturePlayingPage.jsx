@@ -38,7 +38,7 @@ export const OnlineLecturePlayingPage = () => {
                 <div className="flex">
                     <div className="flex-7 bg-black">
                         <video
-                            src={"/testvideo.mp4"}
+                            src={`${import.meta.env.VITE_FILE_URL_HEADER}${formData.url}`}
                             width={"100%"}
                             controls
                         />
