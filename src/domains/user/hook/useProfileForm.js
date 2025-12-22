@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
-import { getProfileInfo, updateProfileInfo } from "../api/profile";
+import { getProfileInfo, updateProfileInfo, deleteProfileAccount } from "../api/profile";
 import {fileUpload} from "@/common/api/fileApi.js";
 import axios from "axios";
 
@@ -153,6 +153,7 @@ export default function useProfileForm() {
 
     // 탈퇴 버튼
     const handleDeleteAccount = async () => {
+        console.log("탈퇴 버튼 클릭됨"); // <- 이 로그가 나오는지 확인
         if (!window.confirm("정말로 탈퇴하시겠습니까?")) return;
 
         setLoading(true);
@@ -212,6 +213,7 @@ export default function useProfileForm() {
         handleFileChange,
         previewUrl,
         fileUrl,
-        fileId
+        fileId,
+        handleDeleteAccount
     };
 }

@@ -182,11 +182,11 @@ export default function ProfilePage({
                             </Button>
 
                             <Button
-                                    className="w-auto px-4"
-                                    variant="destructive"
-                                    onClick={handleDeleteAccount}
-                                    disabled={loading}
-                                >
+                                className="w-auto px-4"
+                                variant="destructive"
+                                onClick={handleDeleteAccount}
+                                disabled={loading}
+                            >
                                 회원 탈퇴
                             </Button>
                         </div>
