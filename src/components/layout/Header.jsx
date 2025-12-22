@@ -1,6 +1,6 @@
 import { useSelector, useDispatch } from "react-redux";
-import {logout} from "@/common/store/auth/authSlice";
-import { Link , useNavigate } from "react-router";
+import { logout } from "@/common/store/auth/authSlice";
+import { Link, useNavigate } from "react-router";
 import {
     NavigationMenu,
     NavigationMenuItem,
@@ -10,18 +10,18 @@ import {
     NavigationMenuTrigger,
     navigationMenuTriggerStyle
 } from "@/components/ui/navigation-menu.js";
-import {cn} from "@/lib/utils.js";
-import {Button} from "@/components/ui/button.js";
-import {Separator} from "@/components/ui/separator.js";
-import {BarChart3Icon, FilePlus, LogOutIcon, MessageCircleIcon, SettingsIcon, UserIcon} from "lucide-react";
+import { cn } from "@/lib/utils.js";
+import { Button } from "@/components/ui/button.js";
+import { Separator } from "@/components/ui/separator.js";
+import { BarChart3Icon, FilePlus, LogOutIcon, MessageCircleIcon, SettingsIcon, UserIcon } from "lucide-react";
 import {
     DropdownMenu,
     DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem,
     DropdownMenuLabel, DropdownMenuSeparator,
     DropdownMenuTrigger
 } from "@/components/ui/dropdown-menu.js";
-import {Avatar, AvatarFallback, AvatarImage} from "@/components/ui/avatar.js";
-import {useEffect, useState} from "react";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar.js";
+import { useEffect, useState } from "react";
 
 
 const menus = [
@@ -117,7 +117,7 @@ const menus = [
 
 
 
-export default function Header({isLoggedIn,hasNotifications,hasMessages}) {
+export default function Header({ isLoggedIn, hasNotifications, hasMessages }) {
 
     const [isScrolled, setIsScrolled] = useState(false);
     const dispatch = useDispatch();
@@ -158,54 +158,54 @@ export default function Header({isLoggedIn,hasNotifications,hasMessages}) {
                 </Link>
                 <Separator orientation="vertical" className="h-6 mx-4" />
                 <NavigationMenu>
-{/*                     <NavigationMenuList>{menus.map((menu) =>( */}
-{/*                         <NavigationMenuItem key={menu.name}> */}
-{/*                             {menu.items ? <> */}
-{/*                                     <Link to={menu.to}> */}
-{/*                                         <NavigationMenuTrigger> */}
-{/*                                             {menu.name} */}
-{/*                                         </NavigationMenuTrigger> */}
-{/*                                     </Link> */}
-{/*                                     <NavigationMenuContent> */}
-{/*                                         <ul className="grid w-[500px] font-light gap-3 p-4 grid-cols-2"> */}
-{/*                                             {menu.items?.map((item) =>( */}
-{/*                                                 <NavigationMenuItem key={item.name} className={cn([ */}
-{/*                                                     "select-none rounded-md transition-colors focus:bg-accent  hover:bg-accent", */}
-{/*                                                     item.to === "/products/promote" && */}
-{/*                                                     "col-span-2 bg-primary/10 hover:bg-primary/20 focus:bg-primary/20", */}
-{/*                                                     item.to === "/jobs/submit" && */}
-{/*                                                     "col-span-2 bg-primary/10 hover:bg-primary/20 focus:bg-primary/20", */}
-{/*                                                 ])}> */}
-{/*                                                     <NavigationMenuLink> */}
-{/*                                                         <Link */}
-{/*                                                             className="p-3 space-y-1 block leading-none no-underline outline-none" */}
-{/*                                                             to={item.to}> */}
-{/*                                                             <span className="text-sm font-medium leading-none">{item.name}</span> */}
-{/*                                                             <p className="test-sm leading-snug text-muted-foreground">{item.description}</p> */}
-{/*                                                         </Link> */}
-{/*                                                     </NavigationMenuLink> */}
-{/*                                                 </NavigationMenuItem> */}
-{/*                                             ))} */}
-{/*                                         </ul> */}
-{/*                                     </NavigationMenuContent> */}
-{/*                                 </>: */}
-{/*                                 <Link className={navigationMenuTriggerStyle()} to={menu.to}>{menu.name}</Link> */}
+                    {/*                     <NavigationMenuList>{menus.map((menu) =>( */}
+                    {/*                         <NavigationMenuItem key={menu.name}> */}
+                    {/*                             {menu.items ? <> */}
+                    {/*                                     <Link to={menu.to}> */}
+                    {/*                                         <NavigationMenuTrigger> */}
+                    {/*                                             {menu.name} */}
+                    {/*                                         </NavigationMenuTrigger> */}
+                    {/*                                     </Link> */}
+                    {/*                                     <NavigationMenuContent> */}
+                    {/*                                         <ul className="grid w-[500px] font-light gap-3 p-4 grid-cols-2"> */}
+                    {/*                                             {menu.items?.map((item) =>( */}
+                    {/*                                                 <NavigationMenuItem key={item.name} className={cn([ */}
+                    {/*                                                     "select-none rounded-md transition-colors focus:bg-accent  hover:bg-accent", */}
+                    {/*                                                     item.to === "/products/promote" && */}
+                    {/*                                                     "col-span-2 bg-primary/10 hover:bg-primary/20 focus:bg-primary/20", */}
+                    {/*                                                     item.to === "/jobs/submit" && */}
+                    {/*                                                     "col-span-2 bg-primary/10 hover:bg-primary/20 focus:bg-primary/20", */}
+                    {/*                                                 ])}> */}
+                    {/*                                                     <NavigationMenuLink> */}
+                    {/*                                                         <Link */}
+                    {/*                                                             className="p-3 space-y-1 block leading-none no-underline outline-none" */}
+                    {/*                                                             to={item.to}> */}
+                    {/*                                                             <span className="text-sm font-medium leading-none">{item.name}</span> */}
+                    {/*                                                             <p className="test-sm leading-snug text-muted-foreground">{item.description}</p> */}
+                    {/*                                                         </Link> */}
+                    {/*                                                     </NavigationMenuLink> */}
+                    {/*                                                 </NavigationMenuItem> */}
+                    {/*                                             ))} */}
+                    {/*                                         </ul> */}
+                    {/*                                     </NavigationMenuContent> */}
+                    {/*                                 </>: */}
+                    {/*                                 <Link className={navigationMenuTriggerStyle()} to={menu.to}>{menu.name}</Link> */}
 
-{/*                             } */}
-{/*                         </NavigationMenuItem> */}
-{/*                     ))}</NavigationMenuList> */}
+                    {/*                             } */}
+                    {/*                         </NavigationMenuItem> */}
+                    {/*                     ))}</NavigationMenuList> */}
                 </NavigationMenu>
             </div>
-            {isAuthenticated ?(
+            {isAuthenticated ? (
                 <div className="flex item-center gap-2">
                     <Button size="icon" variant="ghost" asChild className="relative">
                         <Link to="/upload">
                             {user.roleName !== "TEACHER" ?
                                 <>
-                                <FilePlus className="size-5"/>
-                            {hasNotifications && (
-                                <div className="absolute top-1.5 right-1.5 size-2 bg-red-500 rounded-full" />
-                            )}</> : null}
+                                    <FilePlus className="size-5" />
+                                    {hasNotifications && (
+                                        <div className="absolute top-1.5 right-1.5 size-2 bg-red-500 rounded-full" />
+                                    )}</> : null}
                         </Link>
                     </Button>
                     <Button size="icon" variant="ghost" asChild className="relative">
@@ -219,7 +219,7 @@ export default function Header({isLoggedIn,hasNotifications,hasMessages}) {
                     <DropdownMenu>
                         <DropdownMenuTrigger asChild>
                             <Avatar>
-                                <AvatarImage src="https://github.com/Anchangwan.png"/>
+                                <AvatarImage src="https://github.com/Anchangwan.png" />
                                 <AvatarFallback>
                                     N
                                 </AvatarFallback>
@@ -229,16 +229,23 @@ export default function Header({isLoggedIn,hasNotifications,hasMessages}) {
                             <DropdownMenuLabel className="flex flex-col gap-1">
                                 <span className="font-medium">hello</span>
                                 <span className="text-xs text-muted-foreground">
-                    {user.name}
-                  </span>
+                                    {user.name}
+                                </span>
                             </DropdownMenuLabel>
-                            <DropdownMenuSeparator/>
+                            <DropdownMenuSeparator />
                             <DropdownMenuGroup className="flex flex-col gap-1">
-                                <DropdownMenuItem asChild className="cursor-pointer">
-                                    <Link to="/my/dashboard">
-                                        <BarChart3Icon className="size-4 mr-2" />
-                                        Dashboard
-                                    </Link>
+                                <DropdownMenuItem
+                                    className="cursor-pointer"
+                                    onClick={() => {
+                                        if (user?.roleName === 'TEACHER') {
+                                            navigate('/teacher/dashboard');
+                                        } else {
+                                            navigate('/reservations/my');
+                                        }
+                                    }}
+                                >
+                                    <BarChart3Icon className="size-4 mr-2" />
+                                    Dashboard
                                 </DropdownMenuItem>
                                 <DropdownMenuItem asChild className="cursor-pointer">
                                     <Link to="/profile">
@@ -253,7 +260,7 @@ export default function Header({isLoggedIn,hasNotifications,hasMessages}) {
                                     </Link>
                                 </DropdownMenuItem>
                             </DropdownMenuGroup>
-                            <DropdownMenuSeparator/>
+                            <DropdownMenuSeparator />
                             <DropdownMenuItem className="cursor-pointer" onClick={handleLogout}>
                                 <LogOutIcon className="size-4 mr-2" />
                                 Logout
