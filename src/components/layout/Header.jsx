@@ -32,12 +32,15 @@ import {useEffect, useState} from "react";
 import {Item} from "@/components/ui/item.js";
 import {Toggle} from "@/components/ui/toggle.js";
 import {getProfileInfo} from "@/domains/user/api/profile.js";
+import {useSSE} from "@/routes/SSEContext.jsx";
 
 export default function Header({isLoggedIn,hasNotifications,hasMessages}) {
 
     const [isScrolled, setIsScrolled] = useState(false);
     const dispatch = useDispatch();
     const navigate = useNavigate();
+
+    const { notifications } = useSSE();
 
     const { isAuthenticated, user } = useSelector((state) => state.auth ?? {});
     const [ isOnline, setOnline ] = useState(false);
@@ -109,8 +112,10 @@ export default function Header({isLoggedIn,hasNotifications,hasMessages}) {
                     <Button size="icon" variant="ghost" asChild className="relative">
                         <Link to="/my/notifications">
                             <BellIcon className="size-4"/>
-                            {hasNotifications && (
-                                <div className="absolute top-1.5 right-1.5 size-2 bg-red-500 rounded-full"/>
+                            {notifications.length > 0 && (
+                                <span className="absolute -top-1 -right-1 min-w-[18px] h-[18px] flex items-center justify-center bg-red-500 text-white text-[10px] font-semibold rounded-full px-1">
+                                    {notifications.length}
+                                </span>
                             )}
                         </Link>
                     </Button>
