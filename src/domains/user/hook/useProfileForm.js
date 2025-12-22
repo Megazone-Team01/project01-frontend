@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { getMyInfo, updateMyInfo } from "../api/profile";
+import {useDispatch} from "react-redux";
 
 export default function useMyForm() {
     const [userInfo, setUserInfo] = useState({
@@ -13,6 +14,8 @@ export default function useMyForm() {
         profileImg: "",
     });
 
+
+
     const [loading, setLoading] = useState(false);
     const [isEditing, setIsEditing] = useState(false);
 
@@ -24,6 +27,8 @@ export default function useMyForm() {
     useEffect(() => {
         fetchMyInfo();
     }, []);
+
+
 
     const fetchMyInfo = async () => {
         setLoading(true);

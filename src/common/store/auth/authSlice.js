@@ -4,6 +4,7 @@ const initialState = {
     isAuthenticated: !!localStorage.getItem("accessToken"),
     user: JSON.parse(localStorage.getItem("user")) || null,
     accessToken: localStorage.getItem("accessToken") || null,
+    userRole:""
 };
 
 const authSlice = createSlice({
@@ -30,8 +31,11 @@ const authSlice = createSlice({
             state.accessToken = action.payload.accessToken;
             localStorage.setItem("accessToken", action.payload.accessToken);
         },
+        setUseRole: (state, action) => {
+            state.userRole = action.payload.userRole;
+        }
     },
 });
 
-export const { loginSuccess, logout, refreshAccessToken } = authSlice.actions;
+export const { setUserRole,loginSuccess, logout, refreshAccessToken } = authSlice.actions;
 export default authSlice.reducer;

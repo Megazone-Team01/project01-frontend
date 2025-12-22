@@ -4,7 +4,6 @@ import axiosInstance from "@/common/api/axiosInstance.js";
 export const getMyInfo = async () => {
     try {
         const { data } = await axiosInstance.get("/v1/user/profile");
-        console.log(data);
         return data;
     } catch (error) {
         console.error("Get My Info API error:", error);

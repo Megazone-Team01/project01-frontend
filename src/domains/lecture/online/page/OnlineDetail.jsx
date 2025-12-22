@@ -16,7 +16,7 @@ function OnlineDetail() {
     const lectureType = location.pathname.includes("/online") ? "online" : "offline";
     const {data, isLoading ,isError} = useLectureDetail(onlineId, lectureType);
 
-    if (isError) {
+    if (!isError) {
         return <ErrorPage/>;
     }
 

@@ -1,5 +1,5 @@
 import { useSelector, useDispatch } from "react-redux";
-import { logout } from "@/common/store/auth/authSlice";
+import {logout, setUserRole} from "@/common/store/auth/authSlice";
 import { Link , useNavigate } from "react-router";
 import {
     NavigationMenu,
@@ -22,6 +22,7 @@ import {
 } from "@/components/ui/dropdown-menu.js";
 import {Avatar, AvatarFallback, AvatarImage} from "@/components/ui/avatar.js";
 import {useEffect, useState} from "react";
+import {getMyInfo} from "@/domains/user/api/profile.js";
 
 
 
@@ -202,10 +203,12 @@ export default function Header({isLoggedIn,hasNotifications,hasMessages}) {
                 <div className="flex item-center gap-2">
                     <Button size="icon" variant="ghost" asChild className="relative">
                         <Link to="/upload">
-                            <FilePlus className="size-5"/>
+                            {user.roleName !== "TEACHER" ?
+                                <>
+                                <FilePlus className="size-5"/>
                             {hasNotifications && (
                                 <div className="absolute top-1.5 right-1.5 size-2 bg-red-500 rounded-full" />
-                            )}
+                            )}</> : null}
                         </Link>
                     </Button>
                     <Button size="icon" variant="ghost" asChild className="relative">
