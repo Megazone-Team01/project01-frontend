@@ -84,7 +84,7 @@ export default function ProfilePage({
                                     name="email"
                                     value={userInfo.email}
                                     onChange={handleChange}
-                                    placeholder="이메일을 입력하세요"
+                                    placeholder="이메일을 입력해 주세요"
                                     disabled={true}
                                     className={`${userInfo.email ? "text-black placeholder:text-black" : "placeholder:text-gray-400"}`}
                                 />
@@ -98,7 +98,7 @@ export default function ProfilePage({
                                     name="name"
                                     value={userInfo.name}
                                     onChange={handleChange}
-                                    placeholder="이름을 입력하세요"
+                                    placeholder="이름을 입력해 주세요"
                                     disabled={!isEditing}
                                     className={`${userInfo.name ? "text-black placeholder:text-black" : "placeholder:text-gray-400"}`}
                                 />
@@ -112,7 +112,7 @@ export default function ProfilePage({
                                     name="phone"
                                     value={userInfo.phone}
                                     onChange={handlePhoneChange}
-                                    placeholder="'-' 없이 입력하세요"
+                                    placeholder="'-' 없이 입력해 주세요"
                                     disabled={!isEditing}
                                     className={`${userInfo.phone ? "text-black placeholder:text-black" : "placeholder:text-gray-400"}`}
                                 />
@@ -127,7 +127,7 @@ export default function ProfilePage({
                                         name="address"
                                         value={userInfo.address}
                                         onChange={handleAddressChange}
-                                        placeholder="주소를 입력하세요"
+                                        placeholder="주소를 입력해 주세요"
                                         disabled={!isEditing}
                                         className={`${userInfo.address ? "text-black placeholder:text-black" : "placeholder:text-gray-400"}`}
                                     />

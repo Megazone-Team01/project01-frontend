@@ -35,7 +35,7 @@ export default function SignupPage() {
                         name="email"
                         value={form.email}
                         onChange={handleEmailChange}
-                        placeholder="이메일을 입력하세요"
+                        placeholder="이메일을 입력해 주세요"
                     />
                 </div>
 
@@ -50,7 +50,7 @@ export default function SignupPage() {
                             type={showPassword ? "text" : "password"}
                             value={form.password}
                             onChange={handlePasswordChange}
-                            placeholder="비밀번호를 입력하세요"
+                            placeholder="비밀번호를 입력해 주세요"
                         />
                         <button
                             type="button"
@@ -84,7 +84,7 @@ export default function SignupPage() {
                             type={showPasswordConfirm ? "text" : "password"}
                             value={form.passwordConfirm}
                             onChange={handlePasswordConfirmChange}
-                            placeholder="비밀번호를 다시 입력하세요"
+                            placeholder="비밀번호를 다시 입력해 주세요"
                         />
 
                         {/* 비밀번호 확인 가능한 버튼 */}
@@ -134,7 +134,7 @@ export default function SignupPage() {
                         name="name"
                         value={form.name}
                         onChange={handleChange}
-                        placeholder="이름을 입력하세요"
+                        placeholder="이름을 입력해 주세요"
                     />
                 </div>
 
@@ -157,7 +157,7 @@ export default function SignupPage() {
                         name="phone"
                         value={form.phone}
                         onChange={handlePhoneChange}
-                        placeholder="'-' 없이 입력하세요"
+                        placeholder="'-' 없이 입력해 주세요"
                     />
                 </div>
 
