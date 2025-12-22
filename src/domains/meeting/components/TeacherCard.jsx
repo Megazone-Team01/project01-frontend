@@ -15,7 +15,11 @@ const TeacherCard = ({ teacher, onClick }) => {
                 <div className="w-16 h-16 rounded-2xl bg-slate-100 overflow-hidden ring-4 ring-slate-50 
           group-hover:ring-blue-50 transition-all">
                     <img
-                        src={teacher.profileImage || '/default-avatar.png'}
+                        src={
+                            teacher.profileImage
+                                ? `${import.meta.env.VITE_FILE_URL_HEADER}${teacher.profileImage}`
+                                : '/default-avatar.png'
+                        }
                         alt={teacher.name}
                         className="w-full h-full object-cover"
                     />
