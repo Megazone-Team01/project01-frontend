@@ -5,13 +5,15 @@ function Footer() {
 
                 {/* 좌측: 브랜드 + 슬로건 */}
                 <div className="flex flex-col md:flex-1">
-                    <h1 className="text-6xl md:text-7xl font-extrabold tracking-tight drop-shadow-lg bg-clip-text text-transparent bg-gradient-to-r from-yellow-400 via-white to-yellow-400 mb-4 md:mb-6">
-                        LinkEd
+                    <h1 className="text-6xl md:text-7xl font-extrabold tracking-tight drop-shadow-lg
+                                             bg-clip-text text-transparent bg-gradient-to-r from-primary via-white to-primary mb-4 md:mb-6
+                                             [-webkit-text-stroke:0.25px_black]">
+                    LinkEd
                     </h1>
                     <p className="text-xl md:text-2xl opacity-80 mb-4">
                         Learn. Connect. Grow.
                     </p>
-                    <span className="block w-24 h-1 bg-yellow-300 mt-3 rounded"></span> {/* 밑줄 장식 */}
+                    <span className="block w-24 h-1 bg-white mt-3 rounded"></span>
                 </div>
 
                 {/* 세로 구분선 */}
