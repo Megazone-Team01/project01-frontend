@@ -3,11 +3,11 @@ import axiosInstance from "@/common/api/axiosInstance.js";
 // 1 최신순, 2 날짜순, 3. 인기순
 export async function getLectureApi(lectureTypes, searchTypeCode=1, page,keyword = '') {
     try {
-        const { data } = await axiosInstance(`v1/lecture/${lectureTypes}/courses`,{
+        const { data } = await axiosInstance(`/v1/lecture/${lectureTypes}/courses`,{
             params: {
                 searchTypeCode,
                 page,
-                ...(keyword && {keyword})
+                keyword
             }
         });
         console.log("get Lecture Api", data);

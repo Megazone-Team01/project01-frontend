@@ -11,8 +11,6 @@ import OfflineDetail from "@/domains/lecture/offline/page/OfflineDetail.jsx";
 import Online from "@/domains/lecture/online/page/Online.jsx";
 import OnlineDetail from "@/domains/lecture/online/page/OnlineDetail.jsx";
 import LectureLayout from "@/domains/lecture/components/Layout/LectureLayout.jsx";
-import MeetingListPage from '@/domains/meeting/page/MeetingListPage.jsx';
-//import MeetingDetailPage from '@/domains/meeting/page/MeetingDetailPage.jsx';
 
 
 import MyReservation from "@/domains/reservation/page/MyReservation.jsx";
@@ -32,18 +30,16 @@ function CommonRouter() {
             <Route element={<MainLayout />}>
                 <Route path="/organizations" element={<UserOrganizationListPage />} />
                 <Route path="/organization/:id" element={<UserOrganizationDetailPage />} />
-                <Route path="/" element={<Home />}/>
-                <Route path="/admin" element={<AdminMainPage /> } />
-                <Route path="/online/:id" element={<OnlineLecturePlayingPage /> } />
-                <Route path="/organization/:id/meetings" element={<MeetingListPage />} />
-                {/* <Route path="/organization/:id/meetings/:teacherId" element={<MeetingDetailPage />} /> */}
+                <Route path="/" element={<Home />} />
+                <Route path="/admin" element={<AdminMainPage />} />
+                <Route path="/online/:id" element={<OnlineLecturePlayingPage />} />
 
                 {/* 로그인 상태면 접근 제한 */}
-                <Route path="/sign" element={<PublicRoute><Sign /></PublicRoute>}/>
-                <Route path="/login" element={<PublicRoute><Login /></PublicRoute>}/>
-                <Route path="/profile" element={<Profile />}/>
-                <Route path="/lecture" element={<LectureLayout/>}>
-                    <Route path="offline" element={<Offline />}/>
+                <Route path="/sign" element={<PublicRoute><Sign /></PublicRoute>} />
+                <Route path="/login" element={<PublicRoute><Login /></PublicRoute>} />
+                <Route path="/profile" element={<Profile />} />
+                <Route path="/lecture" element={<LectureLayout />}>
+                    <Route path="offline" element={<Offline />} />
                     <Route path="offline/:offlineId" element={<OfflineDetail />} />
 
                     <Route path="online" element={<Online />} />
