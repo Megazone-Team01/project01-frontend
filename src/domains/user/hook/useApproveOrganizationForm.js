@@ -6,12 +6,29 @@ export const useApproveOrganizationForm = () => {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
 
+    // 폰 번호 형식
+    const formatPhoneNumber = (number) => {
+        if (!number) return "";
+        const cleaned = number.replace(/\D/g, "");
+        if (cleaned.length < 4) return cleaned;
+        if (cleaned.length < 7) return cleaned.replace(/(\d{3})(\d+)/, "$1-$2");
+        return cleaned.replace(/(\d{3})(\d{4})(\d+)/, "$1-$2-$3");
+    };
+
     // 승인 대기 요청 조회
     const fetchPendingRequests = async () => {
         try {
             setLoading(true);
             const data = await getPendingJoinRequests();
-            setPendingRequests(data);
+
+            // 조회 시점에 전화번호 포맷 적용
+            const formattedData = data.map(request => ({
+                ...request,
+                phone: formatPhoneNumber(request.phone || "")
+            }));
+
+            setPendingRequests(formattedData);
+
         } catch (err) {
             setError(err.response?.data?.message || "승인 대기 요청 조회 중 오류가 발생했습니다.");
         } finally {

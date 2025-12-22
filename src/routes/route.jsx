@@ -50,9 +50,7 @@ function CommonRouter() {
                 <Route path="/reservations/my" element={<MyReservation />} />
                 <Route path="/rooms" element={<RoomList />} />
                 {/* <Route path="/room/:roomId" element={<RoomReserve />} /> */}
-                <Route path="/sign" element={<Sign />} />
-                <Route path="/login" element={<Login />} />
-                <Route path="/approveOrganization" element={<PrivateRoute><ApproveOrganization /></PrivateRoute>} />
+                <Route path="/approveOrganization" element={<PrivateRoute><ApproveOrganization /></PrivateRoute>}/>
             </Route>
         </Routes>
     )
