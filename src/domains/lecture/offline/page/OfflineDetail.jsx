@@ -1,5 +1,5 @@
 import {useLocation, useParams} from "react-router";
-import Loading from "@/components/common/loading.jsx";
+import useLectureDetali from "@/domains/lecture/hook/useLectureDetail.js";
 import {Badge} from "@/components/ui/badge.js";
 import {formatDate, lectureStatus} from "@/lib/utils.js";
 import EducationPeriod from "@/domains/lecture/components/common/EducationPeriod.jsx";
@@ -7,20 +7,22 @@ import EducationPeriod from "@/domains/lecture/components/common/EducationPeriod
 import {AlertBox} from "@/domains/lecture/components/common/AlertBox.jsx";
 import OrganizationCard from "@/domains/lecture/components/common/OrganizationCard.jsx";
 import {Separator} from "@/components/ui/separator.js";
-import useLectureDetail from "@/domains/lecture/hook/useLectureDetail.js";
-import { useSelector} from "react-redux";
+import LoadingDetail from "@/components/common/LoadingDetail.jsx";
+import ErrorPage from "@/components/common/ErrorPage.jsx";
 
 
 function OfflineDetail() {
     const {offlineId} = useParams();
     const location = useLocation();
     const lectureType = location.pathname.includes("/online") ? "online" : "offline";
-    const {data, isLoading} = useLectureDetail(offlineId, lectureType);
-
-    const enrolled = useSelector(state => state.lecture.enrolled);
+    const {data, isLoading,isError} = useLectureDetali(offlineId, lectureType);
 
     if (isLoading) {
-        return <Loading />;
+        return <LoadingDetail />;
+    }
+
+    if (isError) {
+        return <ErrorPage/>
     }
 
     console.log("asdfa data: ", data)

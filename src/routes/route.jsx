@@ -21,6 +21,7 @@ import ApproveOrganization from "@/domains/user/page/ApproveOrganization.jsx";
 import PublicRoute from "@/routes/PublicRoute.jsx";
 import PrivateRoute from "@/routes/PrivateRoute.jsx";
 import Profile from "@/domains/user/page/Profile.jsx";
+import Upload from "@/domains/lecture/upload/page/Upload.jsx";
 import AdminRoute from "@/routes/AdminRoute.js";
 import {SSEProvider} from "@/routes/SSEContext.jsx";
 import {Provider} from "react-redux";
