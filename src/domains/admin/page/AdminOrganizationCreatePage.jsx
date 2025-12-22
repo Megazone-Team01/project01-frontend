@@ -34,7 +34,7 @@ import {
 } from "@/components/ui/dialog.js";
 import {useEffect, useState} from "react";
 import {Table, TableBody, TableCell, TableHead, TableHeader, TableRow} from "@/components/ui/table.js";
-import {getOrganizationTeacher, getUsersWithFilter} from "@/domains/admin/api/userApi.js";
+import {getUsersWithFilter} from "@/domains/admin/api/userApi.js";
 import {createOrganization} from "@/domains/admin/api/organizationApi.js";
 
 
@@ -47,7 +47,7 @@ export const AdminOrganizationCreatePage = () => {
         ownerId: '',
         ownerName: '',
         tel: '',
-        addressCode: '',
+        address: '',
         addressDetail: '',
         type: '',
         description: ''
@@ -79,7 +79,7 @@ export const AdminOrganizationCreatePage = () => {
             formData.webpage.length === 0 ||
             formData.ownerId.length === 0 ||
             formData.tel.length === 0 ||
-            formData.addressCode.length === 0 ||
+            formData.address.length === 0 ||
             formData.addressDetail.length === 0 ||
             formData.type.length === 0
         ) {
@@ -95,14 +95,6 @@ export const AdminOrganizationCreatePage = () => {
         }
         if( formData.tel.length < 9 ) {
             alert("전화번호가 올바르지 않습니다")
-            return
-        }
-        if( !/^\d+$/.test( formData.addressCode ) ) {
-            alert("우편번호는 숫자만 포함되어야 합니다")
-            return
-        }
-        if( formData.addressCode.length !== 5 ) {
-            alert("우편번호가 올바르지 않습니다")
             return
         }
 
@@ -180,8 +172,8 @@ export const AdminOrganizationCreatePage = () => {
                                         <Field>
                                             <FieldLabel htmlFor="city"> 우편 번호 </FieldLabel>
                                             <Input
-                                                onChange={ (e) => setFormData( { ...formData, addressCode: e.target.value } )}
-                                                value={ formData.addressCode }
+                                                onChange={ (e) => setFormData( { ...formData, address: e.target.value } )}
+                                                value={ formData.address }
                                                 id="city" type="text" placeholder="우편번호를 입력하세요"/>
                                         </Field>
                                         <Field>
