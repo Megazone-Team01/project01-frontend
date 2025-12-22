@@ -25,26 +25,28 @@ export default function ProfilePage({
     setShowPasswordConfirm,
     handlePhoneChange,
     handleFileChange,
+    previewUrl, fileUrl, fileId,
 }) {
     if (loading) return <p>로딩중...</p>;
-
+    console.log("fileUrl:", fileUrl);
     return (
         <div className="flex flex-col gap-4 px-6 max-w-5xl mx-auto">
             <div className="my-profile-page flex flex-col gap-6">
                 <div className="profile-top flex gap-8">
                     <div className="profile-image flex-shrink-0">
                         <img
-                            src={userInfo.profileImage || "https://avatars.githubusercontent.com/u/9919?v=4"}
+                            src={
+                                previewUrl ? previewUrl : fileUrl ? encodeURI(fileUrl)  : "https://avatars.githubusercontent.com/u/9919?v=4"
+                            }
                             alt="프로필"
-                            className="w-48 h-48 rounded-full object-cover"
+//                             className="w-48 h-48 rounded-full object-cover"
                         />
                         <br/>
                         <Input
-                        type="file"
-                        disabled={!isEditing}
-                        onChange={(e) => handleFileChange(e) }
+                            type="file"
+                            disabled={!isEditing}
+                            onChange={(e) => handleFileChange(e) }
                         />
-
 
                     </div>
 
@@ -160,11 +162,12 @@ export default function ProfilePage({
                                     disabled={!isEditing}
                                     className="flex gap-4"
                                 >
+
                                     {["ALL", "ONLINE", "OFFLINE"].map((val) => (
                                         <div key={val} className="flex items-center gap-2">
                                             <RadioGroupItem value={val} id={val.toLowerCase()} />
                                             <Label htmlFor={val.toLowerCase()}>
-                                                {val === "ALL" ? "모두" : val === "ONLINE" ? "온라인" : "오프라인"}
+                                                {val === "ALL" ? "온/오프라인" : val === "ONLINE" ? "온라인" : "오프라인"}
                                             </Label>
                                         </div>
                                     ))}

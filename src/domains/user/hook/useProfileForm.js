@@ -8,6 +8,7 @@ export default function useProfileForm() {
     const [userInfo, setUserInfo] = useState({
         name: "",
         addressCode: "",
+        address: "",
         addressDetail: "",
         email: "",
         phone: "",
@@ -26,11 +27,15 @@ export default function useProfileForm() {
     const [showPasswordConfirm, setShowPasswordConfirm] = useState(false);
 
     const [addressSearchResults, setAddressSearchResults] = useState([]);
+    const [previewUrl, setPreviewUrl] = useState(null);
+    const [fileUrl, setFileUrl] = useState(null); // 서버 URL
+    const fileId = userInfo.fileId;
 
     useEffect(() => {
         fetchProfileInfo();
     }, []);
 
+    // 핸드폰 번호 형식
     const formatPhoneNumber = (number) => {
         if (!number) return "";
         const cleaned = number.replace(/\D/g, "");
@@ -44,10 +49,11 @@ export default function useProfileForm() {
         setLoading(true);
         try {
             const data = await getProfileInfo();
-
+            console.log("fetch 후 userInfo:", data);
             // 조회 시점에 전화번호 포맷 적용
             const formattedPhone = formatPhoneNumber(data.phone || "");
             setUserInfo(prev => ({ ...prev, ...data, phone: formattedPhone }));
+            setFileUrl(data.fileUrl || null);
             console.log("fetch 후 userInfo:", data);
         } catch (err) {
             console.error(err);
@@ -162,50 +168,30 @@ export default function useProfileForm() {
         }
     };
 
-    // 마이페이지 이미지
-//    const handleFileChange = async ( e ) => {
-//        const selectedFile = e.target.files[0];
-//        const data = await fileUpload( selectedFile );
-//        setUserInfo( { ...userInfo, fileId: data.fileId })
-//    }
-
 
     const handleFileChange = async (e) => {
-      const selectedFile = e.target.files[0];
-      if (!selectedFile) return;
+        const selectedFile = e.target.files[0];
+        if (!selectedFile) return;
 
+        // 선택 즉시 미리보기
+        setPreviewUrl(URL.createObjectURL(selectedFile));
 
-      if (!user || !accessToken) {
-        alert("로그인이 필요합니다!");
-        return;
-      }
+        try {
 
-      const uploaderId = user.id;
+            const data = await fileUpload(selectedFile);
 
-      const formData = new FormData();
-      formData.append("file", selectedFile);
-      formData.append("uploaderId", uploaderId);
+            setUserInfo((prev) => ({
+                ...prev,
+                fileId: data.fileId,
+                fileUrl: data.fileUrl,
+            }));
 
-      try {
-        const response = await axios.post(
-          "http://localhost:8080/api/v1/file/upload",
-          formData,
-          {
-            headers: {
-              "Content-Type": "multipart/form-data",
-              Authorization: `Bearer ${accessToken}`,
-            },
-          }
-        );
-
-        setUserInfo((prev) => ({ ...prev, fileId: response.data.fileId }));
-        console.log("업로드 성공!", response.data);
-      } catch (err) {
-        console.error("파일 업로드 실패:", err);
-        alert("파일 업로드 실패: " + err.response?.data?.message || err.message);
-      }
+            console.log("업로드 성공!", data);
+        } catch (err) {
+            console.error("파일 업로드 실패:", err);
+            alert("파일 업로드 실패: " + err.message);
+        }
     };
-
 
     return {
         userInfo,
@@ -224,5 +210,8 @@ export default function useProfileForm() {
         setShowPasswordConfirm,
         handlePhoneChange,
         handleFileChange,
+        previewUrl,
+        fileUrl,
+        fileId
     };
 }
