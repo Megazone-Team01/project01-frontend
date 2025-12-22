@@ -27,9 +27,8 @@ export const updateProfileInfo = async (userData) => {
 export const deleteProfileAccount = async () => {
     try {
         const res = await axiosInstance.delete("/v1/user/profile");
-        return res.data;
-    } catch (error) {
-        console.error("Delete Account API error:", error);
-        throw error;
+        return res;
+    } catch( error ){
+        if( error.status === 401 ) alert( error.response.data.message )
     }
 };

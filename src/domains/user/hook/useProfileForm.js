@@ -153,17 +153,20 @@ export default function useProfileForm() {
 
     // 탈퇴 버튼
     const handleDeleteAccount = async () => {
-        console.log("탈퇴 버튼 클릭됨"); // <- 이 로그가 나오는지 확인
         if (!window.confirm("정말로 탈퇴하시겠습니까?")) return;
 
         setLoading(true);
+
         try {
-            await deleteProfileAccount(); // API 함수 필요
-            alert("회원 탈퇴가 완료되었습니다.");
-            // 로그아웃 또는 페이지 이동
+            const res = await deleteProfileAccount(); // 이제 res 전체 반환
+
+            if (res.status === 200) {  // status 체크 가능
+                alert("회원 탈퇴가 완료되었습니다.");
+                console.log("메인 화면으로 이동합니다");
+                window.location.href = "/"; // 메인 화면으로 이동
+            }
         } catch (err) {
-            console.error(err);
-            alert("탈퇴 중 오류가 발생했습니다.");
+            console.error("탈퇴 중 오류:", err);
         } finally {
             setLoading(false);
         }
