@@ -153,9 +153,11 @@ export default function Header({isLoggedIn,hasNotifications,hasMessages}) {
                                 {
                                     user.role !== "STUDENT" ?
                                         <DropdownMenuItem asChild className="cursor-pointer">
-                                            <Link to="/my/settings">
+                                            <Link to={
+                                                user.role === "ADMIN " ? "/admin" : "/"
+                                            }>
                                                 <BookIcon className="size-4 mr-2"/>
-                                                승인
+                                                관리
                                             </Link>
                                         </DropdownMenuItem>
                                         :
