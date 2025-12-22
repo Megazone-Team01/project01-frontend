@@ -5,22 +5,24 @@ import useLectures from "@/domains/lecture/hook/useLectures.js";
 import Loading from "@/components/common/loading.jsx";
 import CourseCard from "@/domains/lecture/components/common/CourseCard.jsx";
 import PageNation from "@/domains/lecture/components/common/PageNation.jsx";
+import ErrorPage from "@/components/common/ErrorPage.jsx";
 
 function Offline() {
     const dispatch = useDispatch();
-    const {searchKeword, searchType, page}= useSelector((state) => state.lecture);
+    const {searchKeyword, searchType, page}= useSelector((state) => state.lecture);
+    console.log(searchKeyword,"searchKeyword");
     const {
         data: offlineList,
         isLoading,
         isError,
-    } = useLectures("offline", searchType, page, searchKeword);
+    } = useLectures("offline", searchType, page, searchKeyword);
 
     const handlePageChange = (newPage) => {
         dispatch(setPage(newPage));
     };
 
     if(isError) {
-        return <div>error</div>
+        return <ErrorPage />
     }
 
     console.log("offline", offlineList);
@@ -52,6 +54,6 @@ function Offline() {
 
             </div>
             )
-            }
+}
 
-            export default Offline;
+export default Offline;

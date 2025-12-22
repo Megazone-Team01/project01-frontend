@@ -5,12 +5,12 @@ import {Separator} from "@/components/ui/separator.js";
 import {Empty, EmptyTitle} from "@/components/ui/empty.js";
 
 
-export const AdminTodoBoard = ( { data, name } ) => {
-
-    console.log( data, name)
+export const AdminTodoBoard = ( { data, name, onClick } ) => {
 
     return (
-        <Card className="w-full bg-white hover:cursor-pointer hover:bg-gray-50">
+        <Card
+            onClick={ onClick }
+            className="w-full bg-white hover:cursor-pointer hover:bg-gray-50">
             <CardHeader>
                 <CardTitle className="text-center"> { name } </CardTitle>
                 <Separator className="my-1" />
@@ -28,7 +28,7 @@ export const AdminTodoBoard = ( { data, name } ) => {
                                 <div key={index + "_" + name } className="flex">
                                     <p className="text-sm flex-1"> { d.id } </p>
                                     <p className="text-sm flex-5"> { d.name } </p>
-                                    <p className="text-sm flex-3"> { d.createdAt.substring(0, 19) } </p>
+                                    <p className="text-sm flex-3"> { d.createdAt.substring(0, 10) + " " + d.createdAt.substring(11, 19) } </p>
                                 </div>
                             ))
                         }

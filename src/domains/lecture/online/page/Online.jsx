@@ -4,22 +4,23 @@ import {setPage} from "@/common/store/lecture/lectureSlice.js";
 import CourseCard from "@/domains/lecture/components/common/CourseCard.jsx";
 import Loading from "@/components/common/loading.jsx";
 import PageNation from "@/domains/lecture/components/common/PageNation.jsx";
+import ErrorPage from "@/components/common/ErrorPage.jsx";
 
 function Online() {
     const dispatch = useDispatch();
-    const {searchKeword, searchType, page}= useSelector((state) => state.lecture);
+    const {searchKeyword, searchType, page}= useSelector((state) => state.lecture);
     const {
         data:onlineList,
         isLoading,
         isError
-    } = useLectures("online", searchType, page, searchKeword);
+    } = useLectures("online", searchType, page, searchKeyword);
 
     const handlePageChange = (newPage) => {
         dispatch(setPage(newPage));
     };
 
     if(isError) {
-        return <div>error</div>
+        return <ErrorPage />
     }
 
     console.log("onlineData: ", onlineList);

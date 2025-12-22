@@ -17,9 +17,10 @@ export const getUsersWithFilter = async ( filter ) => {
     const res = await axiosInstance.get( "/v1/user",
         {
             params: {
-                searchString: null,
+                searchString: filter.searchString,
                 userRole: filter.userRole,
-                type: filter.type
+                type: filter.type,
+                sortBy: filter.sortBy,
             }
         });
     return res.data;
@@ -30,13 +31,16 @@ export const getOrganizationTeacher = async () => {
     return res.data;
 }
 
-export const deleteUser = async (id, deletedBy) => {
-    const res = await axiosInstance.delete( "/v1/organization/" + id, {
-        params: {
-            deletedBy: deletedBy
-        }
-    });
-    return res.data;
+export const deleteUser = async (id) => {
+    try{
+        const res = await axiosInstance.delete( "/v1/user/" + id );
+        return res;
+    }
+    catch( error ){
+        if( error.status === 401 ) alert( error.response.data.message )
+    }
+
+
 }
 
 export const createUser = async ( data ) => {

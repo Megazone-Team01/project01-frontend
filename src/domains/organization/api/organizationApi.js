@@ -12,8 +12,24 @@ export const getOrganizations = async () => {
     return res.data;
 }
 
+export const getOrganizationsWithFilter = async ( filter ) => {
+    const res = await axiosInstance.get( "/v1/organization", {
+        params: filter
+    } );
+    return res.data;
+}
+
 export const getOrganization = async (organizationId) => {
     const res = await axiosInstance.get("/v1/organization/" + organizationId + "/detail");
-    console.log( res.data )
+    return res.data;
+}
+
+export const getOrganizationTeacher = async ( id ) => {
+    const res = await axiosInstance.get( "/v1/user/teacher/organization/" + id );
+    return res.data;
+}
+
+export const getOrganizationLecture = async ( id ) => {
+    const res = await axiosInstance.get( "/v1/organization/" + id + "/lectures" );
     return res.data;
 }

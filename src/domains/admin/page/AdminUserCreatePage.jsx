@@ -90,14 +90,6 @@ export const AdminUserCreatePage = () => {
             alert("전화번호가 올바르지 않습니다")
             return
         }
-        if( !/^\d+$/.test( formData.addressCode ) ) {
-            alert("우편번호는 숫자만 포함되어야 합니다")
-            return
-        }
-        if( formData.addressCode.length !== 5 ) {
-            alert("우편번호가 올바르지 않습니다")
-            return
-        }
 
         await sendData();
     }

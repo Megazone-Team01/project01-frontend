@@ -14,3 +14,8 @@ export const createDay = async ( name, value ) => {
     })
     return res.status;
 }
+
+export const deleteDay = async ( id ) => {
+    const res = await axiosInstance.delete("/v1/day/" + id )
+    return res.status;
+}

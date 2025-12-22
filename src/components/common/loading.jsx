@@ -1,8 +1,14 @@
+import SkeletonBox from "@/domains/home/components/Skeleton.jsx";
+
 
 function Loading() {
     return (
-        <div>loading...</div>
-    )
+        <>
+            {Array.from({ length: 9 }).map((_, i) => (
+                <SkeletonBox key={i} />
+            ))}
+        </>
+    );
 }
 
 export default Loading;

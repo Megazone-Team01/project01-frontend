@@ -5,13 +5,8 @@ export const getOrganizations = async () => {
     return res.data;
 }
 
-export const deleteOrganization = async (id, deletedBy) => {
-    const res = await axiosInstance.delete( "/v1/organization/" + id,
-        {
-            params: {
-                deletedBy: deletedBy
-            }
-        } );
+export const deleteOrganization = async (id) => {
+    const res = await axiosInstance.delete( "/v1/organization/" + id);
     return res.data;
 }
 
@@ -60,4 +55,9 @@ export const getTeacherInOrganization = async ( id ) => {
 export const getOrganizationDetail = async ( id ) => {
     const res = await axiosInstance.get( "/v1/organization/" + id + "/detail" );
     return res.data;
+}
+
+export const updateOrganization = async ( id, data ) => {
+    const res = await axiosInstance.patch( "/v1/organization/" + id, data );
+    return res.status;
 }

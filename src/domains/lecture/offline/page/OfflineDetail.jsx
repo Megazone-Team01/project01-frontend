@@ -1,6 +1,5 @@
 import {useLocation, useParams} from "react-router";
 import useLectureDetali from "@/domains/lecture/hook/useLectureDetail.js";
-import Loading from "@/components/common/loading.jsx";
 import {Badge} from "@/components/ui/badge.js";
 import {formatDate, lectureStatus} from "@/lib/utils.js";
 import EducationPeriod from "@/domains/lecture/components/common/EducationPeriod.jsx";
@@ -8,18 +7,25 @@ import EducationPeriod from "@/domains/lecture/components/common/EducationPeriod
 import {AlertBox} from "@/domains/lecture/components/common/AlertBox.jsx";
 import OrganizationCard from "@/domains/lecture/components/common/OrganizationCard.jsx";
 import {Separator} from "@/components/ui/separator.js";
+import LoadingDetail from "@/components/common/LoadingDetail.jsx";
+import ErrorPage from "@/components/common/ErrorPage.jsx";
 
 
 function OfflineDetail() {
     const {offlineId} = useParams();
     const location = useLocation();
     const lectureType = location.pathname.includes("/online") ? "online" : "offline";
-    const {data, isLoading} = useLectureDetali(offlineId, lectureType);
+    const {data, isLoading,isError} = useLectureDetali(offlineId, lectureType);
 
     if (isLoading) {
-        return <Loading />;
+        return <LoadingDetail />;
     }
 
+    if (isError) {
+        return <ErrorPage/>
+    }
+
+    console.log("asdfa data: ", data)
     return (
         <div className="max-w-screen-lg mx-auto p-2">
             <div className="flex flex-col gap-5 sm:grid sm:grid-cols-[1fr_2fr]">
@@ -61,7 +67,7 @@ function OfflineDetail() {
                                 <ul className="flex flex-col mb-3">
                                     <li>강사: {data.teacherName}</li>
                                     <li>아카데미: {data.organizationName}</li>
-                                    <li>Price: {data.price}</li>
+                                    <li>가격: {data.price}</li>
                                     <li>수강정원: {data.maxNum}</li>
                                     <EducationPeriod
                                         startAt={data.startAt}
@@ -71,15 +77,24 @@ function OfflineDetail() {
                                 </ul>
                             </div>
                         </div>
-                        <div>
-                            <AlertBox
-                                text={"강의 신청"}
-                                startAt={data.startAt}
-                                endAt={data.endAt}
-                                offlineId={offlineId}
-                                lectureType={lectureType}
-                            />
-                        </div>
+                        <div className="grid grid-cols-2 gap-5">
+                                <div className="flex gap-2">
+                                    {!enrolled ? <AlertBox
+                                        text={"강의 신청"}
+                                        startAt={data.startAt}
+                                        endAt={data.endAt}
+                                        lectureId={offlineId}
+                                        lectureType={lectureType}
+                                    />:
+                                    <AlertBox
+                                        text={"강의 취소"}
+                                        startAt={data.startAt}
+                                        endAt={data.endAt}
+                                        lectureId={offlineId}
+                                        lectureType={lectureType}
+                                    />}
+                                </div>
+                            </div>
                     </section>
                 </div>
             </div>
