@@ -1,7 +1,7 @@
 import axiosInstance from "@/common/api/axiosInstance.js";
 
 export async function uploadLectureApi(formData, lectureType) {
-    const url = `/v1/lecture/upload/${lectureType}`
+    const url = `/v1/lecture/${lectureType}/upload`
     try{
         console.log("📍 요청 URL:", url);
         const { data } = await axiosInstance.post(url, formData,{

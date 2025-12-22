@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, {useEffect, useState} from 'react';
 import { MapPin, Users, Calendar, Clock, DollarSign, Image } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -8,11 +8,19 @@ import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import {useUploadLecture} from "@/domains/lecture/hook/useUploadLecture.js";
+import axiosInstance from "@/common/api/axiosInstance.js";
 
 export default function OfflineUpload() {
     const mutation = useUploadLecture("offline");
     const [thumbnailPreview, setThumbnailPreview] = useState("");
     const [thumbnailFile, setThumbnailFile] = useState(null);
+    // 카테고리 데이터 (API에서 가져올 예정)
+    const [categories, setCategories] = useState([]);
+    const [selectedMainCategory, setSelectedMainCategory] = useState("");
+    const [selectedSubCategory, setSelectedSubCategory] = useState("");
+    const [selectedDetailCategory, setSelectedDetailCategory] = useState("");
+    const [organizations, setOrganizations] = useState([]);
+    const [rooms, setRooms] = useState([]);
 
     const [formData, setFormData] = useState({
         name: '',
@@ -32,14 +40,6 @@ export default function OfflineUpload() {
     const [errors, setErrors] = useState({});
     const [isSubmitting, setIsSubmitting] = useState(false);
 
-    // 카테고리 옵션
-    const categories = [
-        { value: 'programming', label: '프로그래밍' },
-        { value: 'design', label: '디자인' },
-        { value: 'business', label: '비즈니스' },
-        { value: 'language', label: '외국어' },
-        { value: 'marketing', label: '마케팅' },
-    ];
 
     // 요일 옵션
     const days = [
@@ -53,19 +53,117 @@ export default function OfflineUpload() {
     ];
 
     // 기관 옵션
-    const organizations = [
-        { value: '1', label: 'ABC 교육원' },
-        { value: '2', label: 'XYZ 아카데미' },
-        { value: '3', label: '코딩스쿨' },
-    ];
+    // API 호출 함수
+    const fetchOrganizationsWithRooms = async () => {
+        try {
+            const response = await axiosInstance.get('/v1/organization/with-rooms');
+            const data = response.data;
+            console.log("organizations with rooms:", data);
 
-    // 강의실 옵션
-    const rooms = [
-        { value: '1', label: '101호 (30명)' },
-        { value: '2', label: '102호 (50명)' },
-        { value: '3', label: '201호 (20명)' },
-        { value: '4', label: '202호 (40명)' },
-    ];
+            setOrganizations(data);
+        } catch (error) {
+            console.error('조직/강의실 로딩 실패:', error);
+        }
+    };
+
+    const handleOrganizationChange = (value) => {
+        // 1. formData 업데이트 (organizationId 저장, roomId 초기화)
+        setFormData(prev => ({
+            ...prev,
+            organizationId: value,
+            roomId: '' // 강의실 선택 초기화
+        }));
+
+        // 2. 에러 초기화
+        setErrors(prev => ({
+            ...prev,
+            organizationId: null,
+            roomId: null
+        }));
+
+        // 3. 선택된 조직의 강의실만 표시
+        const selectedOrg = organizations.find(org => org.id.toString() === value);
+        if (selectedOrg) {
+            setRooms(selectedOrg.rooms);
+        } else {
+            setRooms([]);
+        }
+    };
+
+    // // 강의실 옵션
+    // const rooms = [
+    //     { value: '1', label: '101호 (30명)' },
+    //     { value: '2', label: '102호 (50명)' },
+    //     { value: '3', label: '201호 (20명)' },
+    //     { value: '4', label: '202호 (40명)' },
+    // ];
+
+
+    // 카테고리 데이터 가져오기
+    useEffect(() => {
+        fetchCategories();
+        fetchOrganizationsWithRooms();
+    }, []);
+
+    const fetchCategories = async () => {
+        try {
+            // 실제 API 호출
+            const response = await axiosInstance.get('/v1/category/lecture');
+            const data = response.data; // axios는 이미 JSON 파싱이 완료됨
+            console.log("category : ", data);
+            // 임시 목업 데이터 (위 SQL과 동일한 구조)
+
+
+            setCategories(data);
+        } catch (error) {
+            console.error('카테고리 로딩 실패:', error);
+        }
+    };
+
+    // 메인 카테고리 목록
+    const mainCategories = categories;
+
+    // 서브 카테고리 목록 (선택된 메인 카테고리의 자식들)
+    const subCategories = selectedMainCategory
+        ? categories.find(c => c.code === selectedMainCategory)?.children || []
+        : [];
+
+    // 상세 카테고리 목록 (선택된 서브 카테고리의 자식들)
+    const detailCategories = selectedSubCategory
+        ? subCategories.find(c => c.code === selectedSubCategory)?.children || []
+        : [];
+
+    // 카테고리 선택 핸들러들 수정
+    const handleMainCategoryChange = (value) => {
+        setSelectedMainCategory(value);
+        setSelectedSubCategory("");
+        setSelectedDetailCategory("");
+
+        // ✅ LEC는 제외하고 저장 (백엔드에서 LEC만 받았으므로)
+        // 또는 전체 경로 저장
+        setFormData(prev => ({ ...prev, category: value }));
+        setErrors(prev => ({ ...prev, category: null }));
+    };
+
+    const handleSubCategoryChange = (value) => {
+        setSelectedSubCategory(value);
+        setSelectedDetailCategory("");
+
+        // ✅ 대분류_중분류 형태로 조합
+        const fullPath = `${selectedMainCategory}_${value}`;
+        setFormData(prev => ({ ...prev, category: fullPath }));
+        setErrors(prev => ({ ...prev, category: null }));
+    };
+
+    const handleDetailCategoryChange = (value) => {
+        setSelectedDetailCategory(value);
+
+        // ✅ 대분류_중분류_소분류 형태로 조합
+        const fullPath = `${selectedMainCategory}_${selectedSubCategory}_${value}`;
+        setFormData(prev => ({ ...prev, category: fullPath }));
+        setErrors(prev => ({ ...prev, category: null }));
+    };
+
 
     const onThumbnailChange = (event) => {
         const { files } = event.target;
@@ -100,7 +198,6 @@ export default function OfflineUpload() {
         }));
         setErrors(prev => ({ ...prev, [name]: null }));
     };
-
     const validateForm = () => {
         const newErrors = {};
 
@@ -163,18 +260,6 @@ export default function OfflineUpload() {
         if (thumbnailFile) {
             submitData.append('thumbnail', thumbnailFile);
         }
-        submitData.append('name', formData.name);
-        submitData.append('description', formData.description);
-        submitData.append('category', formData.category);
-        submitData.append('price', formData.price);
-        submitData.append('startAt', formData.startAt);
-        submitData.append('endAt', formData.endAt);
-        submitData.append('day', formData.day);
-        submitData.append('startTime', formData.startTime);
-        submitData.append('endTime', formData.endTime);
-        submitData.append('maxNum', formData.maxNum);
-        submitData.append('organizationId', formData.organizationId);
-        submitData.append('roomId', formData.roomId);
 
         try {
             Object.entries(formData).forEach(([key, value]) => submitData.append(key, value));
@@ -309,28 +394,85 @@ export default function OfflineUpload() {
                     </Card>
 
                     {/* 카테고리 */}
-                    <Card>
+
+                    {/* 카테고리 (계층적) */}
+                    <Card className="md:col-span-2">
                         <CardHeader>
                             <CardTitle>카테고리</CardTitle>
-                            <CardDescription>강의 분류를 선택하세요</CardDescription>
+                            <CardDescription>강의 분류를 선택하세요 (대분류 → 중분류 → 소분류)</CardDescription>
                         </CardHeader>
-                        <CardContent className="space-y-2">
-                            <Label htmlFor="category">카테고리 *</Label>
-                            <Select
-                                value={formData.category}
-                                onValueChange={(value) => handleSelectChange('category', value)}
-                            >
-                                <SelectTrigger>
-                                    <SelectValue placeholder="선택하세요" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                    {categories.map(cat => (
-                                        <SelectItem key={cat.value} value={cat.value}>
-                                            {cat.label}
-                                        </SelectItem>
-                                    ))}
-                                </SelectContent>
-                            </Select>
+                        <CardContent className="space-y-4">
+                            {/* 1단계: 메인 카테고리 */}
+                            <div className="space-y-2">
+                                <Label htmlFor="mainCategory">대분류 *</Label>
+                                <Select
+                                    value={selectedMainCategory}
+                                    onValueChange={handleMainCategoryChange}
+                                >
+                                    <SelectTrigger>
+                                        <SelectValue placeholder="대분류 선택" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        {mainCategories.map(cat => (
+                                            <SelectItem key={cat.id} value={cat.code}>
+                                                {cat.name}
+                                            </SelectItem>
+                                        ))}
+                                    </SelectContent>
+                                </Select>
+                            </div>
+
+                            {/* 2단계: 서브 카테고리 */}
+                            {selectedMainCategory && subCategories.length > 0 && (
+                                <div className="space-y-2">
+                                    <Label htmlFor="subCategory">중분류 *</Label>
+                                    <Select
+                                        value={selectedSubCategory}
+                                        onValueChange={handleSubCategoryChange}
+                                    >
+                                        <SelectTrigger>
+                                            <SelectValue placeholder="중분류 선택" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            {subCategories.map(cat => (
+                                                <SelectItem key={cat.id} value={cat.code}>
+                                                    {cat.name}
+                                                </SelectItem>
+                                            ))}
+                                        </SelectContent>
+                                    </Select>
+                                </div>
+                            )}
+
+                            {/* 3단계: 상세 카테고리 */}
+                            {selectedSubCategory && detailCategories.length > 0 && (
+                                <div className="space-y-2">
+                                    <Label htmlFor="detailCategory">소분류 *</Label>
+                                    <Select
+                                        value={selectedDetailCategory}
+                                        onValueChange={handleDetailCategoryChange}
+                                    >
+                                        <SelectTrigger>
+                                            <SelectValue placeholder="소분류 선택" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            {detailCategories.map(cat => (
+                                                <SelectItem key={cat.id} value={cat.code}>
+                                                    {cat.name}
+                                                </SelectItem>
+                                            ))}
+                                        </SelectContent>
+                                    </Select>
+                                </div>
+                            )}
+
+                            {/* 선택된 카테고리 표시 */}
+                            {formData.category && (
+                                <div className="text-sm text-slate-600 bg-slate-100 p-3 rounded">
+                                    선택된 카테고리: <span className="font-semibold">{formData.category}</span>
+                                </div>
+                            )}
+
                             {errors.category && (
                                 <p className="text-sm text-red-500">{errors.category}</p>
                             )}
@@ -427,7 +569,7 @@ export default function OfflineUpload() {
                                 </SelectTrigger>
                                 <SelectContent>
                                     {days.map(day => (
-                                        <SelectItem key={day.value} value={day.value}>
+                                        <SelectItem key={day.value} value={day.label}>
                                             {day.label}
                                         </SelectItem>
                                     ))}
@@ -514,15 +656,15 @@ export default function OfflineUpload() {
                             <Label htmlFor="organization">소속 기관 *</Label>
                             <Select
                                 value={formData.organizationId}
-                                onValueChange={(value) => handleSelectChange('organizationId', value)}
+                                onValueChange={handleOrganizationChange}
                             >
                                 <SelectTrigger>
                                     <SelectValue placeholder="선택하세요" />
                                 </SelectTrigger>
                                 <SelectContent>
                                     {organizations.map(org => (
-                                        <SelectItem key={org.value} value={org.value}>
-                                            {org.label}
+                                        <SelectItem key={org.id} value={org.id.toString()}>
+                                            {org.name}
                                         </SelectItem>
                                     ))}
                                 </SelectContent>
@@ -549,12 +691,14 @@ export default function OfflineUpload() {
                                 onValueChange={(value) => handleSelectChange('roomId', value)}
                             >
                                 <SelectTrigger>
-                                    <SelectValue placeholder="선택하세요" />
+                                    <SelectValue placeholder={formData.organizationId ? "강의실 선택" : "먼저 조직을 선택하세요"} />
                                 </SelectTrigger>
                                 <SelectContent>
                                     {rooms.map(room => (
-                                        <SelectItem key={room.value} value={room.value}>
-                                            {room.label}
+                                        <SelectItem
+
+                                            key={room.id} value={room.id.toString()}>
+                                            {room.name} ({room.maxNum}명)
                                         </SelectItem>
                                     ))}
                                 </SelectContent>

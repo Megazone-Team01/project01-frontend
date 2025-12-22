@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Film, Image, Upload, Calendar } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Film, Image, Upload, Calendar, DollarSign } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -7,15 +7,26 @@ import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import {useUploadLecture} from "@/domains/lecture/hook/useUploadLecture.js";
+import { useUploadLecture } from "@/domains/lecture/hook/useUploadLecture.js";
+import axiosInstance from "@/common/api/axiosInstance.js";
 
 export default function OnlineUpload() {
     const mutation = useUploadLecture("online");
     const maxSize = 500 * 1024 * 1024; // 500MB
+
     const [videoPreview, setVideoPreview] = useState("");
     const [thumbnailPreview, setThumbnailPreview] = useState("");
     const [videoFile, setVideoFile] = useState(null);
     const [thumbnailFile, setThumbnailFile] = useState(null);
+
+    // 카테고리 데이터
+    const [categories, setCategories] = useState([]);
+    const [selectedMainCategory, setSelectedMainCategory] = useState("");
+    const [selectedSubCategory, setSelectedSubCategory] = useState("");
+    const [selectedDetailCategory, setSelectedDetailCategory] = useState("");
+
+    // 조직 데이터
+    const [organizations, setOrganizations] = useState([]);
 
     const [formData, setFormData] = useState({
         name: '',
@@ -30,19 +41,70 @@ export default function OnlineUpload() {
     const [errors, setErrors] = useState({});
     const [isSubmitting, setIsSubmitting] = useState(false);
 
-    const categories = [
-        { value: 'programming', label: '프로그래밍' },
-        { value: 'design', label: '디자인' },
-        { value: 'business', label: '비즈니스' },
-        { value: 'language', label: '외국어' },
-        { value: 'marketing', label: '마케팅' },
-    ];
+    // 데이터 가져오기
+    useEffect(() => {
+        fetchCategories();
+        fetchOrganizations();
+    }, []);
 
-    const organizations = [
-        { value: '1', label: 'ABC 교육원' },
-        { value: '2', label: 'XYZ 아카데미' },
-        { value: '3', label: '코딩스쿨' },
-    ];
+    const fetchCategories = async () => {
+        try {
+            const response = await axiosInstance.get('/v1/category/lecture');
+            const data = response.data;
+            console.log("category:", data);
+            setCategories(data);
+        } catch (error) {
+            console.error('카테고리 로딩 실패:', error);
+        }
+    };
+
+    const fetchOrganizations = async () => {
+        try {
+            const response = await axiosInstance.get('/v1/organization/with-rooms');
+            const data = response.data;
+            console.log("organizations:", data);
+            setOrganizations(data);
+        } catch (error) {
+            console.error('조직 로딩 실패:', error);
+        }
+    };
+
+    // 메인 카테고리 목록
+    const mainCategories = categories;
+
+    // 서브 카테고리 목록
+    const subCategories = selectedMainCategory
+        ? categories.find(c => c.code === selectedMainCategory)?.children || []
+        : [];
+
+    // 상세 카테고리 목록
+    const detailCategories = selectedSubCategory
+        ? subCategories.find(c => c.code === selectedSubCategory)?.children || []
+        : [];
+
+    // 카테고리 선택 핸들러
+    const handleMainCategoryChange = (value) => {
+        setSelectedMainCategory(value);
+        setSelectedSubCategory("");
+        setSelectedDetailCategory("");
+        setFormData(prev => ({ ...prev, category: value }));
+        setErrors(prev => ({ ...prev, category: null }));
+    };
+
+    const handleSubCategoryChange = (value) => {
+        setSelectedSubCategory(value);
+        setSelectedDetailCategory("");
+        const fullPath = `${selectedMainCategory}_${value}`;
+        setFormData(prev => ({ ...prev, category: fullPath }));
+        setErrors(prev => ({ ...prev, category: null }));
+    };
+
+    const handleDetailCategoryChange = (value) => {
+        setSelectedDetailCategory(value);
+        const fullPath = `${selectedMainCategory}_${selectedSubCategory}_${value}`;
+        setFormData(prev => ({ ...prev, category: fullPath }));
+        setErrors(prev => ({ ...prev, category: null }));
+    };
 
     const onVideoChange = (event) => {
         const { files } = event.target;
@@ -149,22 +211,11 @@ export default function OnlineUpload() {
         if (thumbnailFile) {
             submitData.append('thumbnail', thumbnailFile);
         }
-        submitData.append('name', formData.name);
-        submitData.append('description', formData.description);
-        submitData.append('category', formData.category);
-        submitData.append('price', formData.price);
-        submitData.append('startAt', formData.startAt);
-        submitData.append('endAt', formData.endAt);
-        submitData.append('organizationId', formData.organizationId);
 
         try {
-
             Object.entries(formData).forEach(([key, value]) => {
                 submitData.append(key, value);
             });
-            console.log("submitData: ", ...submitData);
-            mutation.mutate(submitData);
-
 
             console.log('업로드할 데이터:', {
                 video: videoFile.name,
@@ -172,12 +223,18 @@ export default function OnlineUpload() {
                 ...formData,
             });
 
-            alert('강의가 성공적으로 업로드되었습니다!');
+            mutation.mutate(submitData);
 
+            alert('온라인 강의가 성공적으로 업로드되었습니다!');
+
+            // 폼 초기화
             setVideoPreview('');
             setThumbnailPreview('');
             setVideoFile(null);
             setThumbnailFile(null);
+            setSelectedMainCategory("");
+            setSelectedSubCategory("");
+            setSelectedDetailCategory("");
             setFormData({
                 name: '',
                 description: '',
@@ -211,7 +268,7 @@ export default function OnlineUpload() {
                 )}
 
                 <div className="grid gap-6 md:grid-cols-2">
-                    {/* 영상 업로드 카드 */}
+                    {/* 영상 업로드 */}
                     <Card className="md:col-span-2">
                         <CardHeader>
                             <CardTitle className="flex items-center gap-2">
@@ -254,7 +311,7 @@ export default function OnlineUpload() {
                         </CardContent>
                     </Card>
 
-                    {/* 썸네일 업로드 카드 */}
+                    {/* 썸네일 업로드 */}
                     <Card className="md:col-span-2">
                         <CardHeader>
                             <CardTitle className="flex items-center gap-2">
@@ -297,7 +354,7 @@ export default function OnlineUpload() {
                         </CardContent>
                     </Card>
 
-                    {/* 기본 정보 카드 */}
+                    {/* 기본 정보 */}
                     <Card className="md:col-span-2">
                         <CardHeader>
                             <CardTitle>기본 정보</CardTitle>
@@ -335,38 +392,97 @@ export default function OnlineUpload() {
                         </CardContent>
                     </Card>
 
-                    {/* 카테고리 및 가격 */}
-                    <Card>
+                    {/* 카테고리 (계층적) */}
+                    <Card className="md:col-span-2">
                         <CardHeader>
                             <CardTitle>카테고리</CardTitle>
-                            <CardDescription>강의 분류를 선택하세요</CardDescription>
+                            <CardDescription>강의 분류를 선택하세요 (대분류 → 중분류 → 소분류)</CardDescription>
                         </CardHeader>
-                        <CardContent className="space-y-2">
-                            <Label htmlFor="category">카테고리 *</Label>
-                            <Select
-                                value={formData.category}
-                                onValueChange={(value) => handleSelectChange('category', value)}
-                            >
-                                <SelectTrigger>
-                                    <SelectValue placeholder="선택하세요" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                    {categories.map(cat => (
-                                        <SelectItem key={cat.value} value={cat.value}>
-                                            {cat.label}
-                                        </SelectItem>
-                                    ))}
-                                </SelectContent>
-                            </Select>
+                        <CardContent className="space-y-4">
+                            {/* 대분류 */}
+                            <div className="space-y-2">
+                                <Label htmlFor="mainCategory">대분류 *</Label>
+                                <Select
+                                    value={selectedMainCategory}
+                                    onValueChange={handleMainCategoryChange}
+                                >
+                                    <SelectTrigger>
+                                        <SelectValue placeholder="대분류 선택" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        {mainCategories.map(cat => (
+                                            <SelectItem key={cat.id} value={cat.code}>
+                                                {cat.name}
+                                            </SelectItem>
+                                        ))}
+                                    </SelectContent>
+                                </Select>
+                            </div>
+
+                            {/* 중분류 */}
+                            {selectedMainCategory && subCategories.length > 0 && (
+                                <div className="space-y-2">
+                                    <Label htmlFor="subCategory">중분류 *</Label>
+                                    <Select
+                                        value={selectedSubCategory}
+                                        onValueChange={handleSubCategoryChange}
+                                    >
+                                        <SelectTrigger>
+                                            <SelectValue placeholder="중분류 선택" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            {subCategories.map(cat => (
+                                                <SelectItem key={cat.id} value={cat.code}>
+                                                    {cat.name}
+                                                </SelectItem>
+                                            ))}
+                                        </SelectContent>
+                                    </Select>
+                                </div>
+                            )}
+
+                            {/* 소분류 */}
+                            {selectedSubCategory && detailCategories.length > 0 && (
+                                <div className="space-y-2">
+                                    <Label htmlFor="detailCategory">소분류 *</Label>
+                                    <Select
+                                        value={selectedDetailCategory}
+                                        onValueChange={handleDetailCategoryChange}
+                                    >
+                                        <SelectTrigger>
+                                            <SelectValue placeholder="소분류 선택" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            {detailCategories.map(cat => (
+                                                <SelectItem key={cat.id} value={cat.code}>
+                                                    {cat.name}
+                                                </SelectItem>
+                                            ))}
+                                        </SelectContent>
+                                    </Select>
+                                </div>
+                            )}
+
+                            {/* 선택된 카테고리 표시 */}
+                            {formData.category && (
+                                <div className="text-sm text-slate-600 bg-slate-100 p-3 rounded">
+                                    선택된 카테고리: <span className="font-semibold">{formData.category}</span>
+                                </div>
+                            )}
+
                             {errors.category && (
                                 <p className="text-sm text-red-500">{errors.category}</p>
                             )}
                         </CardContent>
                     </Card>
 
+                    {/* 가격 */}
                     <Card>
                         <CardHeader>
-                            <CardTitle>가격 설정</CardTitle>
+                            <CardTitle className="flex items-center gap-2">
+                                <DollarSign className="w-5 h-5" />
+                                가격 설정
+                            </CardTitle>
                             <CardDescription>강의 수강료를 설정하세요</CardDescription>
                         </CardHeader>
                         <CardContent className="space-y-2">
@@ -386,58 +502,11 @@ export default function OnlineUpload() {
                         </CardContent>
                     </Card>
 
-                    {/* 강의 기간 */}
-                    <Card>
-                        <CardHeader>
-                            <CardTitle className="flex items-center gap-2">
-                                <Calendar className="w-5 h-5" />
-                                시작일
-                            </CardTitle>
-                            <CardDescription>강의 시작 날짜와 시간</CardDescription>
-                        </CardHeader>
-                        <CardContent className="space-y-2">
-                            <Label htmlFor="startAt">강의 시작일 *</Label>
-                            <Input
-                                id="startAt"
-                                name="startAt"
-                                type="datetime-local"
-                                value={formData.startAt}
-                                onChange={handleInputChange}
-                            />
-                            {errors.startAt && (
-                                <p className="text-sm text-red-500">{errors.startAt}</p>
-                            )}
-                        </CardContent>
-                    </Card>
-
-                    <Card>
-                        <CardHeader>
-                            <CardTitle className="flex items-center gap-2">
-                                <Calendar className="w-5 h-5" />
-                                종료일
-                            </CardTitle>
-                            <CardDescription>강의 종료 날짜와 시간</CardDescription>
-                        </CardHeader>
-                        <CardContent className="space-y-2">
-                            <Label htmlFor="endAt">강의 종료일 *</Label>
-                            <Input
-                                id="endAt"
-                                name="endAt"
-                                type="datetime-local"
-                                value={formData.endAt}
-                                onChange={handleInputChange}
-                            />
-                            {errors.endAt && (
-                                <p className="text-sm text-red-500">{errors.endAt}</p>
-                            )}
-                        </CardContent>
-                    </Card>
-
                     {/* 소속 기관 */}
-                    <Card className="md:col-span-2">
+                    <Card>
                         <CardHeader>
                             <CardTitle>소속 기관</CardTitle>
-                            <CardDescription>강의를 등록할 교육 기관을 선택하세요</CardDescription>
+                            <CardDescription>강의를 등록할 교육 기관</CardDescription>
                         </CardHeader>
                         <CardContent className="space-y-2">
                             <Label htmlFor="organization">소속 기관 *</Label>
@@ -450,14 +519,62 @@ export default function OnlineUpload() {
                                 </SelectTrigger>
                                 <SelectContent>
                                     {organizations.map(org => (
-                                        <SelectItem key={org.value} value={org.value}>
-                                            {org.label}
+                                        <SelectItem key={org.id} value={org.id.toString()}>
+                                            {org.name}
                                         </SelectItem>
                                     ))}
                                 </SelectContent>
                             </Select>
                             {errors.organizationId && (
                                 <p className="text-sm text-red-500">{errors.organizationId}</p>
+                            )}
+                        </CardContent>
+                    </Card>
+
+                    {/* 강의 기간 - 시작일 */}
+                    <Card>
+                        <CardHeader>
+                            <CardTitle className="flex items-center gap-2">
+                                <Calendar className="w-5 h-5" />
+                                시작일
+                            </CardTitle>
+                            <CardDescription>강의 시작 날짜</CardDescription>
+                        </CardHeader>
+                        <CardContent className="space-y-2">
+                            <Label htmlFor="startAt">시작일 *</Label>
+                            <Input
+                                id="startAt"
+                                name="startAt"
+                                type="date"
+                                value={formData.startAt}
+                                onChange={handleInputChange}
+                            />
+                            {errors.startAt && (
+                                <p className="text-sm text-red-500">{errors.startAt}</p>
+                            )}
+                        </CardContent>
+                    </Card>
+
+                    {/* 강의 기간 - 종료일 */}
+                    <Card>
+                        <CardHeader>
+                            <CardTitle className="flex items-center gap-2">
+                                <Calendar className="w-5 h-5" />
+                                종료일
+                            </CardTitle>
+                            <CardDescription>강의 종료 날짜</CardDescription>
+                        </CardHeader>
+                        <CardContent className="space-y-2">
+                            <Label htmlFor="endAt">종료일 *</Label>
+                            <Input
+                                id="endAt"
+                                name="endAt"
+                                type="date"
+                                value={formData.endAt}
+                                onChange={handleInputChange}
+                            />
+                            {errors.endAt && (
+                                <p className="text-sm text-red-500">{errors.endAt}</p>
                             )}
                         </CardContent>
                     </Card>
