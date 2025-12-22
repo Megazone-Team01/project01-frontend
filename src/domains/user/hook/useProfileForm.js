@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 import { getMyInfo, updateMyInfo } from "../api/profile";
-import {useDispatch} from "react-redux";
 
 export default function useMyForm() {
     const [userInfo, setUserInfo] = useState({
