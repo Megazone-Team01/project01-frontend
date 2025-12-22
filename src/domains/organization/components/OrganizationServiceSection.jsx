@@ -25,6 +25,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Label } from "@/components/ui/label.js";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { getAvailableRooms } from '@/domains/room/api/roomApi';
+import { createReservation } from '@/domains/reservation/api/reservationApi';
 
 
 const MEETING_CATEGORIES = [
@@ -49,9 +50,16 @@ const OrganizationServiceSection = ({ organizationId }) => {
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [timeSlotsLoading, setTimeSlotsLoading] = useState(false);
 
-    const [availableRooms, setAvailableRooms] = useState([]);
+
     const [selectedRoom, setSelectedRoom] = useState(null);
-    const [roomsLoading, setRoomsLoading] = useState(false);
+    const [roomList, setRoomList] = useState([]);
+    const [roomListLoading, setRoomListLoading] = useState(false);
+    const [selectedRoomForReservation, setSelectedRoomForReservation] = useState(null);
+    const [roomReservationDate, setRoomReservationDate] = useState(new Date());
+    const [roomReservationStartTime, setRoomReservationStartTime] = useState(null);
+    const [roomReservationEndTime, setRoomReservationEndTime] = useState(null);
+    const [isRoomModalOpen, setIsRoomModalOpen] = useState(false);
+    const [roomReservationSubmitting, setRoomReservationSubmitting] = useState(false);
 
 
     const [organizationTeachers, setOrganizationTeachers] = useState([]);
@@ -88,25 +96,24 @@ const OrganizationServiceSection = ({ organizationId }) => {
 
     useEffect(() => {
         const fetchRooms = async () => {
-            if (bookingType === 'OFFLINE' && organizationId) {
-                setRoomsLoading(true);
+            const needRooms = activeTab === 3 || (bookingType === 'OFFLINE' && isModalOpen);
+
+            if (needRooms && organizationId) {
+                setRoomListLoading(true);
                 try {
                     const rooms = await getAvailableRooms(organizationId);
-                    setAvailableRooms(rooms || []);
+                    console.log('회의실 목록:', rooms);
+                    setRoomList(rooms || []);
                 } catch (err) {
                     console.error('회의실 목록 조회 실패:', err);
-                    setAvailableRooms([]);
+                    setRoomList([]);
                 } finally {
-                    setRoomsLoading(false);
+                    setRoomListLoading(false);
                 }
-            } else {
-                setAvailableRooms([]);
-                setSelectedRoom(null);
             }
         };
         fetchRooms();
-    }, [bookingType, organizationId]);
-
+    }, [activeTab, bookingType, organizationId, isModalOpen]);
 
     // 팝업 핸들러
     const handleOpenModal = async (item) => {
@@ -132,9 +139,59 @@ const OrganizationServiceSection = ({ organizationId }) => {
         setSelectedTime(null);
         setSelectedCategory(null);
         setSelectedRoom(null);
-        setAvailableRooms([]);
         setTimeSlots([]);
     };
+
+    const handleOpenRoomModal = (room) => {
+        setSelectedRoomForReservation(room);
+        setIsRoomModalOpen(true);
+        setRoomReservationDate(new Date());
+        setRoomReservationStartTime(null);
+        setRoomReservationEndTime(null);
+    };
+
+    const handleCloseRoomModal = () => {
+        setIsRoomModalOpen(false);
+        setSelectedRoomForReservation(null);
+        setRoomReservationStartTime(null);
+        setRoomReservationEndTime(null);
+    };
+
+    const handleRoomReservationConfirm = async () => {
+        if (!roomReservationStartTime || !roomReservationEndTime || roomReservationSubmitting) return;
+
+        try {
+            setRoomReservationSubmitting(true);
+            const dateStr = roomReservationDate.toISOString().split('T')[0];
+
+            const reservationData = {
+                roomId: selectedRoomForReservation.id,
+                startAt: `${dateStr}T${roomReservationStartTime}:00`,
+                endAt: `${dateStr}T${roomReservationEndTime}:00`,
+            };
+
+            console.log('회의실 예약 데이터:', reservationData);
+            await createReservation(reservationData);
+
+            alert('회의실 예약이 완료되었습니다!');
+            handleCloseRoomModal();
+        } catch (error) {
+            console.error('회의실 예약 실패:', error);
+            alert(error.response?.data?.message || '회의실 예약에 실패했습니다.');
+        } finally {
+            setRoomReservationSubmitting(false);
+        }
+    };
+
+    // 시간 슬롯 생성
+    const generateTimeSlots = () => {
+        const slots = [];
+        for (let hour = 9; hour <= 21; hour++) {
+            slots.push(`${String(hour).padStart(2, '0')}:00`);
+        }
+        return slots;
+    };
+    const roomTimeSlots = generateTimeSlots();
 
 
     const handleConfirm = async () => {
@@ -321,10 +378,24 @@ const OrganizationServiceSection = ({ organizationId }) => {
                                         )
                                     )
                                         : activeTab === 3 ? (
-                                            <div className="col-span-full text-center py-32 bg-white border-2 border-dashed border-slate-200 rounded-[40px]">
-                                                <Monitor size={48} className="mx-auto mb-4 opacity-20" />
-                                                <p className="text-slate-400 font-bold">회의실 기능은 현재 준비 중입니다.</p>
-                                            </div>
+                                            roomListLoading ? (
+                                                Array.from({ length: 3 }).map((_, i) => (
+                                                    <div key={i} className="h-64 bg-slate-100 rounded-[40px] animate-pulse" />
+                                                ))
+                                            ) : roomList.length === 0 ? (
+                                                <div className="col-span-full text-center py-32 bg-white border-2 border-dashed border-slate-200 rounded-[40px]">
+                                                    <Monitor size={48} className="mx-auto mb-4 opacity-20" />
+                                                    <p className="text-slate-400 font-bold">등록된 회의실이 없습니다.</p>
+                                                </div>
+                                            ) : (
+                                                roomList.map(room => (
+                                                    <RoomCard
+                                                        key={room.id}
+                                                        room={room}
+                                                        onClick={() => handleOpenRoomModal(room)}
+                                                    />
+                                                ))
+                                            )
                                         ) : null
                         }
                     </div>
@@ -517,19 +588,19 @@ const OrganizationServiceSection = ({ organizationId }) => {
                                                         04. 회의실 선택
                                                     </h5>
 
-                                                    {roomsLoading ? (
+                                                    {roomListLoading ? (
                                                         <div className="flex items-center justify-center py-8">
                                                             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-slate-900"></div>
                                                             <span className="ml-3 text-slate-500">회의실 목록 조회중...</span>
                                                         </div>
-                                                    ) : availableRooms.length === 0 ? (
+                                                    ) : roomList.length === 0 ? (
                                                         <div className="text-center py-8 bg-slate-50 rounded-[20px] border-2 border-dashed border-slate-200">
                                                             <MapPin size={32} className="mx-auto mb-2 text-slate-300" />
                                                             <p className="text-slate-400 text-sm font-medium">사용 가능한 회의실이 없습니다</p>
                                                         </div>
                                                     ) : (
                                                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                                                            {availableRooms.map(room => (
+                                                            {roomList.map(room => (
                                                                 <button
                                                                     key={room.id}
                                                                     onClick={() => setSelectedRoom(room)}
@@ -637,6 +708,150 @@ const OrganizationServiceSection = ({ organizationId }) => {
                         </div>
                     </div>
                 )}
+                {/* 회의실 예약 모달 */}
+                {isRoomModalOpen && selectedRoomForReservation && (
+                    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+                        <div className="absolute inset-0 bg-slate-900/70 backdrop-blur-md" onClick={handleCloseRoomModal} />
+
+                        <div className="relative bg-white w-full max-w-4xl rounded-[48px] shadow-2xl overflow-hidden flex flex-col md:flex-row max-h-[95vh]">
+
+                            {/* 좌측 정보 */}
+                            <div className="hidden md:flex flex-col justify-between p-12 w-80 text-white bg-indigo-600">
+                                <div className="space-y-8">
+                                    <div className="w-16 h-16 bg-white/20 rounded-3xl flex items-center justify-center">
+                                        <MapPin size={32} />
+                                    </div>
+                                    <div>
+                                        <h3 className="text-3xl font-black leading-tight">{selectedRoomForReservation.name}</h3>
+                                        <p className="text-white/60 text-sm mt-2">{selectedRoomForReservation.location}</p>
+                                        <p className="text-white/70 font-bold mt-4 text-sm">
+                                            스터디 및 회의를 위한<br />공간 예약 서비스입니다.
+                                        </p>
+                                    </div>
+                                </div>
+                                <div className="space-y-4 border-t border-white/10 pt-10 font-bold text-sm opacity-80">
+                                    <div className="flex items-center gap-3"><Users size={18} /> 수용인원: {selectedRoomForReservation.maxNum}명</div>
+                                    <div className="flex items-center gap-3"><Clock size={18} /> 시간 단위 예약</div>
+                                </div>
+                            </div>
+
+                            {/* 우측 */}
+                            <div className="flex-1 flex flex-col bg-white overflow-hidden">
+                                <div className="px-10 py-6 border-b border-slate-100 flex items-center justify-between">
+                                    <h4 className="font-black text-xl text-slate-800">회의실 예약</h4>
+                                    <button onClick={handleCloseRoomModal} className="p-3 hover:bg-slate-100 rounded-full">
+                                        <X size={24} />
+                                    </button>
+                                </div>
+
+                                <div className="flex-1 overflow-y-auto px-10 py-10 space-y-10">
+                                    {/* 날짜 선택 */}
+                                    <div className="space-y-4">
+                                        <h5 className="text-sm font-black text-slate-400 uppercase tracking-wider flex items-center gap-2">
+                                            <CalendarIcon size={16} className="text-indigo-500" /> 01. 날짜 선택
+                                        </h5>
+                                        <div className="flex justify-center">
+                                            <Calendar
+                                                mode="single"
+                                                selected={roomReservationDate}
+                                                onSelect={(date) => date && setRoomReservationDate(date)}
+                                                locale={ko}
+                                                disabled={(date) => {
+                                                    const today = new Date();
+                                                    today.setHours(0, 0, 0, 0);
+                                                    return date < today;
+                                                }}
+                                                className="rounded-2xl border border-slate-200 p-4"
+                                            />
+                                        </div>
+                                        <p className="text-center font-bold text-slate-600">
+                                            선택된 날짜: {formatDate(roomReservationDate)}
+                                        </p>
+                                    </div>
+
+                                    {/* 시작 시간 */}
+                                    <div className="space-y-4">
+                                        <h5 className="text-sm font-black text-slate-400 uppercase tracking-wider flex items-center gap-2">
+                                            <Clock size={16} className="text-indigo-500" /> 02. 시작 시간
+                                        </h5>
+                                        <div className="grid grid-cols-4 gap-2">
+                                            {roomTimeSlots.map(time => (
+                                                <button
+                                                    key={`start-${time}`}
+                                                    onClick={() => {
+                                                        setRoomReservationStartTime(time);
+                                                        const hour = parseInt(time.split(':')[0]) + 1;
+                                                        if (hour <= 22) {
+                                                            setRoomReservationEndTime(`${String(hour).padStart(2, '0')}:00`);
+                                                        }
+                                                    }}
+                                                    className={`py-3 rounded-xl border-2 text-sm font-bold transition-all ${roomReservationStartTime === time
+                                                        ? 'border-indigo-500 bg-indigo-50 text-indigo-600'
+                                                        : 'border-slate-200 hover:border-slate-300'
+                                                        }`}
+                                                >
+                                                    {time}
+                                                </button>
+                                            ))}
+                                        </div>
+                                    </div>
+
+                                    {/* 종료 시간 */}
+                                    {roomReservationStartTime && (
+                                        <div className="space-y-4">
+                                            <h5 className="text-sm font-black text-slate-400 uppercase tracking-wider flex items-center gap-2">
+                                                <Clock size={16} className="text-indigo-500" /> 03. 종료 시간
+                                            </h5>
+                                            <div className="grid grid-cols-4 gap-2">
+                                                {roomTimeSlots
+                                                    .filter(time => time > roomReservationStartTime)
+                                                    .map(time => (
+                                                        <button
+                                                            key={`end-${time}`}
+                                                            onClick={() => setRoomReservationEndTime(time)}
+                                                            className={`py-3 rounded-xl border-2 text-sm font-bold transition-all ${roomReservationEndTime === time
+                                                                ? 'border-indigo-500 bg-indigo-50 text-indigo-600'
+                                                                : 'border-slate-200 hover:border-slate-300'
+                                                                }`}
+                                                        >
+                                                            {time}
+                                                        </button>
+                                                    ))}
+                                            </div>
+                                        </div>
+                                    )}
+
+                                    {/* 예약 요약 */}
+                                    {roomReservationStartTime && roomReservationEndTime && (
+                                        <div className="bg-indigo-50 rounded-2xl p-6">
+                                            <p className="text-sm font-bold text-indigo-600">예약 정보</p>
+                                            <p className="text-slate-600 mt-1">
+                                                {formatDate(roomReservationDate)} {roomReservationStartTime} ~ {roomReservationEndTime}
+                                            </p>
+                                        </div>
+                                    )}
+                                </div>
+
+                                {/* 예약 버튼 */}
+                                <div className="p-8 border-t border-slate-100 bg-slate-50/50">
+                                    <button
+                                        disabled={!roomReservationStartTime || !roomReservationEndTime || roomReservationSubmitting}
+                                        onClick={handleRoomReservationConfirm}
+                                        className="w-full py-5 bg-indigo-600 hover:bg-indigo-700 disabled:bg-slate-200 disabled:text-slate-400 text-white rounded-2xl font-bold text-lg transition-all"
+                                    >
+                                        {roomReservationSubmitting
+                                            ? '예약 중...'
+                                            : !roomReservationStartTime
+                                                ? '시작 시간을 선택해 주세요'
+                                                : !roomReservationEndTime
+                                                    ? '종료 시간을 선택해 주세요'
+                                                    : `${roomReservationStartTime} ~ ${roomReservationEndTime} 예약하기`}
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                )}
 
                 <style>{`
                     .custom-scrollbar::-webkit-scrollbar { width: 4px; }
@@ -697,4 +912,40 @@ const TeacherCard = ({ teacher, onClick }) => (
     </div>
 );
 
+const RoomCard = ({ room, onClick }) => (
+    <div
+        onClick={onClick}
+        className="group relative bg-white border border-slate-200 rounded-[40px] p-8 transition-all duration-300 hover:border-indigo-400 hover:shadow-2xl hover:shadow-indigo-500/10 cursor-pointer flex flex-col justify-between min-h-[280px] overflow-hidden"
+    >
+        <div className="flex justify-between items-start mb-6 z-10">
+            <div className="w-16 h-16 bg-indigo-100 rounded-3xl flex items-center justify-center">
+                <MapPin size={32} className="text-indigo-600" />
+            </div>
+            <div className="px-4 py-2 rounded-full bg-emerald-100 text-emerald-700 text-sm font-extrabold">
+                예약가능
+            </div>
+        </div>
+        <div className="z-10">
+            <h3 className="text-2xl font-black mb-1 group-hover:text-indigo-600 transition-colors leading-tight">
+                {room.name}
+            </h3>
+            <p className="text-sm text-slate-400 font-bold mt-2">
+                {room.location}
+            </p>
+            <p className="text-sm text-slate-400 mt-1">
+                수용인원: <span className="font-bold text-slate-600">{room.maxNum}명</span>
+            </p>
+        </div>
+        <div className="flex items-center justify-between pt-6 border-t border-slate-50 mt-8 z-10">
+            <span className="text-slate-400 flex items-center gap-2 font-bold text-sm">
+                <Clock size={16} className="text-indigo-500" />
+                09:00 ~ 22:00
+            </span>
+            <div className="w-12 h-12 rounded-full bg-indigo-100 text-indigo-600 flex items-center justify-center group-hover:scale-110 transition-all">
+                <ArrowRight size={20} />
+            </div>
+        </div>
+        <div className="absolute -right-10 -bottom-10 w-32 h-32 bg-indigo-50/50 rounded-full blur-3xl group-hover:bg-indigo-100/50 transition-colors" />
+    </div>
+);
 export default OrganizationServiceSection;
