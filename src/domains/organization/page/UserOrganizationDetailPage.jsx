@@ -3,11 +3,12 @@ import {useParams} from "react-router";
 import {Separator} from "@/components/ui/separator.js";
 import {Table, TableBody, TableCell, TableRow} from "@/components/ui/table.js";
 import {useEffect, useState} from "react";
-import {getOrganization} from "../api/organizationApi.js";
+import {applyOrganization, getOrganization} from "../api/organizationApi.js";
 import {Tabs, TabsContent, TabsList, TabsTrigger} from "@/components/ui/tabs.js";
 import {Label} from "@/components/ui/label.js";
 import {Card, CardContent, CardHeader} from "@/components/ui/card.js";
 import {ImageIcon} from "lucide-react";
+import {Button} from "@/components/ui/button.js";
 
 
 export const UserOrganizationDetailPage = () => {
@@ -16,6 +17,20 @@ export const UserOrganizationDetailPage = () => {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
 
+    const submitApply = async () => {
+        try {
+            const flag = confirm( organization.name + "에 등록하시겠습니까?" );
+            if( flag ){
+                await applyOrganization( id );
+                alert( "등록 신청이 완료되었습니다" )
+            }
+        }
+        catch( error ){
+            if( error.status === 401 ){
+                alert( error.response.data.message )
+            }
+        }
+    }
     useEffect(() => {
         const fetchOrganization = async () => {
             try {
@@ -92,6 +107,14 @@ export const UserOrganizationDetailPage = () => {
                           </TableRow>
                         </TableBody>
                     </Table>
+                    <div className="pt-2">
+                        <Button type="button" variant="outline"
+                            onClick={submitApply}
+                            className="rounded-none hover:text-gray-700 hover:cursor-pointer"
+                        >
+                            등록 신청
+                        </Button>
+                    </div>
                 </div>
             </div>
             <OrganizationServiceSection organizationId={Number(id)} />
