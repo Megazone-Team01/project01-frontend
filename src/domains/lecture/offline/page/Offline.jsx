@@ -5,6 +5,7 @@ import useLectures from "@/domains/lecture/hook/useLectures.js";
 import Loading from "@/components/common/loading.jsx";
 import CourseCard from "@/domains/lecture/components/common/CourseCard.jsx";
 import PageNation from "@/domains/lecture/components/common/PageNation.jsx";
+import ErrorPage from "@/components/common/ErrorPage.jsx";
 
 function Offline() {
     const dispatch = useDispatch();
@@ -21,7 +22,7 @@ function Offline() {
     };
 
     if(isError) {
-        return <div>error</div>
+        return <ErrorPage />
     }
 
     console.log("offline", offlineList);
@@ -53,6 +54,6 @@ function Offline() {
 
             </div>
             )
-            }
+}
 
-            export default Offline;
+export default Offline;
