@@ -186,10 +186,10 @@ export default function SignupPage() {
                     {loading ? "가입 중..." : "가입하기"}
                 </Button>
 
-                {/* 소셜 로그인 버튼 */}
+                {/* 소셜 로그인 버튼
                 <Button type="submit" disabled={loading} className="mt-2">
                     {loading ? "소셜 로그인 중..." : "소셜 로그인 하기"}
-                </Button>
+                </Button>*/}
             </div>
         </form>
     );
