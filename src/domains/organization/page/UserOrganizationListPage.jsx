@@ -1,7 +1,7 @@
 import OrganizationCard from "../components/OrganizationCard.jsx";
-import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "../../../components/ui/select.js";
+import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select.js";
 import {useEffect, useState} from "react";
-import {getOrganizations} from "../api/organizationApi.js";
+import {getOrganizations, getOrganizationsWithFilter} from "../api/organizationApi.js";
 import {useNavigate} from "react-router";
 
 
@@ -28,6 +28,19 @@ export const UserOrganizationListPage = () => {
         fetchOrganizations();
     }, []);
 
+    const searchFilter = async ( select ) => {
+        setLoading(true);
+        if( select !== 3 ) {
+            const data = await getOrganizationsWithFilter( { isOnline: select } );
+            setOrganizations( data );
+        }
+        else {
+            const data = await getOrganizations();
+            setOrganizations( data );
+        }
+        setLoading(false);
+    }
+
     if (loading) return <div>로딩 중...</div>;
     if (error) return <div>에러: {error}</div>;
 
@@ -38,19 +51,20 @@ export const UserOrganizationListPage = () => {
                     <p className="text-left font-bold text-2xl"> 아카데미 </p>
                 </div>
                 <div className="w-2/3">
-                    <Select>
+                    <Select onValueChange={(value) => searchFilter(value)}>
                         <SelectTrigger className="w-1/2">
                             <SelectValue placeholder="전체"/>
                         </SelectTrigger>
                         <SelectContent>
-                            <SelectItem value={"ALL"}> 전체 </SelectItem>
-                            <SelectItem value={"ONLINE"}> 온라인 </SelectItem>
-                            <SelectItem value={"OFFLINE"}> 오프라인 </SelectItem>
+                            <SelectItem value={3}> 전체 </SelectItem>
+                            <SelectItem value={1}> 온라인 </SelectItem>
+                            <SelectItem value={2}> 오프라인 </SelectItem>
+                            <SelectItem value={0}> 온라인 + 오프라인 </SelectItem>
                         </SelectContent>
                     </Select>
                 </div>
             </div>
-            <div className="grid grid-cols-3 gap-3 p-3">
+            <div className="grid grid-cols-3 gap-4 p-3">
                 {
                     organizations.map( (organization, index) => (
                         <OrganizationCard onClick={() => navigate("/organization/" + organization.id)} key={index} organization={organization} />

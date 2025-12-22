@@ -3,7 +3,7 @@ import {ScrollArea} from "@/components/ui/scroll-area.js";
 import {Fragment, useEffect, useState} from "react";
 import {ButtonGroup} from "@/components/ui/button-group.js";
 import {Button} from "@/components/ui/button.js";
-import {createCategory, getCategories} from "@/domains/admin/api/categoryApi.js";
+import {createCategory, deleteCategory, getCategories} from "@/domains/admin/api/categoryApi.js";
 import {Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger} from "@/components/ui/dialog.js";
 import {Field, FieldDescription, FieldLabel, FieldSet} from "@/components/ui/field.js";
 import {Input} from "@/components/ui/input.js";
@@ -94,6 +94,19 @@ export const AdminCategoryPage = () => {
         if( data === 200 ) alert( "카테고리가 추가되었습니다" )
         else alert( "카테고리 추가에 실패했습니다" )
         window.location.reload()
+    }
+
+    const submitDelete = async () => {
+        if( selected < 1 ) return
+
+        const flag = confirm( "정말로 삭제하시겠습니까?" );
+        if( flag ){
+            const res = await deleteCategory( selected );
+            if( res === 200 ){
+                alert( "삭제되었습니다" )
+                window.location.reload()
+            }
+        }
     }
 
     return (
@@ -317,7 +330,9 @@ export const AdminCategoryPage = () => {
                             onClick={ () => setUpdateOpen(true)}
                             className="bg-gray-500 text-white" variant="default"> 수정 </Button>
                     </DialogTrigger>
-                    <Button className="bg-red-500 text-white" variant="default"> 삭제 </Button>
+                    <Button
+                        onClick={ () => submitDelete() }
+                        className="bg-red-500 text-white" variant="default"> 삭제 </Button>
                 </div>
             </Dialog>
             </Dialog>

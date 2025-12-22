@@ -8,16 +8,25 @@ import {Search} from "lucide-react";
 import {RadioGroup, RadioGroupItem} from "@/components/ui/radio-group.js";
 import {Label} from "@/components/ui/label.js";
 import {useEffect, useState} from "react";
-import {getOrganizations, deleteOrganization, getOrganizationDetail} from "@/domains/admin/api/organizationApi.js";
+import {
+    getOrganizations,
+    deleteOrganization,
+    getOrganizationDetail,
+    updateOrganization
+} from "@/domains/admin/api/organizationApi.js";
 import {Empty, EmptyMedia, EmptyTitle} from "@/components/ui/empty.js";
 import {Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle} from "@/components/ui/dialog.js";
 import {Field, FieldLabel, FieldSet} from "@/components/ui/field.js";
+import {Input} from "@/components/ui/input.js";
+import {Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select.js";
+import {getOrganizationsWithFilter} from "@/domains/organization/api/organizationApi.js";
 
 
 export const AdminOrganizationList = () => {
     const [ organizations, setOrganizations ] = useState([]);
 
     const [ infoOpen, setInfoOpen ] = useState(false);
+    const [ isUpdating, setUpdating ] = useState(false);
     const [ formData, setFormData ] = useState({
         createdAt: '',
         updatedAt: '',
@@ -26,16 +35,24 @@ export const AdminOrganizationList = () => {
         students: []
     })
 
-    const deleteById = async ( id ) => {
-        const flag = confirm( "이 기관을 삭제하시겠습니까?" )
-        console.log( flag )
-        if( flag ){
-            const data = await deleteOrganization( id, 1 );
-            console.log( data );
-            alert( "삭제 되었습니다" )
+    const [ filter, setFilter ] = useState({
+        type: null,
+        searchString: null
+    })
 
-            const ref = await getOrganizations();
-            setOrganizations(ref);
+    const deleteById = async ( id ) => {
+        try {
+            const flag = confirm( "이 기관을 삭제하시겠습니까?" )
+            if( flag ){
+                await deleteOrganization( id );
+                alert( "삭제 되었습니다" )
+
+                const ref = await getOrganizations();
+                setOrganizations(ref);
+            }
+        }
+        catch ( error ){
+            if( error.status === 401 ) alert( error.response.data.message )
         }
     }
 
@@ -43,6 +60,41 @@ export const AdminOrganizationList = () => {
         const data = await getOrganizationDetail( id );
         setFormData( data )
         setInfoOpen( true );
+    }
+
+    const openUpdateModal = async ( id ) => {
+        const data = await getOrganizationDetail( id );
+        setFormData( { ...data, id: id } );
+        setUpdating(true);
+        setInfoOpen( true );
+    }
+
+    const closeModal = () => {
+        setFormData({
+            ...formData,
+            tel: '',
+            address: '',
+            addressDetail: '',
+            description: ''
+        })
+        setUpdating(false);
+        setInfoOpen( false );
+    }
+
+    const submitUpdate = async () => {
+        const data = {
+            tel: formData.tel,
+            addressCode: formData.addressCode,
+            addressDetail: formData.addressDetail,
+            description: formData.description,
+            type: formData.isOnline,
+            homepage: formData.webpage
+        }
+        const res = await updateOrganization( formData.id, data );
+        if( res === 200 ){
+            alert( "수정이 완료되었습니다" )
+            window.location.reload()
+        }
     }
 
     useEffect(() => {
@@ -53,7 +105,16 @@ export const AdminOrganizationList = () => {
         fetchData();
     }, [])
 
-    console.log( formData )
+    useEffect(() => {
+        const fetchData = async () => {
+            const data = await getOrganizationsWithFilter(
+                filter
+            );
+            setOrganizations(data);
+        }
+        fetchData();
+    }, [ filter ]);
+
     return (
         <Card className="w-full min-h-80 bg-white">
             <Dialog open={infoOpen} onClose={setInfoOpen} >
@@ -65,7 +126,9 @@ export const AdminOrganizationList = () => {
                 <div className="flex flex-col pb-4">
                     <div className="flex gap-3">
                         <InputGroup>
-                            <InputGroupInput placeholder="Search..."/>
+                            <InputGroupInput
+                                onChange={(e) => setFilter( { ...filter, searchString: e.target.value } )}
+                                placeholder="Search..."/>
                             <InputGroupAddon>
                                 <Search/>
                             </InputGroupAddon>
@@ -76,19 +139,27 @@ export const AdminOrganizationList = () => {
                         <h3 className="pr-3"> 유형 </h3>
                         <RadioGroup className="flex" defaultValue="default">
                             <div className="flex items-center gap-3">
-                                <RadioGroupItem value="default" id="r1"/>
+                                <RadioGroupItem
+                                    onClick={ () => setFilter( { ...filter, isOnline: null } )}
+                                    value="default" id="r1"/>
                                 <Label htmlFor="r1"> 전체 </Label>
                             </div>
                             <div className="flex items-center gap-3">
-                                <RadioGroupItem value="online" id="r2"/>
+                                <RadioGroupItem
+                                    onClick={ () => setFilter( { ...filter, isOnline: 1 } )}
+                                    value="online" id="r2"/>
                                 <Label htmlFor="r2"> 온라인 </Label>
                             </div>
                             <div className="flex items-center gap-3">
-                                <RadioGroupItem value="offline" id="r3"/>
+                                <RadioGroupItem
+                                    onClick={ () => setFilter( { ...filter, isOnline: 2 } )}
+                                    value="offline" id="r3"/>
                                 <Label htmlFor="r3"> 오프라인 </Label>
                             </div>
                             <div className="flex items-center gap-3">
-                                <RadioGroupItem value="all" id="r3"/>
+                                <RadioGroupItem
+                                    onClick={ () => setFilter( { ...filter, isOnline: 0 } )}
+                                    value="all" id="r3"/>
                                 <Label htmlFor="r3"> 온/오프라인 </Label>
                             </div>
                         </RadioGroup>
@@ -131,6 +202,7 @@ export const AdminOrganizationList = () => {
                                             <TableCell className="text-center flex justify-center">
                                                 <ButtonGroup>
                                                     <Button
+                                                        onClick={() => openUpdateModal( organization.id ) }
                                                         className="bg-white text-green-500 hover:bg-white hover:font-bold hover:cursor-pointer"> 수정 </Button>
                                                     <Button
                                                         className="bg-white text-red-500 hover:bg-white hover:font-bold hover:cursor-pointer"
@@ -157,46 +229,142 @@ export const AdminOrganizationList = () => {
                                     <div className="flex items-center gap-3">
                                         {
                                             formData.leadImage !== null ?
-                                                <img className="flex-1 max-w-1/3" src={formData.profileImage}/>
+                                                <img className="flex-1 max-w-1/3"
+                                                     src={`/${formData.leadImage}`}
+                                                     alt={formData.leadImage}
+                                                />
                                                 :
                                                 <div className="w-1/3 aspect-square bg-gray-50 border"/>
                                         }
-                                        <div className="flex flex-1 flex-col items-start gap-4 pl-5">
-                                            <div className="flex gap-2 flex-1">
-                                                <Label className="text-md font-bold"> 이름: </Label>
-                                                <Label className="text-md text-gray-500"> {formData.name} </Label>
-                                            </div>
-                                            <div className="flex gap-2 flex-1">
-                                                <Label className="text-md font-bold"> 대표자: </Label>
-                                                <Label className="text-md text-gray-500"> {formData.ownerName} </Label>
-                                            </div>
-                                            <div className="flex gap-2 flex-1">
-                                                <Label className="text-md font-bold"> 전화번호: </Label>
-                                                <Label className="text-md text-gray-500"> {formData.tel} </Label>
-                                            </div>
-                                            <div className="flex gap-2 flex-1">
-                                                <Label className="text-md font-bold"> 주소: </Label>
+                                        <div className="flex flex-1 flex-col items-start gap-4 px-5">
+                                            <div className="flex w-full gap-2 flex-1 items-center">
+                                                <Label className="flex-1 text-md font-bold"> 이름: </Label>
                                                 <Label
-                                                    className="text-md text-gray-500"> {formData.addressCode + " " + formData.addressDetail} </Label>
+                                                    className="flex-5 text-md text-gray-500"> {formData.name} </Label>
                                             </div>
-                                            <div className="flex gap-2 flex-1">
-                                                <Label className="text-md font-bold"> 설명: </Label>
-                                                <Label className="text-md text-gray-500"> {formData.description} </Label>
-                                            </div>
-                                            <div className="flex gap-2 flex-1">
-                                                <Label className="text-md font-bold"> 생성일: </Label>
+                                            <div className="flex w-full gap-2 flex-1 items-center">
+                                                <Label className="flex-1 text-md font-bold"> 대표자: </Label>
                                                 <Label
-                                                    className="text-md text-gray-500"> {formData.createdAt.substring(0, 10)} </Label>
+                                                    className="flex-5 text-md text-gray-500"> {formData.ownerName} </Label>
                                             </div>
-                                            <div className="flex gap-2 flex-1">
-                                                <Label className="text-md font-bold"> 최종 수정일: </Label>
-                                                <Label
-                                                    className="text-md text-gray-500"> {formData.updatedAt !== null ? formData.updatedAt.substring(0, 10) : ""} </Label>
+                                            <div className="flex w-full gap-2 flex-1 items-center">
+                                                <Label className="flex-1 text-md font-bold"> 전화번호: </Label>
+                                                {
+                                                    isUpdating ?
+                                                        <Input
+                                                            type="text"
+                                                            className="flex-5 rounded-none"
+                                                            onChange={(e) => setFormData({
+                                                                ...formData,
+                                                                tel: e.target.value
+                                                            })}
+                                                            value={formData.tel}/>
+                                                        :
+                                                        <Label
+                                                            className="flex-5 text-md text-gray-500"> {formData.tel} </Label>
+                                                }
                                             </div>
-                                            <div className="flex gap-2 flex-1">
-                                                <Label className="text-md font-bold"> 삭제일: </Label>
+                                            <div className="flex w-full gap-2 flex-1 items-center">
+                                                <Label className="flex-1 text-md font-bold"> 홈페이지: </Label>
+                                                {
+                                                    isUpdating ?
+                                                        <Input
+                                                            type="text"
+                                                            className="flex-5 rounded-none"
+                                                            onChange={(e) => setFormData({
+                                                                ...formData,
+                                                                webpage: e.target.value
+                                                            })}
+                                                            value={formData.webpage}/>
+                                                        :
+                                                        <Label
+                                                    className="flex-5 text-md text-gray-500"> {formData.webpage} </Label>
+                                                }
+                                            </div>
+                                            <div className="flex w-full gap-2 flex-1 items-center">
+                                                <Label className="flex-1 text-md font-bold"> 유형: </Label>
+                                                {
+                                                    isUpdating ?
+                                                        <Select
+                                                            onValueChange={ (value) => setFormData( { ...formData, isOnline: value }) }
+                                                        >
+                                                            <SelectTrigger className="flex-5 rounded-none">
+                                                                <SelectValue
+                                                                    placeholder={formData.isOnline === 1 ? "온라인" : formData.isOnline === 0 ? "온라인 + 오프라인" : "오프라인"} />
+                                                            </SelectTrigger>
+                                                            <SelectContent className="flex-5 rounded-none">
+                                                                <SelectItem className="flex-5 rounded-none" value={"0"}>온라인 + 오프라인</SelectItem>
+                                                                <SelectItem className="flex-5 rounded-none" value={"1"}>온라인</SelectItem>
+                                                                <SelectItem className="flex-5 rounded-none" value={"2"}>오프라인</SelectItem>
+                                                            </SelectContent>
+                                                        </Select>
+                                                        :
+                                                        <Label
+                                                            className="flex-5 text-md text-gray-500"> {formData.isOnline === 1 ? "온라인" : formData.isOnline === 0 ? "온라인 + 오프라인" : "오프라인"} </Label>
+                                                }
+                                            </div>
+                                            <div className="flex w-full gap-2 flex-1 items-center">
+                                                <Label className="flex-1 text-md font-bold"> 주소: </Label>
+                                                {
+                                                    isUpdating ?
+                                                        <div className="flex-5 flex flex-col gap-2">
+                                                            <Input
+                                                                type="text"
+                                                                className="flex-5 rounded-none"
+                                                                onChange={(e) => setFormData({
+                                                                    ...formData,
+                                                                    addressCode: e.target.value
+                                                                })}
+                                                                value={formData.addressCode}/>
+                                                            <Input
+                                                                type="text"
+                                                                className="flex-5 rounded-none"
+                                                                onChange={(e) => setFormData({
+                                                                    ...formData,
+                                                                    addressDetail: e.target.value
+                                                                })}
+                                                                value={formData.addressDetail}/>
+                                                        </div>
+                                                        :
+                                                        <div className="flex-5 flex flex-col">
+                                                            <Label
+                                                                className="text-md text-gray-500"> {formData.addressCode} </Label>
+                                                            <Label
+                                                                className="text-md text-gray-500"> {formData.addressDetail} </Label>
+                                                        </div>
+                                                }
+                                            </div>
+                                            <div className="flex w-full gap-2 flex-1 items-center">
+                                                <Label className="flex-1 text-md font-bold"> 설명: </Label>
+                                                {
+                                                    isUpdating ?
+                                                        <Input
+                                                            className="flex-5 rounded-none"
+                                                            value={formData.description}
+                                                            onChange={(e) => setFormData({
+                                                                ...formData,
+                                                                description: e.target.value
+                                                            })}
+                                                            type="text"/>
+                                                        :
+                                                        <Label
+                                                            className="flex-5 text-md text-gray-500"> {formData.description} </Label>
+                                                }
+                                            </div>
+                                            <div className="flex w-full gap-2 flex-1 items-center">
+                                                <Label className="flex-1 text-md font-bold"> 생성일: </Label>
                                                 <Label
-                                                    className="text-md text-gray-500"> {formData.deletedAt !== null ? formData.deletedAt.substring(0, 10) : ""} </Label>
+                                                    className="flex-5 text-md text-gray-500"> {formData.createdAt.substring(0, 10)} </Label>
+                                            </div>
+                                            <div className="flex w-full gap-2 flex-1 items-center">
+                                                <Label className="flex-1 text-md font-bold"> 수정일: </Label>
+                                                <Label
+                                                    className="flex-5 text-md text-gray-500"> {formData.updatedAt !== null ? formData.updatedAt.substring(0, 10) : ""} </Label>
+                                            </div>
+                                            <div className="flex w-full gap-2 flex-1 items-center">
+                                                <Label className="flex-1 text-md font-bold"> 삭제일: </Label>
+                                                <Label
+                                                    className="flex-5 text-md text-gray-500"> {formData.deletedAt !== null ? formData.deletedAt.substring(0, 10) : ""} </Label>
                                             </div>
                                         </div>
                                     </div>
@@ -228,7 +396,15 @@ export const AdminOrganizationList = () => {
                             </FieldSet>
                         </div>
                         <DialogFooter>
-                            <Button variant="outline" onClick={() => setInfoOpen(false)}>
+                            {
+                                isUpdating ?
+                                    <Button variant="outline" className="border-green-500 hover:text-green-700 hover:bg-green-200 text-green-500" onClick={() => submitUpdate()}>
+                                        수정
+                                    </Button>
+                                    :
+                                    ""
+                            }
+                            <Button variant="outline" onClick={() => closeModal()}>
                                 닫기
                             </Button>
                         </DialogFooter>

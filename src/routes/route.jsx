@@ -22,6 +22,7 @@ import PublicRoute from "@/routes/PublicRoute.jsx";
 import PrivateRoute from "@/routes/PrivateRoute.jsx";
 import Profile from "@/domains/user/page/Profile.jsx";
 import Upload from "@/domains/lecture/upload/page/Upload.jsx";
+import AdminRoute from "@/routes/AdminRoute.js";
 
 function CommonRouter() {
 
@@ -32,7 +33,7 @@ function CommonRouter() {
                 <Route path="/organizations" element={<UserOrganizationListPage />} />
                 <Route path="/organization/:id" element={<UserOrganizationDetailPage />} />
                 <Route path="/" element={<Home />} />
-                <Route path="/admin" element={<AdminMainPage />} />
+                <Route path="/admin" element={<AdminRoute><AdminMainPage /></AdminRoute>} />
                 <Route path="/online/:id" element={<OnlineLecturePlayingPage />} />
 
                 {/* 로그인 상태면 접근 제한 */}
@@ -52,9 +53,7 @@ function CommonRouter() {
                 <Route path="/reservations/my" element={<MyReservation />} />
                 <Route path="/rooms" element={<RoomList />} />
                 {/* <Route path="/room/:roomId" element={<RoomReserve />} /> */}
-                <Route path="/sign" element={<Sign />} />
-                <Route path="/login" element={<Login />} />
-                <Route path="/approveOrganization" element={<PrivateRoute><ApproveOrganization /></PrivateRoute>} />
+                <Route path="/approveOrganization" element={<PrivateRoute><ApproveOrganization /></PrivateRoute>}/>
             </Route>
         </Routes>
     )

@@ -20,3 +20,8 @@ export const createCategory = async ( data ) => {
     const res = await axiosInstance.post("/v1/category", req);
     return res.status;
 }
+
+export const deleteCategory = async ( id ) => {
+    const res = await axiosInstance.delete("/v1/category/" + id )
+    return res.status;
+}

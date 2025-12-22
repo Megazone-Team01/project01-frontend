@@ -2,7 +2,7 @@ import {Table, TableBody, TableCell, TableHead, TableHeader, TableRow} from "@/c
 import {ButtonGroup} from "@/components/ui/button-group.js";
 import {Button} from "@/components/ui/button.js";
 import {useEffect, useState} from "react";
-import {createDay, getDays} from "@/domains/admin/api/dayApi.js";
+import {createDay, deleteDay, getDays} from "@/domains/admin/api/dayApi.js";
 import {Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger} from "@/components/ui/dialog.js";
 import {Field, FieldLabel, FieldSet} from "@/components/ui/field.js";
 import {Input} from "@/components/ui/input.js";
@@ -18,6 +18,18 @@ export const AdminDayPage = () => {
     const [ createOpen, setCreateOpen ] = useState( false )
 
     const [ selected, setSelected ] = useState( null );
+
+    const submitDelete = async ( id ) => {
+        const flag = confirm( "요일을 삭제하시겠습니까?" )
+        if( flag ){
+            const res = await deleteDay( id );
+            if( res.status !== 200 ) alert( res.data.response.message )
+            else {
+                alert("삭제되었습니다")
+                window.location.reload()
+            }
+        }
+    }
 
     useEffect(() => {
         const fetchData = async () => {
@@ -106,7 +118,9 @@ export const AdminDayPage = () => {
                         <Button
                             onClick={() => setCreateOpen(true)}
                             className="bg-green-500 text-white" variant="default"> 추가 </Button>
-                        <Button className="bg-red-500 text-white" variant="default"> 삭제 </Button>
+                        <Button
+                            onClick={ () => submitDelete( selected ) }
+                            className="bg-red-500 text-white" variant="default"> 삭제 </Button>
                     </ButtonGroup>
                 </div>
             </Dialog>
