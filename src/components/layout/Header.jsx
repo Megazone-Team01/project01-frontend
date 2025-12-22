@@ -22,9 +22,6 @@ import {
 } from "@/components/ui/dropdown-menu.js";
 import {Avatar, AvatarFallback, AvatarImage} from "@/components/ui/avatar.js";
 import {useEffect, useState} from "react";
-import {getMyInfo} from "@/domains/user/api/profile.js";
-
-
 
 
 const menus = [
