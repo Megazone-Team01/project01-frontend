@@ -7,8 +7,10 @@ import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Alert, AlertDescription } from '@/components/ui/alert';
+import {useUploadLecture} from "@/domains/lecture/hook/useUploadLecture.js";
 
-export default function LectureUpload() {
+export default function OnlineUpload() {
+    const mutation = useUploadLecture("online");
     const maxSize = 500 * 1024 * 1024; // 500MB
     const [videoPreview, setVideoPreview] = useState("");
     const [thumbnailPreview, setThumbnailPreview] = useState("");
@@ -156,11 +158,13 @@ export default function LectureUpload() {
         submitData.append('organizationId', formData.organizationId);
 
         try {
-            // 실제 API 호출
-            // const response = await fetch('/api/lectures/upload', {
-            //   method: 'POST',
-            //   body: submitData,
-            // });
+
+            Object.entries(formData).forEach(([key, value]) => {
+                submitData.append(key, value);
+            });
+            console.log("submitData: ", ...submitData);
+            mutation.mutate(submitData);
+
 
             console.log('업로드할 데이터:', {
                 video: videoFile.name,

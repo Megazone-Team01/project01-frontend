@@ -124,7 +124,7 @@ export default function Header({isLoggedIn,hasNotifications,hasMessages}) {
     const navigate = useNavigate();
 
     const { isAuthenticated, user } = useSelector((state) => state.auth ?? {});
-
+    console.log("header.user : ", user);
     useEffect(() => {
         const handleScroll = () => {
             if (window.scrollY > 50) {
@@ -199,7 +199,7 @@ export default function Header({isLoggedIn,hasNotifications,hasMessages}) {
             {isAuthenticated ?(
                 <div className="flex item-center gap-2">
                     <Button size="icon" variant="ghost" asChild className="relative">
-                        <Link to="/upload">
+                        <Link to="/offline/upload">
                             {user.roleName !== "TEACHER" ?
                                 <>
                                 <FilePlus className="size-5"/>
