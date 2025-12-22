@@ -1,5 +1,5 @@
 
-import { useState } from 'react';
+import {useEffect, useState} from 'react';
 import {
     Users,
     Clock,
@@ -12,17 +12,20 @@ import {
     Monitor,
     UserCheck,
     Video,
-    ArrowRight,
+    ArrowRight, BookAIcon, User2Icon, ImageIcon,
 } from "lucide-react";
 import { Badge } from '@/components/ui/badge';
 import { useTeachers } from '@/domains/meeting/hook/useTeachers';
 import { getTeacherDetail } from '@/domains/meeting/api/meetingApi';
+import {getOrganizationLecture, getOrganizationTeacher} from "@/domains/organization/api/organizationApi.js";
+import {Card, CardContent, CardDescription, CardHeader, CardTitle} from "@/components/ui/card.js";
+import {Label} from "@/components/ui/label.js";
 // TODO: 회의실 브랜치에서 주석 해제
 // import { useRooms } from '@/domains/room/hook/useRooms';
 
 const OrganizationServiceSection = ({ organizationId }) => {
 
-    const [activeTab, setActiveTab] = useState('meeting');
+    const [activeTab, setActiveTab] = useState(0);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [selectedItem, setSelectedItem] = useState(null);
     const [step, setStep] = useState('select');
@@ -30,6 +33,9 @@ const OrganizationServiceSection = ({ organizationId }) => {
     const [selectedDate, setSelectedDate] = useState(new Date());
     const [selectedTime, setSelectedTime] = useState(null);
     const [bookingType, setBookingType] = useState('ONLINE');
+
+    const [ organizationTeachers, setOrganizationTeachers ] = useState([]);
+    const [ organizationLectures, setOrganizationLectures ] = useState([]);
 
     const { teachers, loading: teachersLoading, error } = useTeachers(organizationId);
 
@@ -56,7 +62,7 @@ const OrganizationServiceSection = ({ organizationId }) => {
         setStep('select');
         setSelectedTime(null);
 
-        if (activeTab === 'meeting') {
+        if (activeTab === 2) {
             const detail = await getTeacherDetail(item.teacherId);
             setSelectedItem(prev => ({ ...prev, ...detail }));
         };
@@ -99,6 +105,19 @@ const OrganizationServiceSection = ({ organizationId }) => {
         return `${date.getFullYear()}년 ${date.getMonth() + 1}월 ${date.getDate()}일`;
     };
 
+    useEffect(() => {
+        const fetchData = async () => {
+            const data = await getOrganizationTeacher( organizationId );
+            setOrganizationTeachers(data);
+
+            const lecData = await getOrganizationLecture( organizationId );
+            setOrganizationLectures( lecData );
+        }
+        fetchData()
+    }, []);
+
+    console.log( organizationLectures )
+
     return (
         <section className="w-full bg-slate-50 border-t border-slate-200">
             <div className="relative overflow-hidden w-full min-h-[900px]">
@@ -106,28 +125,44 @@ const OrganizationServiceSection = ({ organizationId }) => {
 
                     <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-8 border-b border-slate-200 pb-10">
                         <div className="space-y-3">
-                            <h2 className="text-4xl font-black text-slate-900 tracking-tighter">이용 가능한 서비스</h2>
-                            <p className="text-slate-500 text-lg font-medium italic">
+                            <h2 className="text-2xl font-black text-slate-900 tracking-tighter">이용 가능한 서비스</h2>
+                            <p className="text-slate-500 text-sm font-medium italic">
                                 원하는 서비스를 선택하여 일정을 예약하세요
                             </p>
                         </div>
 
-                        <div className="flex bg-slate-200/60 p-1.5 rounded-3xl w-fit shadow-inner border-slate-200">
+                        <div className="flex bg-slate-200/60 p-1 rounded-3xl w-fit shadow-inner border-slate-200">
                             <button
-                                onClick={() => setActiveTab('meeting')}
-                                className={`flex items-center gap-2.5 px-8 py-3 rounded-3xl text-lg font-black transition-all
-                                ${activeTab === 'meeting' ? 'bg-white text-gray-600 shadow-xl scale-100' : 'text-slate-500 hover:text-slate-700'}`}
+                                onClick={() => setActiveTab(0)}
+                                className={`flex items-center gap-2.5 px-8 py-2 rounded-3xl text-sm font-black transition-all
+                                ${activeTab === 0 ? 'bg-white text-gray-600 shadow-xl scale-100' : 'text-slate-500 hover:text-slate-700'}`}
                             >
-                                <UserCheck size={25} />
+                                <User2Icon size={25}/>
+                                <span> 강사 정보 </span>
+                            </button>
+                            <button
+                                onClick={() => setActiveTab(1)}
+                                className={`flex items-center gap-2.5 px-8 py-2 rounded-3xl text-sm font-black transition-all
+                                ${activeTab === 1 ? 'bg-white text-gray-600 shadow-xl scale-100' : 'text-slate-500 hover:text-slate-700'}`}
+                            >
+                                <BookAIcon size={25}/>
+                                <span> 강의 정보 </span>
+                            </button>
+                            <button
+                                onClick={() => setActiveTab(2)}
+                                className={`flex items-center gap-2.5 px-8 py-2 rounded-3xl text-sm font-black transition-all
+                                ${activeTab === 2 ? 'bg-white text-gray-600 shadow-xl scale-100' : 'text-slate-500 hover:text-slate-700'}`}
+                            >
+                                <UserCheck size={25}/>
                                 <span>멘토 강사 상담</span>
                             </button>
 
                             <button
-                                onClick={() => setActiveTab('room')}
-                                className={`flex items-center gap-2.5 px-10 py-4 rounded-3xl text-xl font-black transition-all
-                                ${activeTab === 'room' ? 'bg-white text-gray-600 shadow-lg scale-100' : 'text-slate-500 hover:text-slate-700'}`}
+                                onClick={() => setActiveTab(3)}
+                                className={`flex items-center gap-2.5 px-10 py-2 rounded-3xl text-sm font-black transition-all
+                                ${activeTab === 3 ? 'bg-white text-gray-600 shadow-lg scale-100' : 'text-slate-500 hover:text-slate-700'}`}
                             >
-                                <Monitor size={26} />
+                                <Monitor size={26}/>
                                 <span>회의실</span>
                             </button>
                         </div>
@@ -135,10 +170,62 @@ const OrganizationServiceSection = ({ organizationId }) => {
 
                     {/* 카드 그리드 */}
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                        {activeTab === 'meeting' ? (
-                            teachersLoading ? (
-                                Array.from({ length: 3 }).map((_, i) => (
-                                    <div key={i} className="h-64 bg-slate-100 rounded-[40px] animate-pulse" />
+                        {
+                        activeTab === 0 ? (
+                            organizationTeachers.map( ( t, index) => (
+                                <Card>
+                                    <CardContent>
+                                        <div key={index} className="flex">
+                                            <div className="flex flex-2 flex-col">
+                                                <CardTitle className="font-bold text-xl"> {t.userName } </CardTitle>
+                                                <CardDescription className="text-gray-400">
+                                                    { t.organizationName }
+                                                </CardDescription>
+                                            </div>
+                                            <div className="flex flex-1 flex-col">
+                                                <div className="w-full min-h-36 flex justify-center items-center">
+                                                    <ImageIcon size={25}/>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </CardContent>
+                                </Card>
+                            ))
+                        )
+                        : activeTab === 1 ? (
+                            organizationLectures.map( ( l, index) => (
+                                <Card>
+                                    <CardContent>
+                                        <div key={index} className="flex flex-col">
+                                            <div className="flex flex-col">
+                                                <div className="w-full h-40 flex justify-center items-center">
+                                                    <ImageIcon size={25}/>
+                                                </div>
+                                            </div>
+                                            <div className="flex flex-col">
+                                                <CardTitle className="font-bold text-xl"> {l.name} </CardTitle>
+                                                <CardDescription className="text-gray-500 text-md">
+                                                    {l.teacherName}
+                                                </CardDescription>
+                                                <CardDescription className="text-gray-400">
+                                                    {
+                                                        l.category.map((name, index) => (
+                                                            <span key={name}>
+                                                                {name}{index < l.category.length - 1 ? " > " : ""}
+                                                            </span>
+                                                        ))
+                                                    }
+                                                </CardDescription>
+                                            </div>
+                                        </div>
+                                    </CardContent>
+                                </Card>
+                            ))
+                                )
+                                : activeTab === 2 ? (
+                                        teachersLoading ? (
+                                            Array.from({length: 3}).map((_, i) => (
+                                                <div key={i} className="h-64 bg-slate-100 rounded-[40px] animate-pulse"/>
                                 ))
                             ) : teachers.length === 0 ? (
                                 <div className="col-span-full text-center py-32 bg-white border-2 border-dashed border-slate-200 rounded-[40px]">
@@ -154,12 +241,14 @@ const OrganizationServiceSection = ({ organizationId }) => {
                                     />
                                 ))
                             )
-                        ) : (
+                        )
+                        : activeTab === 3 ? (
                             <div className="col-span-full text-center py-32 bg-white border-2 border-dashed border-slate-200 rounded-[40px]">
                                 <Monitor size={48} className="mx-auto mb-4 opacity-20" />
                                 <p className="text-slate-400 font-bold">회의실 기능은 현재 준비 중입니다.</p>
                             </div>
-                        )}
+                        ) : null
+                        }
                     </div>
                 </div>
 

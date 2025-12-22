@@ -57,7 +57,7 @@ export const AdminLectureCreatePage = () => {
 
     const [ startAtOpen, setStartAtOpen ] = useState( false  );
     const [ endAtOpen, setEndAtOpen ] = useState( false  );
-
+    const [ selectedDays, setSelectedDays ] = useState( [] );
 
     const [ isOnline, setIsOnline ] = useState( true );
 
@@ -68,6 +68,7 @@ export const AdminLectureCreatePage = () => {
         teacherId: '',
         teacherName: '',
         roomId: '',
+        price: '',
         roomName: '',
         category: '',
         description: '',
@@ -78,7 +79,7 @@ export const AdminLectureCreatePage = () => {
         endAt: '',
         startTimeAt: '',
         endTimeAt: '',
-        day: ''
+        day: []
     })
 
     const changeOnOff = ( isOnline ) => {
@@ -145,8 +146,38 @@ export const AdminLectureCreatePage = () => {
         setRoomOpen( false )
     }
 
+    const checkDay = (dayName, isChecked) => {
+        const updatedSelectedDays = isChecked
+            ? [...selectedDays, dayName]
+            : selectedDays.filter(day => day !== dayName);
+
+        setSelectedDays(updatedSelectedDays);
+
+        setFormData(prev => ({
+            ...prev,
+            day: updatedSelectedDays
+        }));
+    }
+
     const handleFileChange = async ( e ) => {
         const selectedFile = e.target.files[0]
+
+        const videoMimeTypes = [
+            'video/mp4',
+            'video/mpeg',
+            'video/quicktime',  // .mov
+            'video/x-msvideo',  // .avi
+            'video/webm',
+            'video/ogg',
+            'video/x-matroska'  // .mkv
+        ];
+
+        if (!videoMimeTypes.includes(selectedFile.type)) {
+            alert('동영상 파일만 업로드 가능합니다.');
+            e.target.value = ''; // input 초기화
+            return;
+        }
+
         const data = await fileUpload( selectedFile );
 
         setFormData( { ...formData, fileId: data.fileId })
@@ -182,12 +213,15 @@ export const AdminLectureCreatePage = () => {
                 formData.maxNum.length === 0 ||
                 formData.roomId.length === 0 ||
                 formData.startTimeAt.length === 0 ||
-                formData.endTimeAt.length === 0 ||
-                formData.day.length === 0
+                formData.endTimeAt.length === 0
             ) {
                 alert( "오프라인 강의 필수 값들이 채워지지 않았습니다" )
                 return
             }
+        }
+        if( formData.day.length === 0 ){
+            alert( "최소 하루의 요일은 선택해야 합니다" )
+            return
         }
 
         const data = await createLecture( formData );
@@ -264,6 +298,15 @@ export const AdminLectureCreatePage = () => {
                                             formData.organizationName.length < 1 ?
                                                 <FieldDescription className="text-red-500"> 기관 선택이 완료되어야 목록이 나옵니다. </FieldDescription> : ""
                                         }
+                                    </Field>
+                                    <Field className="flex">
+                                        <FieldLabel> 가격 </FieldLabel>
+                                        <Input
+                                            value={formData.price}
+                                            type="number"
+                                            min="10000"
+                                            onChange={ (e) => setFormData( { ...formData, price: e.target.value } ) }
+                                            placeholder="가격을 입력하세요" required/>
                                     </Field>
                                     <Field orientation="horizontal">
                                         <FieldLabel> 카테고리 </FieldLabel>
@@ -369,6 +412,7 @@ export const AdminLectureCreatePage = () => {
                                                 <FieldLabel> 강의 영상 </FieldLabel>
                                                 <Input
                                                     type="file"
+                                                    accept="video/*"
                                                     onChange={(e) => handleFileChange(e) }
                                                 />
                                             </Field>
@@ -408,44 +452,58 @@ export const AdminLectureCreatePage = () => {
                                                     <div className="flex gap-2">
                                                         <div className="w-1/5 grid grid-cols-4">
                                                             <div className="flex gap-1">
-                                                                <Checkbox onClick={() => setFormData(
-                                                                    { ...formData, day: "월" }
-                                                                )}/>
+                                                                <Checkbox
+                                                                    onCheckedChange={(checked) => {
+                                                                        checkDay( "월", checked )
+                                                                    }}
+                                                                />
                                                                 <Label> 월 </Label>
                                                             </div>
                                                             <div className="flex gap-1">
-                                                                <Checkbox onClick={() => setFormData(
-                                                                    { ...formData, day: "화" })}
+                                                                <Checkbox
+                                                                    onCheckedChange={(checked) => {
+                                                                        checkDay( "화", checked )
+                                                                    }}
                                                                 />
                                                                 <Label> 화 </Label>
                                                             </div>
                                                             <div className="flex gap-1">
-                                                                <Checkbox onClick={() => setFormData(
-                                                                    { ...formData, day: "수" })}
+                                                                <Checkbox
+                                                                    onCheckedChange={(checked) => {
+                                                                        checkDay( "수", checked )
+                                                                    }}
                                                                 />
                                                                 <Label> 수 </Label>
                                                             </div>
                                                             <div className="flex gap-1">
-                                                                <Checkbox onClick={() => setFormData(
-                                                                    { ...formData, day: "목" })}
+                                                                <Checkbox
+                                                                    onCheckedChange={(checked) => {
+                                                                        checkDay( "목", checked )
+                                                                    }}
                                                                 />
                                                                 <Label> 목 </Label>
                                                             </div>
                                                             <div className="flex gap-1">
-                                                                <Checkbox onClick={() => setFormData(
-                                                                    { ...formData, day: "금" })}
+                                                                <Checkbox
+                                                                    onCheckedChange={(checked) => {
+                                                                        checkDay( "금", checked )
+                                                                    }}
                                                                 />
                                                                 <Label> 금 </Label>
                                                             </div>
                                                             <div className="flex gap-1">
-                                                                <Checkbox onClick={() => setFormData(
-                                                                    { ...formData, day: "토" })}
+                                                                <Checkbox
+                                                                    onCheckedChange={(checked) => {
+                                                                        checkDay( "토", checked )
+                                                                    }}
                                                                 />
                                                                 <Label> 토 </Label>
                                                             </div>
                                                             <div className="flex gap-1">
-                                                                <Checkbox onClick={() => setFormData(
-                                                                    { ...formData, day: "일" })}
+                                                                <Checkbox
+                                                                    onCheckedChange={(checked) => {
+                                                                        checkDay( "일", checked )
+                                                                    }}
                                                                 />
                                                                 <Label> 일 </Label>
                                                             </div>

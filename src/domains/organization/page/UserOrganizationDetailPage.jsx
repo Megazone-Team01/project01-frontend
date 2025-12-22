@@ -47,12 +47,10 @@ export const UserOrganizationDetailPage = () => {
                     <Table>
                         <TableBody>
                             <TableRow>
-                                <TableCell className="w-[100px]"> 상호명: </TableCell>
-                                <TableCell> {organization.name} </TableCell>
-                            </TableRow>
-                            <TableRow>
                                 <TableCell className="w-[100px]"> 강의 유형: </TableCell>
-                                <TableCell> {organization.isOnline} </TableCell>
+                                <TableCell>
+                                    {organization.isOnline === 1 ? "온라인" : organization.isOnline === 0 ? "온라인 + 오프라인" : "오프라인" }
+                                </TableCell>
                             </TableRow>
                             <TableRow>
                                 <TableCell className="w-[100px]"> 주소: </TableCell>
@@ -64,7 +62,21 @@ export const UserOrganizationDetailPage = () => {
                             </TableRow>
                             <TableRow>
                                 <TableCell className="w-[100px]"> 전화번호: </TableCell>
-                                <TableCell> { organization.tel } </TableCell>
+                                <TableCell>
+                                    {
+                                        organization.tel ?
+                                             organization.tel.length === 9 ?
+                                                organization.tel.substring(0, 2) + "-" + organization.tel.substring(2, 5) + "-" + organization.tel.substring(5, 9)
+                                                :
+                                                organization.tel.length === 11 ?
+                                                    organization.tel.substring(0, 3) + "-" + organization.tel.substring(3, 7) + "-" + organization.tel.substring(7, 11)
+                                                    :
+                                                    organization.tel
+                                            :
+                                            <div />
+                                    }
+
+                                </TableCell>
                             </TableRow>
                             <TableRow>
                               <TableCell className="w-[100px]"> 소개: </TableCell>
