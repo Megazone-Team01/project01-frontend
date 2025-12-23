@@ -9,12 +9,10 @@ import {RadioGroup, RadioGroupItem} from "@/components/ui/radio-group.js";
 import {Label} from "@/components/ui/label.js";
 import {useEffect, useState} from "react";
 import {Empty, EmptyTitle} from "@/components/ui/empty.js";
-import {deleteUser, getUserDetail, getUsers, getUsersWithFilter} from "@/domains/admin/api/userApi.js";
+import {adminUpdateUser, deleteUser, getUserDetail, getUsers, getUsersWithFilter} from "@/domains/admin/api/userApi.js";
 import {Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle} from "@/components/ui/dialog.js";
 import {Field, FieldLabel, FieldSet} from "@/components/ui/field.js";
-import {Skeleton} from "@/components/ui/skeleton.js";
 import {Input} from "@/components/ui/input.js";
-import axiosInstance from "@/common/api/axiosInstance.js";
 
 
 export const AdminUserList = () => {
@@ -28,13 +26,13 @@ export const AdminUserList = () => {
         name: '',
         email: '',
         phone: '',
-        addressCode: '',
+        address: '',
         addressDetail: '',
         roleName: '',
         createdAt: '',
         updatedAt: '',
         deletedAt: '',
-        profileImage: '',
+        fileUrl: '',
         lectures: [],
         organizations: []
     })
@@ -75,10 +73,11 @@ export const AdminUserList = () => {
         const data = await getUserDetail( id );
         setFormData( {
             ...formData,
+            id: id,
             name: data.name,
             email: data.email,
             phone: data.phone,
-            addressCode: data.addressCode,
+            address: data.address,
             addressDetail: data.addressDetail,
             roleName: data.roleName,
             createdAt: data.createdAt,
@@ -86,7 +85,7 @@ export const AdminUserList = () => {
             deletedAt: data.deletedAt,
             lectures: data.lectures,
             organizations: data.organizations,
-            profileImage: data.profileImage
+            fileUrl: data.profileImage
         })
         setUpdating(true);
         setInfoOpen(true);
@@ -103,18 +102,23 @@ export const AdminUserList = () => {
             return
         }
 
-        const res = await axiosInstance.post( "/v1/user/update", data );
-        if( res === 200 ){
-            alert( "수정되었습니다" )
-            window.location.reload();
-        }
+        const res = await adminUpdateUser(formData.id, {
+            name: formData.name,
+            phone: formData.phone,
+            address: formData.address,
+            addressDetail: formData.addressDetail,
+            type: formData.type,
+            fileId: null
+        })
+        alert( "수정되었습니다" )
+        window.location.reload();
     }
     const closeModal = () => {
         setFormData( {
             ...formData,
             name: '',
             phone: '',
-            addressCode: '',
+            address: '',
             addressDetail: ''
         })
         setInfoOpen(false);
@@ -128,7 +132,7 @@ export const AdminUserList = () => {
             name: data.name,
             email: data.email,
             phone: data.phone,
-            addressCode: data.addressCode,
+            address: data.address,
             addressDetail: data.addressDetail,
             roleName: data.roleName,
             createdAt: data.createdAt,
@@ -136,7 +140,7 @@ export const AdminUserList = () => {
             deletedAt: data.deletedAt,
             lectures: data.lectures,
             organizations: data.organizations,
-            profileImage: data.profileImage
+            fileUrl: data.fileUrl
         })
         setUpdating(false);
         setInfoOpen(true);
@@ -251,7 +255,7 @@ export const AdminUserList = () => {
                                                 {user.roleName}
                                             </TableCell>
                                             <TableCell className="text-center"> {user.phone} </TableCell>
-                                            <TableCell className="text-center"> {user.addressCode + " " + user.addressDetail} </TableCell>
+                                            <TableCell className="text-center"> {user.address + " " + user.addressDetail} </TableCell>
                                             <TableCell className="text-center"> {user.deleted ? "삭제됨" : "활성화"} </TableCell>
                                             <TableCell className="text-center flex justify-center">
                                                 <ButtonGroup>
@@ -283,8 +287,11 @@ export const AdminUserList = () => {
                             <Field>
                                 <div className="flex items-center gap-3 pr-5">
                                     {
-                                        formData.profileImage !== null ?
-                                            <img className="flex-1 max-w-1/3" src={formData.profileImage}/>
+                                        formData.fileUrl !== null && formData.fileUrl !== undefined ?
+                                            <img className="flex-1 max-w-1/3"
+                                                 src={`${import.meta.env.VITE_FILE_URL_HEADER}${formData.fileUrl}`}
+                                                alt={`${import.meta.env.VITE_FILE_URL_HEADER}${formData.fileUrl}`}
+                                            />
                                             :
                                             <div className="flex-1 max-w-1/3 aspect-square bg-gray-100 border" />
                                     }
@@ -295,6 +302,7 @@ export const AdminUserList = () => {
                                                 isUpdating ?
                                                     <Input
                                                         value={formData.name}
+                                                        onChange={(e) => setFormData( { ...formData, name: e.target.value })}
                                                         className="flex-5 rounded-none"
                                                     />
                                                     :
@@ -312,6 +320,7 @@ export const AdminUserList = () => {
                                                 isUpdating ?
                                                     <Input
                                                         value={formData.phone}
+                                                        onChange={(e) => setFormData( { ...formData, phone: e.target.value })}
                                                         className="flex-5 rounded-none"
                                                     />
                                                     :
@@ -330,18 +339,20 @@ export const AdminUserList = () => {
                                                 isUpdating ?
                                                     <div className="flex flex-5 flex-col gap-2">
                                                         <Input
-                                                            value={formData.addressCode}
+                                                            value={formData.address}
+                                                            onChange={(e) => setFormData( { ...formData, address: e.target.value })}
                                                             className="flex-5 rounded-none"
                                                         />
                                                         <Input
                                                             value={formData.addressDetail}
+                                                            onChange={(e) => setFormData( { ...formData, addressDetail: e.target.value })}
                                                             className="flex-5 rounded-none"
                                                         />
                                                     </div>
                                                     :
                                                     <div className="flex flex-5 flex-col gap-2">
                                                         <Label
-                                                            className="text-md text-gray-500"> {formData.addressCode} </Label>
+                                                            className="text-md text-gray-500"> {formData.address} </Label>
                                                         <Label
                                                             className="text-md text-gray-500"> {formData.addressDetail} </Label>
                                                     </div>

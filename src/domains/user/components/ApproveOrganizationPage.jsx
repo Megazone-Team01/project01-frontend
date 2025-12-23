@@ -13,13 +13,13 @@ export default function ApproveOrganizationPage() {
             <table className="w-full table-fixed border-collapse">
                 <thead>
                     <tr className="bg-gray-100">
-                        <th className="px-4 py-2 w-[150px] text-left whitespace-nowrap">기관 명</th>
-                        <th className="px-4 py-2 w-[150px] text-left whitespace-nowrap">가입 요청자 명</th>
+                        <th className="px-4 py-2 w-[150px] text-left whitespace-nowrap">가입 요청 기관</th>
+                        <th className="px-4 py-2 w-[150px] text-left whitespace-nowrap">요청자</th>
                         <th className="px-4 py-2 w-[80px] text-left whitespace-nowrap">역할</th>
                         <th className="px-4 py-2 w-[250px] text-left whitespace-nowrap">이메일</th>
-                        <th className="px-4 py-2 w-[150px] text-left whitespace-nowrap">폰번호</th>
-                        <th className="px-4 py-2 w-[80px] text-center whitespace-nowrap">승인</th>
-                        <th className="px-4 py-2 w-[80px] text-center whitespace-nowrap">거절</th>
+                        <th className="px-4 py-2 w-[150px] text-left whitespace-nowrap">연락처</th>
+                        <th className="px-4 py-2 w-[80px] text-center whitespace-nowrap">조치</th>
+                        <th className="px-4 py-2 w-[80px] text-center whitespace-nowrap"></th>
                     </tr>
                 </thead>
                 <tbody>

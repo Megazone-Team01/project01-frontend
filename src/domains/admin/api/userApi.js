@@ -50,7 +50,7 @@ export const createUser = async ( data ) => {
         passwordConfirm: data.password,
         name: data.name,
         phone: data.phone,
-        addressCode: data.addressCode,
+        address: data.address,
         addressDetail: data.addressDetail,
         role: data.role,
         type: data.type
@@ -62,4 +62,14 @@ export const createUser = async ( data ) => {
 export const getUserDetail = async ( id ) => {
     const res = await axiosInstance.get( "/v1/user/" + id );
     return res.data;
+}
+
+export const adminUpdateUser = async ( id , data ) => {
+    try {
+        const res = await axiosInstance.patch( "/v1/user/update/" + id + "/admin", data );
+        return res.data;
+    }
+    catch ( error ){
+        if( error.status === 401 ) alert( error.response.data.message )
+    }
 }
