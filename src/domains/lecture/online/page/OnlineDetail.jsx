@@ -29,7 +29,7 @@ function OnlineDetail() {
         <div className="max-w-screen-lg mx-auto p-2">
             <div className="flex flex-col gap-5 sm:grid sm:grid-cols-[1fr_2fr]">
                 <img
-                    src="https://picsum.photos/400/200"
+                    src={`${import.meta.env.VITE_FILE_URL_HEADER}${data.thumbnail}`}
                     alt="thumbnail"
                     className="w-[400px] h-[300px] object-cover"
                 />
