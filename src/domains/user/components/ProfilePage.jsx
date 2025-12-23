@@ -6,6 +6,7 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group.js";
 import {Separator} from "@/components/ui/separator.js";
 import {Field, FieldLabel, FieldSet} from "@/components/ui/field.js";
 import {fileUpload} from "@/common/api/fileApi.js";
+import.meta.env.VITE_FILE_URL_HEADER
 
 export default function ProfilePage({
     userInfo,
@@ -35,11 +36,15 @@ export default function ProfilePage({
                 <div className="profile-top flex gap-8">
                     <div className="profile-image flex-shrink-0">
                         <img
-                            src={
-                                previewUrl ? previewUrl : fileUrl ? encodeURI(fileUrl)  : "https://avatars.githubusercontent.com/u/9919?v=4"
-                            }
-                            alt="프로필"
-//                             className="w-48 h-48 rounded-full object-cover"
+                          src={
+                            previewUrl
+                              ? previewUrl
+                              : fileUrl
+                              ? `${import.meta.env.VITE_FILE_URL_HEADER}${encodeURIComponent(fileUrl)}`
+                              : "https://avatars.githubusercontent.com/u/9919?v=4"
+                          }
+                          alt="프로필"
+                          className="w-48 h-48 rounded-full object-cover"
                         />
                         <br/>
                         <Input
@@ -79,7 +84,7 @@ export default function ProfilePage({
                                     name="email"
                                     value={userInfo.email}
                                     onChange={handleChange}
-                                    placeholder="이메일을 입력하세요"
+                                    placeholder="이메일을 입력해 주세요"
                                     disabled={true}
                                     className={`${userInfo.email ? "text-black placeholder:text-black" : "placeholder:text-gray-400"}`}
                                 />
@@ -93,7 +98,7 @@ export default function ProfilePage({
                                     name="name"
                                     value={userInfo.name}
                                     onChange={handleChange}
-                                    placeholder="이름을 입력하세요"
+                                    placeholder="이름을 입력해 주세요"
                                     disabled={!isEditing}
                                     className={`${userInfo.name ? "text-black placeholder:text-black" : "placeholder:text-gray-400"}`}
                                 />
@@ -107,7 +112,7 @@ export default function ProfilePage({
                                     name="phone"
                                     value={userInfo.phone}
                                     onChange={handlePhoneChange}
-                                    placeholder="'-' 없이 입력하세요"
+                                    placeholder="'-' 없이 입력해 주세요"
                                     disabled={!isEditing}
                                     className={`${userInfo.phone ? "text-black placeholder:text-black" : "placeholder:text-gray-400"}`}
                                 />
@@ -117,20 +122,12 @@ export default function ProfilePage({
                         <div className="flex flex-col gap-1">
                             <Label htmlFor="address">주소</Label>
                                 <div className="flex gap-2">
-{/*                                     <Input */}
-{/*                                         id="zipcode" */}
-{/*                                         name="zipcode" */}
-{/*                                         value={userInfo.addressCode} */}
-{/*                                         placeholder="우편번호" */}
-{/*                                         disabled */}
-{/*                                         className={`${userInfo.addressCode ? "text-black placeholder:text-black" : "placeholder:text-gray-400"}`} */}
-{/*                                     /> */}
                                     <Input
                                         id="address"
                                         name="address"
                                         value={userInfo.address}
                                         onChange={handleAddressChange}
-                                        placeholder="주소를 입력하세요"
+                                        placeholder="주소를 입력해 주세요"
                                         disabled={!isEditing}
                                         className={`${userInfo.address ? "text-black placeholder:text-black" : "placeholder:text-gray-400"}`}
                                     />
@@ -182,11 +179,11 @@ export default function ProfilePage({
                             </Button>
 
                             <Button
-                                    className="w-auto px-4"
-                                    variant="destructive"
-                                    onClick={handleDeleteAccount}
-                                    disabled={loading}
-                                >
+                                className="w-auto px-4"
+                                variant="destructive"
+                                onClick={handleDeleteAccount}
+                                disabled={loading}
+                            >
                                 회원 탈퇴
                             </Button>
                         </div>

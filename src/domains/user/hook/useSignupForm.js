@@ -54,9 +54,16 @@ export default function useSignupForm() {
         setForm((prev) => {
             const updated = { ...prev, password };
 
+            // 최소 8글자, 대문자, 소문자, 숫자, 특수문자 검사
+            const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=[\]{};':"\\|,.<>\/?]).{8,}$/;
+
+
             if (!updated.password || !updated.passwordConfirm) {
-                // 입력값을 클리어하면 메시지 없애기
                 setPasswordError("");
+            } else if (!passwordRegex.test(updated.password)) {
+                setPasswordError(
+                    "비밀번호는 최소 8자 이상이며, 대문자, 소문자, 숫자, 특수문자를 포함해야 합니다."
+                );
             } else if (updated.password !== updated.passwordConfirm) {
                 setPasswordError("비밀번호가 일치하지 않습니다.");
             } else {
@@ -75,8 +82,14 @@ export default function useSignupForm() {
         setForm((prev) => {
             const updated = { ...prev, passwordConfirm };
 
+            const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]).{8,}$/;
+
             if (!updated.password || !updated.passwordConfirm) {
                 setPasswordConfirmError("");
+            } else if (!passwordRegex.test(updated.passwordConfirm)) {
+                setPasswordConfirmError(
+                    "비밀번호는 최소 8자 이상이며, 대문자, 소문자, 숫자, 특수문자를 포함해야 합니다."
+                );
             } else if (updated.password !== updated.passwordConfirm) {
                 setPasswordConfirmError("비밀번호가 일치하지 않습니다.");
             } else {
