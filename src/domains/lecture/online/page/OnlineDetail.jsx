@@ -24,7 +24,7 @@ function OnlineDetail() {
     if (isLoading) {
         return <LoadingDetail/>
     }
-    console.log(data,"젭");
+
     return (
         <div className="max-w-screen-lg mx-auto p-2">
             <div className="flex flex-col gap-5 sm:grid sm:grid-cols-[1fr_2fr]">
