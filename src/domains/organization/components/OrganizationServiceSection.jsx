@@ -487,28 +487,29 @@ const OrganizationServiceSection = ({ organizationId }) => {
                                                         <Video size={16} className="text-blue-500" /> 01. 상담 방식 선택
                                                     </h4>
                                                     <div className="flex gap-4">
-                                                        <button
-                                                            disabled={userType === 2}
-                                                            onClick={() => setBookingType('ONLINE')}
-                                                            className={`flex-1 py-4 rounded-2xl border-2 text-base font-bold transition-all flex flex-col items-center gap-1
+                                                        {userType !== 2 && (
+                                                            <button
+                                                                disabled={userType === 2}
+                                                                onClick={() => setBookingType('ONLINE')}
+                                                                className={`flex-1 py-4 rounded-2xl border-2 text-base font-bold transition-all flex flex-col items-center gap-1
                     ${userType === 2 ? 'opacity-40 cursor-not-allowed' : ''}
-                                                        ${bookingType === 'ONLINE' ? 'border-slate-900 bg-slate-900 text-white shadow-xl' : 'border-slate-100 text-slate-400 hover:bg-slate-50'}`}
-                                                        >
-                                                            <span>화상(Zoom)</span>
-                                                            {userType === 2 && <span className="text-xs opacity-70">오프라인 전용</span>}
-                                                        </button>
+                                                                ${bookingType === 'ONLINE' ? 'border-slate-900 bg-slate-900 text-white shadow-xl' : 'border-slate-100 text-slate-400 hover:bg-slate-50'}`}
+                                                            >
+                                                                <span>화상(Zoom)</span>
+                                                                {userType === 2 && <span className="text-xs opacity-70">오프라인 전용</span>}
+                                                            </button>)}
 
                                                         {/* 대면(현장) - 온라인 전용(type=1)이면 비활성화 */}
-                                                        <button
+                                                        {userType !== 1 && (<button
                                                             disabled={userType === 1}
                                                             onClick={() => setBookingType('OFFLINE')}
                                                             className={`flex-1 py-4 rounded-2xl border-2 text-base font-bold transition-all flex flex-col items-center gap-1
-                                                             ${userType === 1 ? 'opacity-40 cursor-not-allowed' : ''}
-                                                                ${bookingType === 'OFFLINE' ? 'border-slate-900 bg-slate-900 text-white shadow-xl' : 'border-slate-100 text-slate-400 hover:bg-slate-50'}`}
+                                                            ${userType === 1 ? 'opacity-40 cursor-not-allowed' : ''}
+                                                            ${bookingType === 'OFFLINE' ? 'border-slate-900 bg-slate-900 text-white shadow-xl' : 'border-slate-100 text-slate-400 hover:bg-slate-50'}`}
                                                         >
                                                             <span>대면(현장)</span>
                                                             {userType === 1 && <span className="text-xs opacity-70">온라인 전용</span>}
-                                                        </button>
+                                                        </button>)}
                                                     </div>
                                                 </div>
                                             )}
