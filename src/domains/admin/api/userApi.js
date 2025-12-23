@@ -55,8 +55,14 @@ export const createUser = async ( data ) => {
         role: data.role,
         type: data.type
     }
-    const res = await axiosInstance.post( "/v1/user/signup", formData );
-    return res.data;
+    try {
+        const res = await axiosInstance.post( "/v1/user/signup", formData );
+        return res.data;
+    }
+    catch ( error ){
+        alert( error.response.data.message );
+    }
+
 }
 
 export const getUserDetail = async ( id ) => {
