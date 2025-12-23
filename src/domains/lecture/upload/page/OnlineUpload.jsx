@@ -207,27 +207,34 @@ export default function OnlineUpload() {
         setIsSubmitting(true);
 
         const submitData = new FormData();
+
+        // 1. 파일들을 먼저 추가
         submitData.append('video', videoFile);
         if (thumbnailFile) {
             submitData.append('thumbnail', thumbnailFile);
         }
 
+        // 2. 나머지 폼 데이터 추가
+        Object.entries(formData).forEach(([key, value]) => {
+            submitData.append(key, value);
+        });
+
+        // FormData 내용 확인 (디버깅용)
+        console.log('=== FormData 내용 ===');
+        for (let [key, value] of submitData.entries()) {
+            if (value instanceof File) {
+                console.log(key, ':', value.name, `(${value.size} bytes)`);
+            } else {
+                console.log(key, ':', value);
+            }
+        }
+
         try {
-            Object.entries(formData).forEach(([key, value]) => {
-                submitData.append(key, value);
-            });
-
-            console.log('업로드할 데이터:', {
-                video: videoFile.name,
-                thumbnail: thumbnailFile?.name,
-                ...formData,
-            });
-
+            // ✅ mutate 사용 (mutateAsync 대신)
             mutation.mutate(submitData);
 
-            alert('온라인 강의가 성공적으로 업로드되었습니다!');
-
-            // 폼 초기화
+            // ✅ 폼 초기화를 여기서 하지 말고 onSuccess에서 하는 것이 좋습니다
+            // 일단은 오프라인과 동일하게 처리
             setVideoPreview('');
             setThumbnailPreview('');
             setVideoFile(null);
@@ -247,7 +254,7 @@ export default function OnlineUpload() {
 
         } catch (error) {
             console.error('업로드 실패:', error);
-            setErrors({ submit: '업로드에 실패했습니다.' });
+            setErrors({ submit: error.message || '업로드에 실패했습니다.' });
         } finally {
             setIsSubmitting(false);
         }

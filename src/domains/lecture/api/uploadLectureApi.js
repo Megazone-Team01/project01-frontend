@@ -4,6 +4,7 @@ export async function uploadLectureApi(formData, lectureType) {
     const url = `/v1/lecture/${lectureType}/upload`
     try{
         console.log("📍 요청 URL:", url);
+        console.log(formData, "formdata 🟢")
         const { data } = await axiosInstance.post(url, formData,{
             headers: {
                 'Content-Type': 'multipart/form-data'

@@ -5,6 +5,7 @@ import { useNavigate} from "react-router";
 
 
 export function useUploadLecture(lectureType) {
+
     const navigate = useNavigate();
     return useMutation({
         mutationFn: (formData) => uploadLectureApi(formData, lectureType),

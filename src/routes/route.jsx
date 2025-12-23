@@ -21,7 +21,6 @@ import ApproveOrganization from "@/domains/user/page/ApproveOrganization.jsx";
 import PublicRoute from "@/routes/PublicRoute.jsx";
 import PrivateRoute from "@/routes/PrivateRoute.jsx";
 import Profile from "@/domains/user/page/Profile.jsx";
-import Upload from "@/domains/lecture/upload/page/OnlineUpload.jsx";
 import AdminRoute from "@/routes/AdminRoute.js";
 import OfflineUpload from "@/domains/lecture/upload/page/OfflineUpload.jsx";
 import OnlineUpload from "@/domains/lecture/upload/page/OnlineUpload.jsx";
