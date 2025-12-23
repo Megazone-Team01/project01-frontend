@@ -124,12 +124,12 @@ export default function Header({  hasNotifications }) {
                         {user.roleName !== "TEACHER" && (
                             <DropdownMenuContent align="end">
                                 <DropdownMenuItem asChild>
-                                    <Link to="/upload/offline" className="cursor-pointer">
+                                    <Link to="/offline/upload" className="cursor-pointer">
                                         오프라인 강의 업로드
                                     </Link>
                                 </DropdownMenuItem>
                                 <DropdownMenuItem asChild>
-                                    <Link to="/upload/online" className="cursor-pointer">
+                                    <Link to="/online/upload" className="cursor-pointer">
                                         온라인 강의 업로드
                                     </Link>
                                 </DropdownMenuItem>
