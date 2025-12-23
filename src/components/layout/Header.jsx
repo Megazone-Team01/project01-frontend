@@ -198,7 +198,7 @@ export default function Header({ isLoggedIn, hasNotifications, hasMessages }) {
                                 <DropdownMenuItem asChild className="cursor-pointer">
                                     <Link to="/profile">
                                         <UserIcon className="size-4 mr-2"/>
-                                        마이페이지
+                                        MyPage
                                     </Link>
                                 </DropdownMenuItem>
                                 {

@@ -6,6 +6,7 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group.js";
 import {Separator} from "@/components/ui/separator.js";
 import {Field, FieldLabel, FieldSet} from "@/components/ui/field.js";
 import {fileUpload} from "@/common/api/fileApi.js";
+import { UserIcon } from "lucide-react";
 import.meta.env.VITE_FILE_URL_HEADER
 
 export default function ProfilePage({
@@ -35,18 +36,23 @@ export default function ProfilePage({
             <div className="my-profile-page flex flex-col gap-6">
                 <div className="profile-top flex gap-8">
                     <div className="profile-image flex-shrink-0">
-                        <img
-                          src={
-                            previewUrl
-                              ? previewUrl
-                              : fileUrl
-                              ? `${import.meta.env.VITE_FILE_URL_HEADER}${encodeURIComponent(fileUrl)}`
-                              : "https://avatars.githubusercontent.com/u/9919?v=4"
-                          }
-                          alt="프로필"
-                          className="w-48 h-48 rounded-full object-cover"
-                        />
-                        <br/>
+                        {previewUrl || fileUrl ? (
+                            <img
+                              src={
+                                previewUrl
+                                  ? previewUrl
+                                  : `${import.meta.env.VITE_FILE_URL_HEADER}${encodeURIComponent(fileUrl)}`
+                              }
+                              alt="프로필"
+                              className="w-48 h-48 rounded-full object-cover"
+                            />
+                        ) : (
+                            <div className="w-48 h-48 rounded-full bg-gray-100 flex items-center justify-center">
+                              <UserIcon className="w-24 h-24 text-gray-400" />
+                            </div>
+                        )}
+
+                        <br />
                         <Input
                             type="file"
                             disabled={!isEditing}
