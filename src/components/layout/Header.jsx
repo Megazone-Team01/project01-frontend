@@ -107,16 +107,35 @@ export default function Header({  hasNotifications }) {
             </div>
             {isAuthenticated ? (
                 <div className="flex item-center gap-2">
-                    <Button size="icon" variant="ghost" asChild className="relative">
-                        <Link to="/upload">
-                            {user.roleName !== "TEACHER" ?
-                                <>
-                                    <FilePlus className="size-5" />
-                                    {hasNotifications && (
-                                        <div className="absolute top-1.5 right-1.5 size-2 bg-red-500 rounded-full" />
-                                    )}</> : null}
-                        </Link>
-                    </Button>
+                    <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                            <Button size="icon" variant="ghost" className="relative">
+                                {user.roleName !== "TEACHER" ? (
+                                    <>
+                                        <FilePlus className="size-5" />
+                                        {hasNotifications && (
+                                            <div className="absolute top-1.5 right-1.5 size-2 bg-red-500 rounded-full" />
+                                        )}
+                                    </>
+                                ) : null}
+                            </Button>
+                        </DropdownMenuTrigger>
+
+                        {user.roleName !== "TEACHER" && (
+                            <DropdownMenuContent align="end">
+                                <DropdownMenuItem asChild>
+                                    <Link to="/offline/upload" className="cursor-pointer">
+                                        오프라인 강의 업로드
+                                    </Link>
+                                </DropdownMenuItem>
+                                <DropdownMenuItem asChild>
+                                    <Link to="/online/upload" className="cursor-pointer">
+                                        온라인 강의 업로드
+                                    </Link>
+                                </DropdownMenuItem>
+                            </DropdownMenuContent>
+                        )}
+                    </DropdownMenu>
                     <DropdownMenu>
                         <DropdownMenuTrigger asChild>
                             <div className="relative flex justify-center items-center hover:cursor-pointer px-3">
@@ -159,11 +178,18 @@ export default function Header({  hasNotifications }) {
                         </DropdownMenuContent>
                     </DropdownMenu>
                     <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                            <Avatar>
-                                <AvatarImage
-                                    src={`${import.meta.env.VITE_FILE_URL_HEADER}${userInfo.fileUrl}`}
-                                />
+                    <DropdownMenuTrigger asChild>
+                        <Avatar>
+                            <AvatarImage
+                                src={
+                                    userInfo?.fileUrl
+                                        ? `${import.meta.env.VITE_FILE_URL_HEADER}${userInfo.fileUrl}`
+                                        : undefined
+                                }
+                                onError={(e) => {
+                                    e.target.style.display = 'none'; // 에러나면 이미지 숨김
+                                }}
+                            />
                                 <AvatarFallback>
                                     <UserIcon className="text-gray-400" />
                                 </AvatarFallback>

@@ -17,8 +17,6 @@ function OnlineDetail() {
     const lectureType = location.pathname.includes("/online") ? "online" : "offline";
     const {data, isLoading ,isError} = useLectureDetail(onlineId, lectureType);
 
-    const enrolled = useSelector(state => state.lecture.enrolled);
-
     if (isError) {
         return <ErrorPage/>;
     }
@@ -87,7 +85,7 @@ function OnlineDetail() {
                         <div>
                             <div className="grid grid-cols-2 gap-5">
                                 <div className="flex gap-2">
-                                    {!enrolled ? <AlertBox
+                                    {!data.exists ? <AlertBox
                                         text={"강의 신청"}
                                         startAt={data.startAt}
                                         endAt={data.endAt}
