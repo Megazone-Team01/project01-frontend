@@ -48,7 +48,7 @@ export default function ProfilePage({
                             />
                         ) : (
                             <div className="w-48 h-48 rounded-full bg-gray-100 flex items-center justify-center">
-                              <UserIcon className="w-24 h-24 text-gray-400" />
+                                <UserIcon className="w-32 h-32 text-gray-400" />
                             </div>
                         )}
 
