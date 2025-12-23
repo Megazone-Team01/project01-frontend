@@ -1,7 +1,8 @@
 import { useState, useEffect } from "react";
-import { useSelector } from "react-redux";
-import { getProfileInfo, updateProfileInfo } from "../api/profile";
+import { useSelector, useDispatch } from "react-redux";
+import { getProfileInfo, updateProfileInfo, deleteProfileAccount } from "../api/profile";
 import {fileUpload} from "@/common/api/fileApi.js";
+import { logout } from "@/common/store/auth/authSlice";
 import axios from "axios";
 
 export default function useProfileForm() {
@@ -30,6 +31,7 @@ export default function useProfileForm() {
     const [previewUrl, setPreviewUrl] = useState(null);
     const [fileUrl, setFileUrl] = useState(null); // 서버 URL
     const fileId = userInfo.fileId;
+    const dispatch = useDispatch();
 
     useEffect(() => {
         fetchProfileInfo();
@@ -156,17 +158,28 @@ export default function useProfileForm() {
         if (!window.confirm("정말로 탈퇴하시겠습니까?")) return;
 
         setLoading(true);
+
         try {
-            await deleteProfileAccount(); // API 함수 필요
+            await deleteProfileAccount(); // API 호출
+
+            // 탈퇴 성공 시
             alert("회원 탈퇴가 완료되었습니다.");
-            // 로그아웃 또는 페이지 이동
+
+            // 1. Redux 상태 초기화
+            dispatch(logout());
+
+            // 2. 로컬스토리지 초기화 (Redux logout에서 일부 제거되므로 안전하게)
+            localStorage.clear();
+
+            // 3. 메인 화면으로 이동
+            window.location.href = "/";
         } catch (err) {
-            console.error(err);
-            alert("탈퇴 중 오류가 발생했습니다.");
+            console.error("탈퇴 중 오류:", err);
         } finally {
             setLoading(false);
         }
     };
+
 
 
     const handleFileChange = async (e) => {
@@ -212,6 +225,7 @@ export default function useProfileForm() {
         handleFileChange,
         previewUrl,
         fileUrl,
-        fileId
+        fileId,
+        handleDeleteAccount
     };
 }

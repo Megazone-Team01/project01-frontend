@@ -14,7 +14,10 @@ export const getOrganizations = async () => {
 
 export const getOrganizationsWithFilter = async ( filter ) => {
     const res = await axiosInstance.get( "/v1/organization", {
-        params: filter
+        params: {
+            ...filter,
+            statusCode: 1,
+        }
     } );
     return res.data;
 }
@@ -32,4 +35,9 @@ export const getOrganizationTeacher = async ( id ) => {
 export const getOrganizationLecture = async ( id ) => {
     const res = await axiosInstance.get( "/v1/organization/" + id + "/lectures" );
     return res.data;
+}
+
+export const applyOrganization = async ( organizationId ) => {
+    const res = await axiosInstance.post( "/v1/organization/apply/" + organizationId );
+    return res;
 }

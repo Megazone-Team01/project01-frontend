@@ -25,7 +25,7 @@ export const AdminUserCreatePage = () => {
         email: '',
         password: '',
         phone: '',
-        addressCode: '',
+        address: '',
         addressDetail: '',
         role: '',
         type: ''
@@ -61,7 +61,7 @@ export const AdminUserCreatePage = () => {
             formData.email.length === 0 ||
             formData.password.length === 0 ||
             formData.phone.length === 0 ||
-            formData.addressCode.length === 0 ||
+            formData.address.length === 0 ||
             formData.role.length === 0 ||
             formData.type.length === 0
         ) {
@@ -157,11 +157,11 @@ export const AdminUserCreatePage = () => {
                             </Field>
                             <div className="grid grid-cols-2 gap-4">
                                 <Field>
-                                    <FieldLabel htmlFor="city"> 우편 번호 </FieldLabel>
+                                    <FieldLabel htmlFor="city"> 도로명 주소 </FieldLabel>
                                     <Input
-                                        onChange={(e) => setFormData({...formData, addressCode: e.target.value})}
-                                        value={formData.addressCode}
-                                        id="city" type="text" placeholder="우편번호를 입력하세요"/>
+                                        onChange={(e) => setFormData({...formData, address: e.target.value})}
+                                        value={formData.address}
+                                        id="city" type="text" placeholder="도로명을 입력하세요"/>
                                 </Field>
                                 <Field>
                                     <FieldLabel htmlFor="zip"> 상세 주소</FieldLabel>

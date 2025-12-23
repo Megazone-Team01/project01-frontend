@@ -17,7 +17,7 @@ export const createOrganization = async ( data ) => {
         webpage: data.webpage,
         ownerId: data.ownerId,
         tel: data.tel,
-        addressCode: data.addressCode,
+        address: data.address,
         addressDetail: data.addressDetail,
         isOnline: data.type,
         description: data.description

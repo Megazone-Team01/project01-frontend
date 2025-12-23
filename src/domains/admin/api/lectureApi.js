@@ -50,6 +50,7 @@ export const createLecture = async (data) => {
         description: data.description,
         type: data.type,
         fileId: data.fileId,
+        price: data.price,
         maxNum: data.maxNum,
         roomId: data.roomId,
         startTimeAt: data.startTimeAt,
@@ -85,8 +86,9 @@ export const deleteLecture = async ( id, isOnline ) => {
 
 export const updateLecture = async ( data ) => {
     const id = data.id;
+    console.log( data.isOnline )
     const req = {
-        isOnline : data.isOnline,
+        isOnline : data.isOnline ? 1 : 0,
         name : data.name,
         price: data.price,
         startAt: data.startAt,

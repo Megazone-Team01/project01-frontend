@@ -251,8 +251,6 @@ const OrganizationServiceSection = ({ organizationId }) => {
         fetchData()
     }, []);
 
-    console.log(organizationLectures)
-
     return (
         <section className="w-full bg-slate-50 border-t border-slate-200">
             <div className="relative overflow-hidden w-full min-h-[900px]">
@@ -306,25 +304,91 @@ const OrganizationServiceSection = ({ organizationId }) => {
                     {/* 카드 그리드 */}
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                         {
-                            activeTab === 0 ? (
-                                organizationTeachers.map((t, index) => (
-                                    <Card>
-                                        <CardContent>
-                                            <div key={index} className="flex">
-                                                <div className="flex flex-2 flex-col">
-                                                    <CardTitle className="font-bold text-xl"> {t.userName} </CardTitle>
-                                                    <CardDescription className="text-gray-400">
-                                                        {t.organizationName}
-                                                    </CardDescription>
-                                                </div>
-                                                <div className="flex flex-1 flex-col">
-                                                    <div className="w-full min-h-36 flex justify-center items-center">
-                                                        <ImageIcon size={25} />
-                                                    </div>
-                                                </div>
+                        activeTab === 0 ? (
+                            organizationTeachers.map( ( t, index) => (
+                                <Card>
+                                    <CardContent>
+                                        <div key={index} className="flex">
+                                            <div className="flex flex-2 flex-col">
+                                                <CardTitle className="font-bold text-xl"> {t.userName } </CardTitle>
+                                                <CardDescription className="text-gray-400">
+                                                    { t.organizationName }
+                                                </CardDescription>
                                             </div>
-                                        </CardContent>
-                                    </Card>
+                                            <div className="flex flex-1 flex-col">
+                                                {
+                                                    t.url === null ?
+                                                        <div
+                                                            className="w-full min-h-36 flex justify-center items-center">
+                                                            <ImageIcon size={25}/>
+                                                        </div>
+                                                        :
+                                                        <img
+                                                            className="aspect-square"
+                                                            src={`${import.meta.env.VITE_FILE_URL_HEADER}${t.url}`}
+                                                            alt={t.url}/>
+                                                }
+                                            </div>
+                                        </div>
+                                    </CardContent>
+                                </Card>
+                            ))
+                        )
+                        : activeTab === 1 ? (
+                            organizationLectures.map( ( l, index) => (
+                                <Card>
+                                    <CardContent>
+                                        <div key={index} className="flex flex-col">
+                                            <div className="flex flex-col">
+                                                {
+                                                    l.thumbnail != null ?
+                                                        <img
+                                                            className="object-contain max-w-full max-h-40"
+                                                            src={`${import.meta.env.VITE_FILE_URL_HEADER}${l.thumbnail}`}
+                                                            alt={l.thumbnail}/>
+                                                        :
+                                                        <div className="w-full h-40 flex justify-center items-center">
+                                                            <ImageIcon size={25}/>
+                                                        </div>
+                                                }
+                                            </div>
+                                            <div className="flex flex-col">
+                                            <CardTitle className="font-bold text-xl"> {l.name} </CardTitle>
+                                                <CardDescription className="text-gray-500 text-md">
+                                                    {l.teacherName}
+                                                </CardDescription>
+                                                <CardDescription className="text-gray-400">
+                                                    {
+                                                        l.category.map((name, index) => (
+                                                            <span key={name}>
+                                                                {name}{index < l.category.length - 1 ? " > " : ""}
+                                                            </span>
+                                                        ))
+                                                    }
+                                                </CardDescription>
+                                            </div>
+                                        </div>
+                                    </CardContent>
+                                </Card>
+                            ))
+                                )
+                                : activeTab === 2 ? (
+                                        teachersLoading ? (
+                                            Array.from({length: 3}).map((_, i) => (
+                                                <div key={i} className="h-64 bg-slate-100 rounded-[40px] animate-pulse"/>
+                                ))
+                            ) : teachers.length === 0 ? (
+                                <div className="col-span-full text-center py-32 bg-white border-2 border-dashed border-slate-200 rounded-[40px]">
+                                    <UserCheck size={48} className="mx-auto mb-4 opacity-20" />
+                                    <p className="text-slate-400 font-bold">등록된 상담 전문가가 없습니다.</p>
+                                </div>
+                            ) : (
+                                teachers.map(teacher => (
+                                    <TeacherCard
+                                        key={teacher.teacherId || teacher.id}
+                                        teacher={teacher}
+                                        onClick={() => handleOpenModal(teacher)}
+                                    />
                                 ))
                             )
                                 : activeTab === 1 ? (
