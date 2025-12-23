@@ -12,7 +12,7 @@ function App() {
 
     useEffect(() => {
         const refreshToken = localStorage.getItem("refreshToken");
-        console.log("현재 Redux 상태:", auth);
+
         if (refreshToken) {
             getNewAccessToken(refreshToken)
             .then((res) => {

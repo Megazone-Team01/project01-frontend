@@ -14,11 +14,8 @@ import {Button} from "@/components/ui/button.js";
 import {Separator} from "@/components/ui/separator.js";
 import {
     BarChart3Icon,
-    BellIcon, BellMinusIcon, BellOffIcon, BookIcon,
-    ComputerIcon,
+    BellIcon, BellOffIcon, BookIcon,
     LogOutIcon,
-    MessageCircleIcon,
-    SettingsIcon,
     UserIcon,
     FilePlus
 } from "lucide-react";
@@ -35,7 +32,7 @@ import {Toggle} from "@/components/ui/toggle.js";
 import {getProfileInfo} from "@/domains/user/api/profile.js";
 import {useSSE} from "@/routes/SSEContext.jsx";
 
-export default function Header({ isLoggedIn, hasNotifications, hasMessages }) {
+export default function Header({  hasNotifications }) {
 
     const [isScrolled, setIsScrolled] = useState(false);
     const dispatch = useDispatch();
@@ -47,7 +44,7 @@ export default function Header({ isLoggedIn, hasNotifications, hasMessages }) {
     const [ isOnline, setOnline ] = useState(false);
 
     const [ userInfo, setUserInfo ] = useState({
-        fileUrl: '',
+        fileUrl: null,
         name: ''
     });
 
@@ -68,6 +65,7 @@ export default function Header({ isLoggedIn, hasNotifications, hasMessages }) {
         const fetchData = async () => {
             if( user !== null ){
                 const data = await getProfileInfo( user.id );
+                console.log("getProfileInfo!!", data);
                 setUserInfo(data);
             }
             else {
@@ -87,7 +85,6 @@ export default function Header({ isLoggedIn, hasNotifications, hasMessages }) {
     };
 
     console.log( user )
-
     return (
         <nav
             className={cn([
@@ -110,16 +107,35 @@ export default function Header({ isLoggedIn, hasNotifications, hasMessages }) {
             </div>
             {isAuthenticated ? (
                 <div className="flex item-center gap-2">
-                    <Button size="icon" variant="ghost" asChild className="relative">
-                        <Link to="/upload">
-                            {user.roleName !== "TEACHER" ?
-                                <>
-                                    <FilePlus className="size-5" />
-                                    {hasNotifications && (
-                                        <div className="absolute top-1.5 right-1.5 size-2 bg-red-500 rounded-full" />
-                                    )}</> : null}
-                        </Link>
-                    </Button>                                 
+                    <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                            <Button size="icon" variant="ghost" className="relative">
+                                {user.roleName !== "TEACHER" ? (
+                                    <>
+                                        <FilePlus className="size-5" />
+                                        {hasNotifications && (
+                                            <div className="absolute top-1.5 right-1.5 size-2 bg-red-500 rounded-full" />
+                                        )}
+                                    </>
+                                ) : null}
+                            </Button>
+                        </DropdownMenuTrigger>
+
+                        {user.roleName !== "TEACHER" && (
+                            <DropdownMenuContent align="end">
+                                <DropdownMenuItem asChild>
+                                    <Link to="/upload/offline" className="cursor-pointer">
+                                        오프라인 강의 업로드
+                                    </Link>
+                                </DropdownMenuItem>
+                                <DropdownMenuItem asChild>
+                                    <Link to="/upload/online" className="cursor-pointer">
+                                        온라인 강의 업로드
+                                    </Link>
+                                </DropdownMenuItem>
+                            </DropdownMenuContent>
+                        )}
+                    </DropdownMenu>
                     <DropdownMenu>
                         <DropdownMenuTrigger asChild>
                             <div className="relative flex justify-center items-center hover:cursor-pointer px-3">
@@ -164,9 +180,16 @@ export default function Header({ isLoggedIn, hasNotifications, hasMessages }) {
                     <DropdownMenu>
                     <DropdownMenuTrigger asChild>
                         <Avatar>
-                                <AvatarImage
-                                    src={`${import.meta.env.VITE_FILE_URL_HEADER}${userInfo.fileUrl}`}
-                                />
+                            <AvatarImage
+                                src={
+                                    userInfo?.fileUrl
+                                        ? `${import.meta.env.VITE_FILE_URL_HEADER}${userInfo.fileUrl}`
+                                        : undefined
+                                }
+                                onError={(e) => {
+                                    e.target.style.display = 'none'; // 에러나면 이미지 숨김
+                                }}
+                            />
                                 <AvatarFallback>
                                     <UserIcon className="text-gray-400" />
                                 </AvatarFallback>
