@@ -42,7 +42,7 @@ const OrganizationServiceSection = ({ organizationId }) => {
     const { user, isAuthenticated } = useSelector((state) => state.auth);
     const userType = user?.type;
 
-    const [activeTab, setActiveTab] = useState('meeting');
+    const [activeTab, setActiveTab] = useState(0);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [selectedItem, setSelectedItem] = useState(null);
     const [step, setStep] = useState('select');
@@ -325,10 +325,10 @@ const OrganizationServiceSection = ({ organizationId }) => {
                         {
                             activeTab === 0 ? (
                                 organizationTeachers.map((t, index) => (
-                                    <Card>
-                                        <CardContent>
+                                    <Card className="rounded-none p-0">
+                                        <CardContent className="p-0">
                                             <div key={index} className="flex">
-                                                <div className="flex flex-2 flex-col">
+                                                <div className="flex flex-1 flex-col p-4">
                                                     <CardTitle className="font-bold text-xl"> {t.userName} </CardTitle>
                                                     <CardDescription className="text-gray-400">
                                                         {t.organizationName}
@@ -343,7 +343,7 @@ const OrganizationServiceSection = ({ organizationId }) => {
                                                             </div>
                                                             :
                                                             <img
-                                                                className="aspect-square"
+                                                                className="aspect-square object-cover max-w-full"
                                                                 src={`${import.meta.env.VITE_FILE_URL_HEADER}${t.url}`}
                                                                 alt={t.url} />
                                                     }
@@ -355,14 +355,14 @@ const OrganizationServiceSection = ({ organizationId }) => {
                             )
                                 : activeTab === 1 ? (
                                     organizationLectures.map((l, index) => (
-                                        <Card>
-                                            <CardContent>
+                                        <Card className="p-0 rounded-none">
+                                            <CardContent className="p-0">
                                                 <div key={index} className="flex flex-col">
                                                     <div className="flex flex-col">
                                                         {
                                                             l.thumbnail != null ?
                                                                 <img
-                                                                    className="object-contain max-w-full max-h-40"
+                                                                    className="object-cover max-w-full max-h-40"
                                                                     src={`${import.meta.env.VITE_FILE_URL_HEADER}${l.thumbnail}`}
                                                                     alt={l.thumbnail} />
                                                                 :
@@ -371,7 +371,7 @@ const OrganizationServiceSection = ({ organizationId }) => {
                                                                 </div>
                                                         }
                                                     </div>
-                                                    <div className="flex flex-col">
+                                                    <div className="flex flex-col p-3">
                                                         <CardTitle className="font-bold text-xl"> {l.name} </CardTitle>
                                                         <CardDescription className="text-gray-500 text-md">
                                                             {l.teacherName}
