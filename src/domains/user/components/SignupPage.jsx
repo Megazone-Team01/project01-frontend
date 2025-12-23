@@ -174,7 +174,7 @@ export default function SignupPage() {
                             <div key={val} className="flex items-center gap-2">
                                 <RadioGroupItem value={val} id={val.toLowerCase()} />
                                 <Label htmlFor={val.toLowerCase()}>
-                                    {val === "ALL" ? "모두" : val === "ONLINE" ? "온라인" : "오프라인"}
+                                    {val === "ALL" ? "온/오프라인" : val === "ONLINE" ? "온라인" : "오프라인"}
                                 </Label>
                             </div>
                         ))}
