@@ -10,13 +10,6 @@ export default defineConfig({
   server: {
     headers: {
       'Content-Security-Policy': "img-src 'self' data: https://* http://localhost:* blob:"
-    },
-
-  },
-  proxy: {
-    '/uploads': {
-      target: 'http://localhost:8080',  // 백엔드 주소
-      changeOrigin: true,
     }
   },
   resolve: {

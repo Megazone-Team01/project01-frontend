@@ -3,6 +3,7 @@ import LectureCard from "@/components/common/LectureCard.jsx";
 import { useState} from "react";
 import useHomeLectures from "@/domains/home/hook/useHomeLectures.js";
 import {TabButtons} from "@/domains/home/components/TabButtons.jsx";
+import { useSelector } from "react-redux";
 import Loading from "@/components/common/loading.jsx";
 import {Link} from "react-router";
 
@@ -18,7 +19,8 @@ export default function Home() {
     const [activeTab, setActiveTab] = useState("online");
     const { lectures, isLoading } = useHomeLectures(activeTab);
 
-    console.log( lectures )
+    const auth = useSelector((state) => state.auth);
+
 
     return (
         <div>
@@ -41,7 +43,7 @@ export default function Home() {
                          {!isLoading ? lectures?.map((lecture) => (
                              <Link to={`/lecture/${activeTab}/${lecture.id}`} key={lecture.id}>
                                  <LectureCard
-                                     imgUrl={lecture.thumbnail}
+                                     imgUrl="https://picsum.photos/400/200"
                                      title={lecture.title}
                                      description={lecture.description}
                                  />

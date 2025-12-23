@@ -8,6 +8,7 @@ import OrganizationCard from "@/domains/lecture/components/common/OrganizationCa
 import {Separator} from "@/components/ui/separator.js";
 import LoadingDetail from "@/components/common/LoadingDetail.jsx";
 import ErrorPage from "@/components/common/ErrorPage.jsx";
+import {useSelector} from "react-redux";
 import useLectureDetail from "@/domains/lecture/hook/useLectureDetail.js";
 
 
@@ -17,7 +18,10 @@ function OfflineDetail() {
     const lectureType = location.pathname.includes("/online") ? "online" : "offline";
     const {data, isLoading,isError} = useLectureDetail(offlineId, lectureType);
 
-    console.log(data.thumbnail)
+    const enrolled = useSelector(state => state.lecture.enrolled);
+
+    console.log(data,"detail");
+
     if (isLoading) {
         return <LoadingDetail />;
     }
@@ -31,7 +35,7 @@ function OfflineDetail() {
         <div className="max-w-screen-lg mx-auto p-2">
             <div className="flex flex-col gap-5 sm:grid sm:grid-cols-[1fr_2fr]">
                 <img
-                    src={`${import.meta.env.VITE_FILE_URL_HEADER}${data.thumbnail}`}
+                    src="https://picsum.photos/400/200"
                     alt="thumbnail"
                     className="w-[400px] h-[300px] object-fit"
                 />

@@ -32,7 +32,7 @@ function Online() {
                         <CourseCard
                             key={online.id}
                             id={online.id}
-                            imgUrl={online.thumbnail}
+                            imgUrl="https://picsum.photos/400/200"
                             title={online.title}
                             startAt={online.startTime}
                             endAt={online.endTime}

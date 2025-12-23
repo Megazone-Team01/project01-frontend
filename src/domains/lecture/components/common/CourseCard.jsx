@@ -15,7 +15,7 @@ function CourseCard({id,imgUrl, title, description, startAt, endAt}) {
                 <div className="w-full h-full flex flex-col overflow-hidden shadow-2xl">
                     <div className="w-full h-48 flex-shrink-0"> {/* 이미지 높이 고정 */}
                         <img
-                            src={`${import.meta.env.VITE_FILE_URL_HEADER}${imgUrl}`}
+                            src={imgUrl}
                             alt="thumbnail"
                             className="w-full h-full object-cover"
                         />
