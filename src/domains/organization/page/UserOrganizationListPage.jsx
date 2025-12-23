@@ -10,6 +10,7 @@ export const UserOrganizationListPage = () => {
     const [ organizations, setOrganizations ] = useState([]);
     const [ loading, setLoading ] = useState(false);
     const [error, setError] = useState(null);
+    const [ selected, setSelected] = useState("전체");
 
     const navigate = useNavigate();
 
@@ -30,6 +31,7 @@ export const UserOrganizationListPage = () => {
 
     const searchFilter = async ( select ) => {
         setLoading(true);
+        setSelected( select === 1 ? "온라인" : select === 2 ? "오프라인" : select === 3 ? "전체" : "온라인 + 오프라인" )
         if( select !== 3 ) {
             const data = await getOrganizationsWithFilter( { isOnline: select } );
             setOrganizations( data );
@@ -53,7 +55,9 @@ export const UserOrganizationListPage = () => {
                 <div className="w-2/3">
                     <Select onValueChange={(value) => searchFilter(value)}>
                         <SelectTrigger className="w-1/2">
-                            <SelectValue placeholder="전체"/>
+                            <SelectValue
+                                placeholder={selected}
+                            />
                         </SelectTrigger>
                         <SelectContent>
                             <SelectItem value={3}> 전체 </SelectItem>

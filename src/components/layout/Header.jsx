@@ -9,16 +9,13 @@ import {
     NavigationMenuList,
     NavigationMenuTrigger,
 } from "@/components/ui/navigation-menu.js";
-import {cn} from "@/lib/utils.js";
-import {Button} from "@/components/ui/button.js";
-import {Separator} from "@/components/ui/separator.js";
+import { cn } from "@/lib/utils.js";
+import { Button } from "@/components/ui/button.js";
+import { Separator } from "@/components/ui/separator.js";
 import {
     BarChart3Icon,
-    BellIcon, BellMinusIcon, BellOffIcon, BookIcon,
-    ComputerIcon,
+    BellIcon, BellOffIcon, BookIcon,
     LogOutIcon,
-    MessageCircleIcon,
-    SettingsIcon,
     UserIcon,
     FilePlus
 } from "lucide-react";
@@ -28,14 +25,14 @@ import {
     DropdownMenuLabel, DropdownMenuSeparator,
     DropdownMenuTrigger
 } from "@/components/ui/dropdown-menu.js";
-import {Avatar, AvatarFallback, AvatarImage} from "@/components/ui/avatar.js";
-import {useEffect, useState} from "react";
-import {Item} from "@/components/ui/item.js";
-import {Toggle} from "@/components/ui/toggle.js";
-import {getProfileInfo} from "@/domains/user/api/profile.js";
-import {useSSE} from "@/routes/SSEContext.jsx";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar.js";
+import { useEffect, useState } from "react";
+import { Item } from "@/components/ui/item.js";
+import { Toggle } from "@/components/ui/toggle.js";
+import { getProfileInfo } from "@/domains/user/api/profile.js";
+import { useSSE } from "@/routes/SSEContext.jsx";
 
-export default function Header({ isLoggedIn, hasNotifications, hasMessages }) {
+export default function Header({  hasNotifications }) {
 
     const [isScrolled, setIsScrolled] = useState(false);
     const dispatch = useDispatch();
@@ -44,9 +41,9 @@ export default function Header({ isLoggedIn, hasNotifications, hasMessages }) {
     const { notifications } = useSSE();
 
     const { isAuthenticated, user } = useSelector((state) => state.auth ?? {});
-    const [ isOnline, setOnline ] = useState(false);
+    const [isOnline, setOnline] = useState(false);
 
-    const [ userInfo, setUserInfo ] = useState({
+    const [userInfo, setUserInfo] = useState({
         fileUrl: '',
         name: ''
     });
@@ -66,19 +63,19 @@ export default function Header({ isLoggedIn, hasNotifications, hasMessages }) {
 
     useEffect(() => {
         const fetchData = async () => {
-            if( user !== null ){
-                const data = await getProfileInfo( user.id );
+            if (user !== null) {
+                const data = await getProfileInfo(user.id);
                 setUserInfo(data);
             }
             else {
-                setUserInfo( {
+                setUserInfo({
                     fileUrl: '',
                     name: ''
                 })
             }
         }
         fetchData();
-    }, [ isAuthenticated ]);
+    }, [isAuthenticated]);
 
     // 로그아웃
     const handleLogout = () => {
@@ -86,6 +83,7 @@ export default function Header({ isLoggedIn, hasNotifications, hasMessages }) {
         navigate("/");      // 홈으로 이동
     };
 
+    console.log(user)
 
     return (
         <nav
@@ -101,24 +99,43 @@ export default function Header({ isLoggedIn, hasNotifications, hasMessages }) {
                 </Link>
                 <Separator orientation="vertical" className="h-6 mx-4" />
                 <Item
-                    onClick={ isOnline ? () => navigate("/organizations") : () => navigate("/organizations") }
+                    onClick={isOnline ? () => navigate("/organizations") : () => navigate("/organizations")}
                     className="text-white hover:font-bold hover:cursor-pointer"> 아카데미 </Item>
                 <Item
-                    onClick={ isOnline ? () => navigate("/lecture/online") : () => navigate("/lecture/offline") }
+                    onClick={isOnline ? () => navigate("/lecture/online") : () => navigate("/lecture/offline")}
                     className="text-white hover:font-bold hover:cursor-pointer"> 강의 </Item>
             </div>
             {isAuthenticated ? (
                 <div className="flex item-center gap-2">
-                    <Button size="icon" variant="ghost" asChild className="relative">
-                        <Link to="/upload">
-                            {user.roleName !== "TEACHER" ?
-                                <>
-                                    <FilePlus className="size-5" />
-                                    {hasNotifications && (
-                                        <div className="absolute top-1.5 right-1.5 size-2 bg-red-500 rounded-full" />
-                                    )}</> : null}
-                        </Link>
-                    </Button>                                 
+                    <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                            <Button size="icon" variant="ghost" className="relative">
+                                {user.roleName !== "TEACHER" ? (
+                                    <>
+                                        <FilePlus className="size-5" />
+                                        {hasNotifications && (
+                                            <div className="absolute top-1.5 right-1.5 size-2 bg-red-500 rounded-full" />
+                                        )}
+                                    </>
+                                ) : null}
+                            </Button>
+                        </DropdownMenuTrigger>
+
+                        {user.roleName !== "TEACHER" && (
+                            <DropdownMenuContent align="end">
+                                <DropdownMenuItem asChild>
+                                    <Link to="/offline/upload" className="cursor-pointer">
+                                        오프라인 강의 업로드
+                                    </Link>
+                                </DropdownMenuItem>
+                                <DropdownMenuItem asChild>
+                                    <Link to="/online/upload" className="cursor-pointer">
+                                        온라인 강의 업로드
+                                    </Link>
+                                </DropdownMenuItem>
+                            </DropdownMenuContent>
+                        )}
+                    </DropdownMenu>
                     <DropdownMenu>
                         <DropdownMenuTrigger asChild>
                             <div className="relative flex justify-center items-center hover:cursor-pointer px-3">
@@ -127,8 +144,8 @@ export default function Header({ isLoggedIn, hasNotifications, hasMessages }) {
                                     notifications.length > 0 && (
                                         <span
                                             className="absolute -top-1 -right-1 min-w-[18px] h-[18px] flex items-center justify-center bg-red-500 text-white text-[10px] font-semibold rounded-full px-1">
-                                        {notifications.length}
-                                    </span>
+                                            {notifications.length}
+                                        </span>
                                     )
                                 }
                             </div>
@@ -143,13 +160,13 @@ export default function Header({ isLoggedIn, hasNotifications, hasMessages }) {
                                                 key={index + "_N"}
                                                 className="rounded-none data-[highlighted]:text-black data-[state=open]:text-black
                                                 data-[highlighted]:bg-yellow-200 data-[state=open]:bg-yellow-200 hover:bg-yellow-200 active:bg-yellow-200 active:text-black hover:cursor-pointer bg-yellow-100 min-h-[60px]">
-                                                <DropdownMenuLabel> { noti.message } </DropdownMenuLabel>
+                                                <DropdownMenuLabel> {noti.message} </DropdownMenuLabel>
                                             </DropdownMenuItem>
                                             <DropdownMenuSeparator className="my-0" />
                                         </div>
                                     ))
                                 )
-                                :
+                                    :
                                     <DropdownMenuItem
                                         className="rounded-none bg-white disabled p-3">
                                         <DropdownMenuLabel className="flex justify-center items-center gap-3">
@@ -163,9 +180,16 @@ export default function Header({ isLoggedIn, hasNotifications, hasMessages }) {
                     <DropdownMenu>
                     <DropdownMenuTrigger asChild>
                         <Avatar>
-                                <AvatarImage
-                                    src={`${import.meta.env.VITE_FILE_URL_HEADER}${userInfo.fileUrl}`}
-                                />
+                            <AvatarImage
+                                src={
+                                    userInfo?.fileUrl
+                                        ? `${import.meta.env.VITE_FILE_URL_HEADER}${userInfo.fileUrl}`
+                                        : undefined
+                                }
+                                onError={(e) => {
+                                    e.target.style.display = 'none'; // 에러나면 이미지 숨김
+                                }}
+                            />
                                 <AvatarFallback>
                                     <UserIcon className="text-gray-400" />
                                 </AvatarFallback>
@@ -174,26 +198,28 @@ export default function Header({ isLoggedIn, hasNotifications, hasMessages }) {
                         <DropdownMenuContent className="w-56">
                             <DropdownMenuLabel className="flex flex-col gap-1">
                                 <span className="font-medium">
-                                    { userInfo.name }
+                                    {userInfo.name}
                                 </span>
                                 <span className="text-xs text-muted-foreground">
-                                    {user.role === "ADMIN" ? "관리자" : user.role === "TEACHER" ? "강사" : "학생" }
-                                  </span>
+                                    {user.role === "ADMIN" ? "관리자" : user.role === "TEACHER" ? "강사" : "학생"}
+                                </span>
                             </DropdownMenuLabel>
                             <DropdownMenuSeparator />
                             <DropdownMenuGroup className="flex flex-col gap-1">
                                 <DropdownMenuItem
                                     className="cursor-pointer"
                                     onClick={() => {
-                                        if (user?.roleName === 'TEACHER') {
+                                        if (user?.role === 'TEACHER') {
                                             navigate('/teacher/dashboard');
+                                        } else if (user?.role === 'ADMIN') {
+                                            navigate('/admin');
                                         } else {
                                             navigate('/reservations/my');
                                         }
                                     }}
                                 >
                                     <BarChart3Icon className="size-4 mr-2" />
-                                    Dashboard
+                                    대시보드
                                 </DropdownMenuItem>
                                 <DropdownMenuItem asChild className="cursor-pointer">
                                     <Link to="/profile">
@@ -201,23 +227,10 @@ export default function Header({ isLoggedIn, hasNotifications, hasMessages }) {
                                         MyPage
                                     </Link>
                                 </DropdownMenuItem>
-                                {
-                                    user.role !== "STUDENT" ?
-                                        <DropdownMenuItem asChild className="cursor-pointer">
-                                            <Link to={
-                                                user.role === "ADMIN" ? "/admin" : "/"
-                                            }>
-                                                <BookIcon className="size-4 mr-2"/>
-                                                관리
-                                            </Link>
-                                        </DropdownMenuItem>
-                                        :
-                                        ""
-                                }
                             </DropdownMenuGroup>
                             <DropdownMenuSeparator />
                             <DropdownMenuItem className="cursor-pointer" onClick={handleLogout}>
-                                <LogOutIcon className="size-4 mr-2"/>
+                                <LogOutIcon className="size-4 mr-2" />
                                 Logout
                             </DropdownMenuItem>
                         </DropdownMenuContent>
@@ -234,7 +247,7 @@ export default function Header({ isLoggedIn, hasNotifications, hasMessages }) {
                                 data-[state=on]:bg-white
                                 data-[state=on]:text-red-500
                                 ">
-                                <span className="text-xs">{ isOnline ? "ON" : "OFF"} </span>
+                                <span className="text-xs">{isOnline ? "ON" : "OFF"} </span>
                             </div>
                         </Toggle>
                     </div>
@@ -248,6 +261,22 @@ export default function Header({ isLoggedIn, hasNotifications, hasMessages }) {
                     <Button asChild>
                         <Link to="/sign">Sign Up</Link>
                     </Button>
+                    <div className="flex justify-end items-center">
+                        <Toggle variant="outline" pressed={isOnline} onPressedChange={setOnline} asChild>
+                            <div
+                                className="
+                                hover:cursor-pointer hover:bg-transparent
+                                border-white text-white
+                                hover:text-white
+                                hover:font-bold
+                                data-[state=on]:font-bold
+                                data-[state=on]:bg-white
+                                data-[state=on]:text-red-500
+                                ">
+                                <span className="text-xs">{isOnline ? "ON" : "OFF"} </span>
+                            </div>
+                        </Toggle>
+                    </div>
                 </div>
             )}
         </nav>

@@ -26,6 +26,7 @@ import { format, isBefore, startOfDay, isToday, isSameDay } from 'date-fns';
 import { ko } from 'date-fns/locale';
 import axiosInstance from '@/common/api/axiosInstance';
 
+import ApproveOrganization from "@/domains/user/page/ApproveOrganization.jsx";
 // API 함수들
 const teacherApi = {
     getTeacherMeetings: async () => {
@@ -34,9 +35,9 @@ const teacherApi = {
     },
     approveMeeting: async (meetingId, isOnline, location = null) => {
         const response = await axiosInstance.patch(
-            `/v1/meetings/${meetingId}/approve`,
+            `/v1/meetings/${meetingId}/approve?isOnline=${isOnline}`,
             { location },
-            { params: { isOnline } }
+            // { params: { isOnline } }
         );
         return response.data;
     },
@@ -53,7 +54,7 @@ const teacherApi = {
 // 사이드 메뉴 아이템
 const MENU_ITEMS = [
     { id: 'meetings', label: '상담 관리', icon: Users, path: '/teacher/dashboard' },
-    { id: 'organization', label: '기관 승인', icon: Building2, path: '/teacher/organization' },
+    { id: 'organization', label: '기관 신청 승인', icon: Building2, path: '/teacher/organization' },
     { id: 'settings', label: '설정', icon: Settings, path: '/teacher/settings' },
 ];
 
@@ -431,6 +432,13 @@ const TeacherDashboard = () => {
         setError(null);
         try {
             const data = await teacherApi.getTeacherMeetings();
+            console.log('=== API 응답 확인 ===');
+            console.log('전체:', data);
+            if (data?.[0]) {
+                console.log('첫 번째 항목:', data[0]);
+                console.log('online:', data[0].online);
+                console.log('isOnline:', data[0].isOnline);
+            }
             setMeetings(Array.isArray(data) ? data : []);
         } catch (err) {
             console.error('상담 목록 조회 실패:', err);
@@ -535,47 +543,34 @@ const TeacherDashboard = () => {
                                                 selected={selectedDate}
                                                 onSelect={(date) => date && setSelectedDate(date)}
                                                 locale={ko}
-                                                className="w-full max-w-md mx-auto"
-                                                components={{
-                                                    DayContent: ({ date }) => (
-                                                        <div className="relative w-full h-full flex items-center justify-center">
-                                                            {date.getDate()}
-                                                            {hasEventOnDate(date) && (
-                                                                <span className="absolute bottom-0 left-1/2 -translate-x-1/2 w-1.5 h-1.5 bg-blue-500 rounded-full" />
-                                                            )}
-                                                        </div>
-                                                    ),
+                                                disabled={(date) => {
+                                                    const today = new Date();
+                                                    today.setHours(0, 0, 0, 0);
+                                                    return date < today;
                                                 }}
+                                                className="rounded-2xl border border-slate-200 shadow-sm p-4 w-full [&_table]:w-full"
                                                 classNames={{
                                                     months: "flex flex-col w-full",
                                                     month: "space-y-4 w-full",
                                                     caption: "flex justify-between items-center px-2 mb-4",
                                                     caption_label: "text-xl font-bold",
-                                                    nav: "flex items-center gap-1",
+                                                    nav: "flex items-center gap-2",
                                                     nav_button: "h-9 w-9 bg-slate-100 hover:bg-slate-200 rounded-lg flex items-center justify-center transition-colors",
+                                                    nav_button_previous: "",
+                                                    nav_button_next: "",
                                                     table: "w-full border-collapse",
                                                     head_row: "flex w-full",
-                                                    head_cell: "text-slate-500 font-medium text-sm flex-1 text-center py-2",
-                                                    row: "flex w-full",
-                                                    cell: "flex-1 text-center p-1",
-                                                    day: "w-full aspect-square flex items-center justify-center rounded-xl text-base hover:bg-slate-100 cursor-pointer transition-colors",
-                                                    day_selected: "bg-blue-500 text-white hover:bg-blue-600",
-                                                    day_today: "bg-slate-100 font-bold",
+                                                    head_cell: "text-slate-600 font-bold text-base flex-1 text-center py-3",
+                                                    row: "flex w-full mt-2",
+                                                    cell: "flex-1 text-center p-0 relative",
+                                                    day: "w-full aspect-square flex items-center justify-center rounded-xl text-base font-semibold hover:bg-slate-100 cursor-pointer",
+                                                    day_selected: "bg-indigo-500 text-white hover:bg-indigo-600",
+                                                    day_today: "bg-slate-200 text-slate-900 font-bold",
                                                     day_outside: "text-slate-300",
+                                                    day_disabled: "text-slate-300 opacity-50 cursor-not-allowed hover:bg-transparent",
                                                 }}
                                             />
 
-                                            {/* 통계 */}
-                                            <div className="mt-6 pt-6 border-t border-slate-100 flex justify-center gap-4">
-                                                <div className="px-6 py-3 bg-yellow-50 rounded-xl text-center">
-                                                    <p className="text-2xl font-black text-yellow-600">{pendingMeetings.length}</p>
-                                                    <p className="text-xs text-slate-500">대기중</p>
-                                                </div>
-                                                <div className="px-6 py-3 bg-green-50 rounded-xl text-center">
-                                                    <p className="text-2xl font-black text-green-600">{meetings.filter(m => m.status === 1).length}</p>
-                                                    <p className="text-xs text-slate-500">승인됨</p>
-                                                </div>
-                                            </div>
                                         </div>
 
                                         {/* 상담 목록 */}
@@ -591,10 +586,13 @@ const TeacherDashboard = () => {
                                                         </span>
                                                     </h2>
                                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                                        {pendingMeetings.map((meeting) => (
+                                                        {pendingMeetings.map((meeting, index) => (
                                                             <MeetingCard
-                                                                key={`${meeting.isOnline ? 'on' : 'off'}-${meeting.meetingId}`}
-                                                                meeting={meeting}
+                                                                key={`pending-${meeting.meetingId}-${index}`}
+                                                                meeting={{
+                                                                    ...meeting,
+                                                                    isOnline: meeting.online ?? meeting.isOnline ?? false
+                                                                }}
                                                                 onApprove={handleApprove}
                                                                 onReject={handleReject}
                                                             />
@@ -620,10 +618,13 @@ const TeacherDashboard = () => {
                                                     </div>
                                                 ) : (
                                                     <div className="space-y-2">
-                                                        {selectedDateMeetings.filter(m => m.status !== 0).map((meeting) => (
+                                                        {selectedDateMeetings.filter(m => m.status !== 0).map((meeting, index) => (
                                                             <MeetingCard
-                                                                key={`${meeting.isOnline ? 'on' : 'off'}-${meeting.meetingId}`}
-                                                                meeting={meeting}
+                                                                key={`selected-${meeting.meetingId}-${index}`}
+                                                                meeting={{
+                                                                    ...meeting,
+                                                                    isOnline: meeting.online ?? meeting.isOnline ?? false
+                                                                }}
                                                                 onApprove={handleApprove}
                                                                 onReject={handleReject}
                                                                 compact
@@ -650,10 +651,13 @@ const TeacherDashboard = () => {
 
                                                     {showPastMeetings && (
                                                         <div className="mt-3 space-y-2">
-                                                            {pastMeetings.map((meeting) => (
+                                                            {pastMeetings.map((meeting, index) => (
                                                                 <MeetingCard
-                                                                    key={`${meeting.isOnline ? 'on' : 'off'}-${meeting.meetingId}`}
-                                                                    meeting={meeting}
+                                                                    key={`past-${meeting.meetingId}-${index}`}
+                                                                    meeting={{
+                                                                        ...meeting,
+                                                                        isOnline: meeting.online ?? meeting.isOnline ?? false
+                                                                    }}
                                                                     onApprove={handleApprove}
                                                                     onReject={handleReject}
                                                                     compact
@@ -677,10 +681,9 @@ const TeacherDashboard = () => {
                         )}
 
                         {activeMenu === 'organization' && (
+
                             <div className="text-center py-20 bg-white rounded-2xl border border-slate-200">
-                                <Building2 size={48} className="mx-auto mb-4 text-slate-300" />
-                                <p className="text-slate-400 font-bold text-lg">기관 승인 기능 준비중</p>
-                                <p className="text-slate-400 text-sm mt-2">곧 사용할 수 있습니다.</p>
+                                <ApproveOrganization />
                             </div>
                         )}
 

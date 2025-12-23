@@ -17,6 +17,7 @@ function Offline() {
         isError,
     } = useLectures("offline", searchType, page, searchKeyword);
 
+    console.log(offlineList, "flsit");
     const handlePageChange = (newPage) => {
         dispatch(setPage(newPage));
     };
@@ -35,7 +36,7 @@ function Offline() {
                         <CourseCard
                             key={offline.id}
                             id={offline.id}
-                            imgUrl="https://picsum.photos/400/200"
+                            imgUrl={offline.thumbnail}
                             title={offline.title}
                             startAt={offline.startTime}
                             endAt={offline.endTime}

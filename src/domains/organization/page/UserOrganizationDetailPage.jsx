@@ -1,5 +1,5 @@
 import OrganizationServiceSection from "../components/OrganizationServiceSection";
-import {useParams} from "react-router";
+import {useNavigate, useParams} from "react-router";
 import {Separator} from "@/components/ui/separator.js";
 import {Table, TableBody, TableCell, TableRow} from "@/components/ui/table.js";
 import {useEffect, useState} from "react";
@@ -9,6 +9,7 @@ import {Label} from "@/components/ui/label.js";
 import {Card, CardContent, CardHeader} from "@/components/ui/card.js";
 import {ImageIcon} from "lucide-react";
 import {Button} from "@/components/ui/button.js";
+import {useSelector} from "react-redux";
 
 
 export const UserOrganizationDetailPage = () => {
@@ -16,9 +17,17 @@ export const UserOrganizationDetailPage = () => {
     const [organization, setOrganization] = useState([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
+    const navigate = useNavigate()
+
+    const { isAuthenticated } = useSelector((state) => state.auth ?? {});
 
     const submitApply = async () => {
         try {
+            if( !isAuthenticated ) {
+                alert( "로그인이 필요합니다" )
+                navigate( "/login")
+                return;
+            }
             const flag = confirm( organization.name + "에 등록하시겠습니까?" );
             if( flag ){
                 await applyOrganization( id );

@@ -8,6 +8,7 @@ import {Separator} from "@/components/ui/separator.js";
 import OrganizationCard from "@/domains/lecture/components/common/OrganizationCard.jsx";
 import ErrorPage from "@/components/common/ErrorPage.jsx";
 import LoadingDetail from "@/components/common/LoadingDetail.jsx";
+import {useSelector} from "react-redux";
 
 function OnlineDetail() {
     // useParams()로 URL 변수 받기
@@ -16,7 +17,7 @@ function OnlineDetail() {
     const lectureType = location.pathname.includes("/online") ? "online" : "offline";
     const {data, isLoading ,isError} = useLectureDetail(onlineId, lectureType);
 
-    if (!isError) {
+    if (isError) {
         return <ErrorPage/>;
     }
 
@@ -24,12 +25,11 @@ function OnlineDetail() {
         return <LoadingDetail/>
     }
 
-    console.log("data", data)
     return (
         <div className="max-w-screen-lg mx-auto p-2">
             <div className="flex flex-col gap-5 sm:grid sm:grid-cols-[1fr_2fr]">
                 <img
-                    src="https://picsum.photos/400/200"
+                    src={`${import.meta.env.VITE_FILE_URL_HEADER}${data.thumbnail}`}
                     alt="thumbnail"
                     className="w-[400px] h-[300px] object-cover"
                 />
@@ -85,7 +85,7 @@ function OnlineDetail() {
                         <div>
                             <div className="grid grid-cols-2 gap-5">
                                 <div className="flex gap-2">
-                                    {!enrolled ? <AlertBox
+                                    {!data.exists ? <AlertBox
                                         text={"강의 신청"}
                                         startAt={data.startAt}
                                         endAt={data.endAt}
