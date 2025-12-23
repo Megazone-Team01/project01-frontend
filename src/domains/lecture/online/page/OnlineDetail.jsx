@@ -8,6 +8,7 @@ import {Separator} from "@/components/ui/separator.js";
 import OrganizationCard from "@/domains/lecture/components/common/OrganizationCard.jsx";
 import ErrorPage from "@/components/common/ErrorPage.jsx";
 import LoadingDetail from "@/components/common/LoadingDetail.jsx";
+import {useSelector} from "react-redux";
 
 function OnlineDetail() {
     // useParams()로 URL 변수 받기
@@ -16,7 +17,9 @@ function OnlineDetail() {
     const lectureType = location.pathname.includes("/online") ? "online" : "offline";
     const {data, isLoading ,isError} = useLectureDetail(onlineId, lectureType);
 
-    if (!isError) {
+    const enrolled = useSelector(state => state.lecture.enrolled);
+
+    if (isError) {
         return <ErrorPage/>;
     }
 
@@ -24,7 +27,6 @@ function OnlineDetail() {
         return <LoadingDetail/>
     }
 
-    console.log("data", data)
     return (
         <div className="max-w-screen-lg mx-auto p-2">
             <div className="flex flex-col gap-5 sm:grid sm:grid-cols-[1fr_2fr]">

@@ -27,14 +27,14 @@ const items = [
 function SliderBanner() {
 
     return (
-        <div className=" max-w-[1468px] mx-auto mb-20">
-            <Carousel className="relative">
+        <div className=" max-w-[1100px] mx-auto ">
+            <Carousel className="relative bottom-5">
                 <CarouselContent className="h-full">
                     {items.map((item) => (
                         <CarouselItem key={item.id}>
-                            <div className="flex justify-center items-center h-full min-h-[400px] md:min-h-[500px] lg:min-h-[600px] overflow-hidden rounded-2xl">
+                            <div className="flex justify-center items-center h-full min-h-[300px] md:min-h-[400px] lg:min-h-[500px] overflow-hidden rounded-2xl">
                                 <img
-                                    className="relative z-10 rounded-2xl overflow-hidden h-full w-full  object-cover"
+                                    className="relative z-10 rounded-2xl overflow-hidden h-[300px] md:h-[400px] lg:h-[500px] object-cover"
                                     src={item.image}
                                     alt={item.title}
                                 />
@@ -44,7 +44,7 @@ function SliderBanner() {
                 </CarouselContent>
 
                 {/* 중앙 정렬된 네비게이션 버튼 */}
-                <div className="absolute left-1/2 md:left-1/6 -translate-x-1/2 bottom-10 flex gap-2">
+                <div className="absolute left-1/2 md:left-1/6 -translate-x-1/2 bottom-25 flex gap-2">
                     <CarouselPrevious/>
                     <CarouselNext/>
                 </div>
