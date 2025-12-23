@@ -38,7 +38,7 @@ const MEETING_CATEGORIES = [
 
 const OrganizationServiceSection = ({ organizationId }) => {
 
-    const [activeTab, setActiveTab] = useState('meeting');
+    const [activeTab, setActiveTab] = useState(0);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [selectedItem, setSelectedItem] = useState(null);
     const [step, setStep] = useState('select');

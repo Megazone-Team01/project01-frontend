@@ -186,15 +186,19 @@ export default function Header({ isLoggedIn, hasNotifications, hasMessages }) {
                                 <DropdownMenuItem
                                     className="cursor-pointer"
                                     onClick={() => {
-                                        if (user?.roleName === 'TEACHER') {
+                                        if (user?.role === 'TEACHER') {
                                             navigate('/teacher/dashboard');
-                                        } else {
+                                        }
+                                        else if( user?.role === "ADMIN") {
+                                            navigate('/admin')
+                                        }
+                                        else if( user?.role === "STUDENT") {
                                             navigate('/reservations/my');
                                         }
                                     }}
                                 >
                                     <BarChart3Icon className="size-4 mr-2" />
-                                    Dashboard
+                                    대시보드
                                 </DropdownMenuItem>
                                 <DropdownMenuItem asChild className="cursor-pointer">
                                     <Link to="/profile">
@@ -202,19 +206,6 @@ export default function Header({ isLoggedIn, hasNotifications, hasMessages }) {
                                         마이페이지
                                     </Link>
                                 </DropdownMenuItem>
-                                {
-                                    user.role !== "STUDENT" ?
-                                        <DropdownMenuItem asChild className="cursor-pointer">
-                                            <Link to={
-                                                user.role === "ADMIN" ? "/admin" : "/"
-                                            }>
-                                                <BookIcon className="size-4 mr-2"/>
-                                                관리
-                                            </Link>
-                                        </DropdownMenuItem>
-                                        :
-                                        ""
-                                }
                             </DropdownMenuGroup>
                             <DropdownMenuSeparator />
                             <DropdownMenuItem className="cursor-pointer" onClick={handleLogout}>
