@@ -59,13 +59,15 @@ const MeetingStatusBadge = ({ status, statusName }) => {
 const MeetingCard = ({ meeting, onCancel, compact = false }) => {
     const [isProcessing, setIsProcessing] = useState(false);
 
+    const isOnline = meeting.online ?? meeting.isOnline ?? false;
+
     const formatTime = (dateTime) => format(new Date(dateTime), 'HH:mm');
 
     const handleCancel = async () => {
         if (!confirm('정말 이 상담을 취소하시겠습니까?')) return;
         setIsProcessing(true);
         try {
-            await onCancel(meeting.meetingId, meeting.isOnline);
+            await onCancel(meeting.meetingId, isOnline);
         } finally {
             setIsProcessing(false);
         }
