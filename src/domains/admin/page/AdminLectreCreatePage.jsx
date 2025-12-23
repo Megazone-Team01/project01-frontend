@@ -847,7 +847,7 @@ export const AdminLectureCreatePage = () => {
                         </InputGroup>
                         <Button variant="ghost"> 검색 </Button>
                     </div>
-                    <div className="text-center">
+                    <div className="text-center overflow-y-auto max-h-[40vh]">
                         <Table>
                             <TableHeader>
                                 <TableRow>
