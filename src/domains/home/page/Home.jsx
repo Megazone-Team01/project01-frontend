@@ -20,7 +20,6 @@ export default function Home() {
     const { lectures, isLoading } = useHomeLectures(activeTab);
 
     const auth = useSelector((state) => state.auth);
-    console.log("홈 페이지 auth 상태:", auth);
 
 
     return (
