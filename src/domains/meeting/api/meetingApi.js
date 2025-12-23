@@ -32,12 +32,16 @@ export const createMeeting = async (meetingData) => {
 
 
 export const cancelMeeting = async (meetingId, isOnline) => {
-    const response = await axiosInstance.delete(`/v1/meetings/${meetingId}`, {
-        params: { isOnline }
-    });
+    const response = await axiosInstance.delete(
+        `/v1/meetings/${meetingId}?isOnline=${isOnline}`,
+        {
+            headers: {
+                'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
+            }
+        }
+    );
     return response.data;
 };
-
 
 export const approveMeeting = async (meetingId, isOnline, location = null) => {
     const response = await axiosInstance.patch(
