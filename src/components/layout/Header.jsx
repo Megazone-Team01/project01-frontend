@@ -14,11 +14,8 @@ import {Button} from "@/components/ui/button.js";
 import {Separator} from "@/components/ui/separator.js";
 import {
     BarChart3Icon,
-    BellIcon, BellMinusIcon, BellOffIcon, BookIcon,
-    ComputerIcon,
+    BellIcon, BellOffIcon, BookIcon,
     LogOutIcon,
-    MessageCircleIcon,
-    SettingsIcon,
     UserIcon,
     FilePlus
 } from "lucide-react";
@@ -35,7 +32,7 @@ import {Toggle} from "@/components/ui/toggle.js";
 import {getProfileInfo} from "@/domains/user/api/profile.js";
 import {useSSE} from "@/routes/SSEContext.jsx";
 
-export default function Header({ isLoggedIn, hasNotifications, hasMessages }) {
+export default function Header({  hasNotifications }) {
 
     const [isScrolled, setIsScrolled] = useState(false);
     const dispatch = useDispatch();
@@ -47,7 +44,7 @@ export default function Header({ isLoggedIn, hasNotifications, hasMessages }) {
     const [ isOnline, setOnline ] = useState(false);
 
     const [ userInfo, setUserInfo ] = useState({
-        fileUrl: '',
+        fileUrl: null,
         name: ''
     });
 
@@ -68,6 +65,7 @@ export default function Header({ isLoggedIn, hasNotifications, hasMessages }) {
         const fetchData = async () => {
             if( user !== null ){
                 const data = await getProfileInfo( user.id );
+                console.log("getProfileInfo!!", data);
                 setUserInfo(data);
             }
             else {
@@ -87,7 +85,6 @@ export default function Header({ isLoggedIn, hasNotifications, hasMessages }) {
     };
 
     console.log( user )
-
     return (
         <nav
             className={cn([
@@ -164,9 +161,16 @@ export default function Header({ isLoggedIn, hasNotifications, hasMessages }) {
                     <DropdownMenu>
                     <DropdownMenuTrigger asChild>
                         <Avatar>
-                                <AvatarImage
-                                    src={`${import.meta.env.VITE_FILE_URL_HEADER}${userInfo.fileUrl}`}
-                                />
+                            <AvatarImage
+                                src={
+                                    userInfo?.fileUrl
+                                        ? `${import.meta.env.VITE_FILE_URL_HEADER}${userInfo.fileUrl}`
+                                        : undefined
+                                }
+                                onError={(e) => {
+                                    e.target.style.display = 'none'; // 에러나면 이미지 숨김
+                                }}
+                            />
                                 <AvatarFallback>
                                     <UserIcon className="text-gray-400" />
                                 </AvatarFallback>

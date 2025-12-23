@@ -9,6 +9,7 @@ import OrganizationCard from "@/domains/lecture/components/common/OrganizationCa
 import {Separator} from "@/components/ui/separator.js";
 import LoadingDetail from "@/components/common/LoadingDetail.jsx";
 import ErrorPage from "@/components/common/ErrorPage.jsx";
+import {useSelector} from "react-redux";
 
 
 function OfflineDetail() {
@@ -16,6 +17,8 @@ function OfflineDetail() {
     const location = useLocation();
     const lectureType = location.pathname.includes("/online") ? "online" : "offline";
     const {data, isLoading,isError} = useLectureDetali(offlineId, lectureType);
+
+    const enrolled = useSelector(state => state.lecture.enrolled);
 
     if (isLoading) {
         return <LoadingDetail />;
@@ -25,7 +28,7 @@ function OfflineDetail() {
         return <ErrorPage/>
     }
 
-    console.log("asdfa data: ", data)
+
     return (
         <div className="max-w-screen-lg mx-auto p-2">
             <div className="flex flex-col gap-5 sm:grid sm:grid-cols-[1fr_2fr]">
