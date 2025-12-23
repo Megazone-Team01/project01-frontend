@@ -3,6 +3,8 @@ import { Clock, ArrowRight } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 
 const TeacherCard = ({ teacher, onClick }) => {
+    const imageUrl = teacher.profileImage || teacher.fileUrl || teacher.url;
+
     return (
         <div
             onClick={onClick}
@@ -16,12 +18,15 @@ const TeacherCard = ({ teacher, onClick }) => {
           group-hover:ring-blue-50 transition-all">
                     <img
                         src={
-                            teacher.profileImage
-                                ? `${import.meta.env.VITE_FILE_URL_HEADER}${teacher.profileImage}`
+                            imageUrl
+                                ? `${import.meta.env.VITE_FILE_URL_HEADER}${imageUrl}`
                                 : '/default-avatar.png'
                         }
                         alt={teacher.name}
                         className="w-full h-full object-cover"
+                        onError={(e) => {
+                            e.target.src = '/default-avatar.png';
+                        }}
                     />
                 </div>
                 <div className="flex gap-1 flex-wrap justify-end">

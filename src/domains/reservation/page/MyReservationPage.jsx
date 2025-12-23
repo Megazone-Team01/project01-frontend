@@ -455,34 +455,31 @@ const MyReservationPage = () => {
                                         selected={selectedDate}
                                         onSelect={(date) => date && setSelectedDate(date)}
                                         locale={ko}
-                                        className="w-full max-w-md mx-auto"
-                                        components={{
-                                            DayContent: ({ date }) => (
-                                                <div className="relative w-full h-full flex items-center justify-center">
-                                                    {date.getDate()}
-                                                    {hasEventOnDate(date) && (
-                                                        <span className={`absolute bottom-0 left-1/2 -translate-x-1/2 w-1.5 h-1.5 rounded-full ${activeMenu === 'meetings' ? 'bg-blue-500' : 'bg-indigo-500'
-                                                            }`} />
-                                                    )}
-                                                </div>
-                                            ),
+                                        disabled={(date) => {
+                                            const today = new Date();
+                                            today.setHours(0, 0, 0, 0);
+                                            return date < today;
                                         }}
+                                        className="rounded-2xl border border-slate-200 shadow-sm p-4 w-full [&_table]:w-full"
                                         classNames={{
                                             months: "flex flex-col w-full",
                                             month: "space-y-4 w-full",
                                             caption: "flex justify-between items-center px-2 mb-4",
                                             caption_label: "text-xl font-bold",
-                                            nav: "flex items-center gap-1",
+                                            nav: "flex items-center gap-2",
                                             nav_button: "h-9 w-9 bg-slate-100 hover:bg-slate-200 rounded-lg flex items-center justify-center transition-colors",
+                                            nav_button_previous: "",
+                                            nav_button_next: "",
                                             table: "w-full border-collapse",
                                             head_row: "flex w-full",
-                                            head_cell: "text-slate-500 font-medium text-sm flex-1 text-center py-2",
+                                            head_cell: "text-slate-600 font-bold text-base flex-1 text-center py-3",
                                             row: "flex w-full",
                                             cell: "flex-1 text-center p-1",
-                                            day: "w-full aspect-square flex items-center justify-center rounded-xl text-base hover:bg-slate-100 cursor-pointer transition-colors",
-                                            day_selected: `${activeMenu === 'meetings' ? 'bg-blue-500' : 'bg-indigo-500'} text-white hover:opacity-90`,
-                                            day_today: "bg-slate-100 font-bold",
+                                            day: "w-full aspect-square flex items-center justify-center rounded-xl text-base font-semibold hover:bg-slate-100 cursor-pointer",
+                                            day_selected: "bg-blue-500 text-white hover:bg-blue-600",
+                                            day_today: "bg-slate-200 text-slate-900 font-bold",
                                             day_outside: "text-slate-300",
+                                            day_disabled: "text-slate-300 opacity-50 cursor-not-allowed hover:bg-transparent",
                                         }}
                                     />
                                 </div>
@@ -509,7 +506,7 @@ const MyReservationPage = () => {
                                             {activeMenu === 'meetings'
                                                 ? selectedDateItems.map((meeting) => (
                                                     <MeetingCard
-                                                        key={`${meeting.isOnline ? 'on' : 'off'}-${meeting.meetingId}`}
+                                                        key={`meeting-${meeting.isOnline ? 'online' : 'offline'}-${meeting.meetingId}-${meeting.startAt}`}
                                                         meeting={meeting}
                                                         onCancel={handleMeetingCancel}
                                                     />
@@ -538,7 +535,7 @@ const MyReservationPage = () => {
                                             {upcomingItems.slice(0, 5).map((item) =>
                                                 activeMenu === 'meetings' ? (
                                                     <MeetingCard
-                                                        key={`${item.isOnline ? 'on' : 'off'}-${item.meetingId}`}
+                                                        key={`upcoming-meeting-${item.isOnline ? 'online' : 'offline'}-${item.meetingId}-${item.startAt}`}
                                                         meeting={item}
                                                         onCancel={handleMeetingCancel}
                                                         compact
@@ -576,7 +573,7 @@ const MyReservationPage = () => {
                                                 {pastItems.map((item) =>
                                                     activeMenu === 'meetings' ? (
                                                         <MeetingCard
-                                                            key={`${item.isOnline ? 'on' : 'off'}-${item.meetingId}`}
+                                                            key={`past-meeting-${item.isOnline ? 'online' : 'offline'}-${item.meetingId}-${item.startAt}`}
                                                             meeting={item}
                                                             onCancel={handleMeetingCancel}
                                                             compact

@@ -26,6 +26,7 @@ import { Label } from "@/components/ui/label.js";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { getAvailableRooms } from '@/domains/room/api/roomApi';
 import { createReservation } from '@/domains/reservation/api/reservationApi';
+import { useSelector } from 'react-redux';
 
 
 const MEETING_CATEGORIES = [
@@ -37,6 +38,9 @@ const MEETING_CATEGORIES = [
 
 
 const OrganizationServiceSection = ({ organizationId }) => {
+
+    const { user, isAuthenticated } = useSelector((state) => state.auth);
+    const userType = user?.type;
 
     const [activeTab, setActiveTab] = useState('meeting');
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -60,6 +64,7 @@ const OrganizationServiceSection = ({ organizationId }) => {
     const [roomReservationEndTime, setRoomReservationEndTime] = useState(null);
     const [isRoomModalOpen, setIsRoomModalOpen] = useState(false);
     const [roomReservationSubmitting, setRoomReservationSubmitting] = useState(false);
+    const [roomReservationStep, setRoomReservationStep] = useState('select');
 
 
     const [organizationTeachers, setOrganizationTeachers] = useState([]);
@@ -155,6 +160,7 @@ const OrganizationServiceSection = ({ organizationId }) => {
         setSelectedRoomForReservation(null);
         setRoomReservationStartTime(null);
         setRoomReservationEndTime(null);
+        setRoomReservationStep('select');
     };
 
     const handleRoomReservationConfirm = async () => {
@@ -170,11 +176,10 @@ const OrganizationServiceSection = ({ organizationId }) => {
                 endAt: `${dateStr}T${roomReservationEndTime}:00`,
             };
 
-            console.log('회의실 예약 데이터:', reservationData);
+
             await createReservation(reservationData);
 
-            alert('회의실 예약이 완료되었습니다!');
-            handleCloseRoomModal();
+            setRoomReservationStep('success');
         } catch (error) {
             console.error('회의실 예약 실패:', error);
             alert(error.response?.data?.message || '회의실 예약에 실패했습니다.');
@@ -282,7 +287,12 @@ const OrganizationServiceSection = ({ organizationId }) => {
                                 <span> 강의 정보 </span>
                             </button>
                             <button
-                                onClick={() => setActiveTab(2)}
+                                onClick={() => {
+                                    if (!isAuthenticated) {
+                                        alert('로그인이 필요합니다.');
+                                        return;
+                                    } setActiveTab(2)
+                                }}
                                 className={`flex items-center gap-2.5 px-8 py-2 rounded-3xl text-sm font-black transition-all
                                 ${activeTab === 2 ? 'bg-white text-gray-600 shadow-xl scale-100' : 'text-slate-500 hover:text-slate-700'}`}
                             >
@@ -291,7 +301,16 @@ const OrganizationServiceSection = ({ organizationId }) => {
                             </button>
 
                             <button
-                                onClick={() => setActiveTab(3)}
+                                onClick={() => {
+                                    if (!isAuthenticated) {
+                                        alert('로그인이 필요합니다.');
+                                        return;
+                                    }
+                                    if (userType === 1) {
+                                        alert('온라인 수강생은 회의실 예약이 불가합니다.');
+                                        return;
+                                    } setActiveTab(3)
+                                }}
                                 className={`flex items-center gap-2.5 px-10 py-2 rounded-3xl text-sm font-black transition-all
                                 ${activeTab === 3 ? 'bg-white text-gray-600 shadow-lg scale-100' : 'text-slate-500 hover:text-slate-700'}`}
                             >
@@ -304,114 +323,114 @@ const OrganizationServiceSection = ({ organizationId }) => {
                     {/* 카드 그리드 */}
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                         {
-                        activeTab === 0 ? (
-                            organizationTeachers.map( ( t, index) => (
-                                <Card>
-                                    <CardContent>
-                                        <div key={index} className="flex">
-                                            <div className="flex flex-2 flex-col">
-                                                <CardTitle className="font-bold text-xl"> {t.userName } </CardTitle>
-                                                <CardDescription className="text-gray-400">
-                                                    { t.organizationName }
-                                                </CardDescription>
-                                            </div>
-                                            <div className="flex flex-1 flex-col">
-                                                {
-                                                    t.url === null ?
-                                                        <div
-                                                            className="w-full min-h-36 flex justify-center items-center">
-                                                            <ImageIcon size={25}/>
-                                                        </div>
-                                                        :
-                                                        <img
-                                                            className="aspect-square"
-                                                            src={`${import.meta.env.VITE_FILE_URL_HEADER}${t.url}`}
-                                                            alt={t.url}/>
-                                                }
-                                            </div>
-                                        </div>
-                                    </CardContent>
-                                </Card>
-                            ))
-                        )
-                        : activeTab === 1 ? (
-                            organizationLectures.map( ( l, index) => (
-                                <Card>
-                                    <CardContent>
-                                        <div key={index} className="flex flex-col">
-                                            <div className="flex flex-col">
-                                                {
-                                                    l.thumbnail != null ?
-                                                        <img
-                                                            className="object-contain max-w-full max-h-40"
-                                                            src={`${import.meta.env.VITE_FILE_URL_HEADER}${l.thumbnail}`}
-                                                            alt={l.thumbnail}/>
-                                                        :
-                                                        <div className="w-full h-40 flex justify-center items-center">
-                                                            <ImageIcon size={25}/>
-                                                        </div>
-                                                }
-                                            </div>
-                                            <div className="flex flex-col">
-                                            <CardTitle className="font-bold text-xl"> {l.name} </CardTitle>
-                                                <CardDescription className="text-gray-500 text-md">
-                                                    {l.teacherName}
-                                                </CardDescription>
-                                                <CardDescription className="text-gray-400">
+                            activeTab === 0 ? (
+                                organizationTeachers.map((t, index) => (
+                                    <Card>
+                                        <CardContent>
+                                            <div key={index} className="flex">
+                                                <div className="flex flex-2 flex-col">
+                                                    <CardTitle className="font-bold text-xl"> {t.userName} </CardTitle>
+                                                    <CardDescription className="text-gray-400">
+                                                        {t.organizationName}
+                                                    </CardDescription>
+                                                </div>
+                                                <div className="flex flex-1 flex-col">
                                                     {
-                                                        l.category.map((name, index) => (
-                                                            <span key={name}>
-                                                                {name}{index < l.category.length - 1 ? " > " : ""}
-                                                            </span>
-                                                        ))
+                                                        t.url === null ?
+                                                            <div
+                                                                className="w-full min-h-36 flex justify-center items-center">
+                                                                <ImageIcon size={25} />
+                                                            </div>
+                                                            :
+                                                            <img
+                                                                className="aspect-square"
+                                                                src={`${import.meta.env.VITE_FILE_URL_HEADER}${t.url}`}
+                                                                alt={t.url} />
                                                     }
-                                                </CardDescription>
+                                                </div>
                                             </div>
-                                        </div>
-                                    </CardContent>
-                                </Card>
-                            ))
-                        )
-                            : activeTab === 2 ? (
-                                        teachersLoading ? (
-                                            Array.from({length: 3}).map((_, i) => (
-                                                <div key={i} className="h-64 bg-slate-100 rounded-[40px] animate-pulse"/>
-                                        ))
-                                    ) : teachers.length === 0 ? (
-                                        <div className="col-span-full text-center py-32 bg-white border-2 border-dashed border-slate-200 rounded-[40px]">
-                                            <UserCheck size={48} className="mx-auto mb-4 opacity-20" />
-                                            <p className="text-slate-400 font-bold">등록된 상담 전문가가 없습니다.</p>
-                                        </div>
-                                    ) : (
-                                        teachers.map(teacher => (
-                                            <TeacherCard
-                                                key={teacher.teacherId || teacher.id}
-                                                teacher={teacher}
-                                                onClick={() => handleOpenModal(teacher)}
-                                            />
-                                        ))
-                                    )
+                                        </CardContent>
+                                    </Card>
+                                ))
                             )
-                            : activeTab === 3 ? (
-                                roomListLoading ? (
-                                    Array.from({ length: 3 }).map((_, i) => (
-                                        <div key={i} className="h-64 bg-slate-100 rounded-[40px] animate-pulse" />
-                                    ))
-                                ) : roomList.length === 0 ? (
-                                    <div className="col-span-full text-center py-32 bg-white border-2 border-dashed border-slate-200 rounded-[40px]">
-                                        <Monitor size={48} className="mx-auto mb-4 opacity-20" />
-                                        <p className="text-slate-400 font-bold">등록된 회의실이 없습니다.</p>
-                                    </div>
-                                ) : (
-                                    roomList.map(room => (
-                                        <RoomCard
-                                            key={room.id}
-                                            room={room}
-                                            onClick={() => handleOpenRoomModal(room)}
-                                        />
+                                : activeTab === 1 ? (
+                                    organizationLectures.map((l, index) => (
+                                        <Card>
+                                            <CardContent>
+                                                <div key={index} className="flex flex-col">
+                                                    <div className="flex flex-col">
+                                                        {
+                                                            l.thumbnail != null ?
+                                                                <img
+                                                                    className="object-contain max-w-full max-h-40"
+                                                                    src={`${import.meta.env.VITE_FILE_URL_HEADER}${l.thumbnail}`}
+                                                                    alt={l.thumbnail} />
+                                                                :
+                                                                <div className="w-full h-40 flex justify-center items-center">
+                                                                    <ImageIcon size={25} />
+                                                                </div>
+                                                        }
+                                                    </div>
+                                                    <div className="flex flex-col">
+                                                        <CardTitle className="font-bold text-xl"> {l.name} </CardTitle>
+                                                        <CardDescription className="text-gray-500 text-md">
+                                                            {l.teacherName}
+                                                        </CardDescription>
+                                                        <CardDescription className="text-gray-400">
+                                                            {
+                                                                l.category.map((name, index) => (
+                                                                    <span key={name}>
+                                                                        {name}{index < l.category.length - 1 ? " > " : ""}
+                                                                    </span>
+                                                                ))
+                                                            }
+                                                        </CardDescription>
+                                                    </div>
+                                                </div>
+                                            </CardContent>
+                                        </Card>
                                     ))
                                 )
-                            ) : null
+                                    : activeTab === 2 ? (
+                                        teachersLoading ? (
+                                            Array.from({ length: 3 }).map((_, i) => (
+                                                <div key={i} className="h-64 bg-slate-100 rounded-[40px] animate-pulse" />
+                                            ))
+                                        ) : teachers.length === 0 ? (
+                                            <div className="col-span-full text-center py-32 bg-white border-2 border-dashed border-slate-200 rounded-[40px]">
+                                                <UserCheck size={48} className="mx-auto mb-4 opacity-20" />
+                                                <p className="text-slate-400 font-bold">등록된 상담 전문가가 없습니다.</p>
+                                            </div>
+                                        ) : (
+                                            teachers.map(teacher => (
+                                                <TeacherCard
+                                                    key={teacher.teacherId || teacher.id}
+                                                    teacher={teacher}
+                                                    onClick={() => handleOpenModal(teacher)}
+                                                />
+                                            ))
+                                        )
+                                    )
+                                        : activeTab === 3 ? (
+                                            roomListLoading ? (
+                                                Array.from({ length: 3 }).map((_, i) => (
+                                                    <div key={i} className="h-64 bg-slate-100 rounded-[40px] animate-pulse" />
+                                                ))
+                                            ) : roomList.length === 0 ? (
+                                                <div className="col-span-full text-center py-32 bg-white border-2 border-dashed border-slate-200 rounded-[40px]">
+                                                    <Monitor size={48} className="mx-auto mb-4 opacity-20" />
+                                                    <p className="text-slate-400 font-bold">등록된 회의실이 없습니다.</p>
+                                                </div>
+                                            ) : (
+                                                roomList.map(room => (
+                                                    <RoomCard
+                                                        key={room.id}
+                                                        room={room}
+                                                        onClick={() => handleOpenRoomModal(room)}
+                                                    />
+                                                ))
+                                            )
+                                        ) : null
                         }
                     </div>
                 </div>
@@ -468,16 +487,28 @@ const OrganizationServiceSection = ({ organizationId }) => {
                                                         <Video size={16} className="text-blue-500" /> 01. 상담 방식 선택
                                                     </h4>
                                                     <div className="flex gap-4">
-                                                        {['ONLINE', 'OFFLINE'].map(mode => (
-                                                            <button
-                                                                key={mode}
-                                                                onClick={() => setBookingType(mode)}
-                                                                className={`flex-1 py-4 rounded-2xl border-2 text-base font-bold transition-all
-                                                ${bookingType === mode ? 'border-slate-900 bg-slate-900 text-white shadow-xl' : 'border-slate-100 text-slate-400 hover:bg-slate-50'}`}
-                                                            >
-                                                                {mode === 'ONLINE' ? '화상(Zoom)' : '대면(현장)'}
-                                                            </button>
-                                                        ))}
+                                                        <button
+                                                            disabled={userType === 2}
+                                                            onClick={() => setBookingType('ONLINE')}
+                                                            className={`flex-1 py-4 rounded-2xl border-2 text-base font-bold transition-all flex flex-col items-center gap-1
+                    ${userType === 2 ? 'opacity-40 cursor-not-allowed' : ''}
+                                                        ${bookingType === 'ONLINE' ? 'border-slate-900 bg-slate-900 text-white shadow-xl' : 'border-slate-100 text-slate-400 hover:bg-slate-50'}`}
+                                                        >
+                                                            <span>화상(Zoom)</span>
+                                                            {userType === 2 && <span className="text-xs opacity-70">오프라인 전용</span>}
+                                                        </button>
+
+                                                        {/* 대면(현장) - 온라인 전용(type=1)이면 비활성화 */}
+                                                        <button
+                                                            disabled={userType === 1}
+                                                            onClick={() => setBookingType('OFFLINE')}
+                                                            className={`flex-1 py-4 rounded-2xl border-2 text-base font-bold transition-all flex flex-col items-center gap-1
+                                                             ${userType === 1 ? 'opacity-40 cursor-not-allowed' : ''}
+                                                                ${bookingType === 'OFFLINE' ? 'border-slate-900 bg-slate-900 text-white shadow-xl' : 'border-slate-100 text-slate-400 hover:bg-slate-50'}`}
+                                                        >
+                                                            <span>대면(현장)</span>
+                                                            {userType === 1 && <span className="text-xs opacity-70">온라인 전용</span>}
+                                                        </button>
                                                     </div>
                                                 </div>
                                             )}
@@ -759,109 +790,156 @@ const OrganizationServiceSection = ({ organizationId }) => {
                                     </button>
                                 </div>
 
-                                <div className="flex-1 overflow-y-auto px-10 py-10 space-y-10">
-                                    {/* 날짜 선택 */}
-                                    <div className="space-y-4">
-                                        <h5 className="text-sm font-black text-slate-400 uppercase tracking-wider flex items-center gap-2">
-                                            <CalendarIcon size={16} className="text-indigo-500" /> 01. 날짜 선택
-                                        </h5>
-                                        <div className="flex justify-center">
-                                            <Calendar
-                                                mode="single"
-                                                selected={roomReservationDate}
-                                                onSelect={(date) => date && setRoomReservationDate(date)}
-                                                locale={ko}
-                                                disabled={(date) => {
-                                                    const today = new Date();
-                                                    today.setHours(0, 0, 0, 0);
-                                                    return date < today;
-                                                }}
-                                                className="rounded-2xl border border-slate-200 p-4"
-                                            />
-                                        </div>
-                                        <p className="text-center font-bold text-slate-600">
-                                            선택된 날짜: {formatDate(roomReservationDate)}
-                                        </p>
-                                    </div>
-
-                                    {/* 시작 시간 */}
-                                    <div className="space-y-4">
-                                        <h5 className="text-sm font-black text-slate-400 uppercase tracking-wider flex items-center gap-2">
-                                            <Clock size={16} className="text-indigo-500" /> 02. 시작 시간
-                                        </h5>
-                                        <div className="grid grid-cols-4 gap-2">
-                                            {roomTimeSlots.map(time => (
-                                                <button
-                                                    key={`start-${time}`}
-                                                    onClick={() => {
-                                                        setRoomReservationStartTime(time);
-                                                        const hour = parseInt(time.split(':')[0]) + 1;
-                                                        if (hour <= 22) {
-                                                            setRoomReservationEndTime(`${String(hour).padStart(2, '0')}:00`);
-                                                        }
-                                                    }}
-                                                    className={`py-3 rounded-xl border-2 text-sm font-bold transition-all ${roomReservationStartTime === time
-                                                        ? 'border-indigo-500 bg-indigo-50 text-indigo-600'
-                                                        : 'border-slate-200 hover:border-slate-300'
-                                                        }`}
-                                                >
-                                                    {time}
-                                                </button>
-                                            ))}
-                                        </div>
-                                    </div>
-
-                                    {/* 종료 시간 */}
-                                    {roomReservationStartTime && (
+                                <div className="flex-1 overflow-y-auto px-10 py-10 space-y-10">{roomReservationStep === 'select' ? (
+                                    <>
+                                        {/* 날짜 선택 */}
                                         <div className="space-y-4">
                                             <h5 className="text-sm font-black text-slate-400 uppercase tracking-wider flex items-center gap-2">
-                                                <Clock size={16} className="text-indigo-500" /> 03. 종료 시간
+                                                <CalendarIcon size={16} className="text-indigo-500" /> 01. 날짜 선택
                                             </h5>
-                                            <div className="grid grid-cols-4 gap-2">
-                                                {roomTimeSlots
-                                                    .filter(time => time > roomReservationStartTime)
-                                                    .map(time => (
-                                                        <button
-                                                            key={`end-${time}`}
-                                                            onClick={() => setRoomReservationEndTime(time)}
-                                                            className={`py-3 rounded-xl border-2 text-sm font-bold transition-all ${roomReservationEndTime === time
-                                                                ? 'border-indigo-500 bg-indigo-50 text-indigo-600'
-                                                                : 'border-slate-200 hover:border-slate-300'
-                                                                }`}
-                                                        >
-                                                            {time}
-                                                        </button>
-                                                    ))}
+                                            <div className="flex justify-center">
+                                                <Calendar
+                                                    mode="single"
+                                                    selected={roomReservationDate}
+                                                    onSelect={(date) => date && setRoomReservationDate(date)}
+                                                    locale={ko}
+                                                    disabled={(date) => {
+                                                        const today = new Date();
+                                                        today.setHours(0, 0, 0, 0);
+                                                        return date < today;
+                                                    }}
+                                                    className="rounded-2xl border border-slate-200 shadow-sm p-4 w-full [&_table]:w-full"
+                                                    classNames={{
+                                                        months: "flex flex-col w-full",
+                                                        month: "space-y-4 w-full",
+                                                        caption: "flex justify-between items-center px-2 mb-4",
+                                                        caption_label: "text-xl font-bold",
+                                                        nav: "flex items-center gap-2",
+                                                        nav_button: "h-9 w-9 bg-slate-100 hover:bg-slate-200 rounded-lg flex items-center justify-center transition-colors",
+                                                        nav_button_previous: "",
+                                                        nav_button_next: "",
+                                                        table: "w-full border-collapse",
+                                                        head_row: "flex w-full",
+                                                        head_cell: "text-slate-600 font-bold text-base flex-1 text-center py-3",
+                                                        row: "flex w-full",
+                                                        cell: "flex-1 text-center p-1",
+                                                        day: "w-full aspect-square flex items-center justify-center rounded-xl text-base font-semibold hover:bg-slate-100 cursor-pointer",
+                                                        day_selected: "bg-indigo-500 text-white hover:bg-indigo-600",
+                                                        day_today: "bg-slate-200 text-slate-900 font-bold",
+                                                        day_outside: "text-slate-300",
+                                                        day_disabled: "text-slate-300 opacity-50 cursor-not-allowed hover:bg-transparent",
+                                                    }}
+                                                />
                                             </div>
-                                        </div>
-                                    )}
-
-                                    {/* 예약 요약 */}
-                                    {roomReservationStartTime && roomReservationEndTime && (
-                                        <div className="bg-indigo-50 rounded-2xl p-6">
-                                            <p className="text-sm font-bold text-indigo-600">예약 정보</p>
-                                            <p className="text-slate-600 mt-1">
-                                                {formatDate(roomReservationDate)} {roomReservationStartTime} ~ {roomReservationEndTime}
+                                            <p className="text-center font-bold text-slate-600">
+                                                선택된 날짜: {formatDate(roomReservationDate)}
                                             </p>
                                         </div>
-                                    )}
+
+                                        {/* 시작 시간 */}
+                                        <div className="space-y-4">
+                                            <h5 className="text-sm font-black text-slate-400 uppercase tracking-wider flex items-center gap-2">
+                                                <Clock size={16} className="text-indigo-500" /> 02. 시작 시간
+                                            </h5>
+                                            <div className="grid grid-cols-4 gap-2">
+                                                {roomTimeSlots.map(time => (
+                                                    <button
+                                                        key={`start-${time}`}
+                                                        onClick={() => {
+                                                            setRoomReservationStartTime(time);
+                                                            const hour = parseInt(time.split(':')[0]) + 1;
+                                                            if (hour <= 22) {
+                                                                setRoomReservationEndTime(`${String(hour).padStart(2, '0')}:00`);
+                                                            }
+                                                        }}
+                                                        className={`py-3 rounded-xl border-2 text-sm font-bold transition-all ${roomReservationStartTime === time
+                                                            ? 'border-indigo-500 bg-indigo-50 text-indigo-600'
+                                                            : 'border-slate-200 hover:border-slate-300'
+                                                            }`}
+                                                    >
+                                                        {time}
+                                                    </button>
+                                                ))}
+                                            </div>
+                                        </div>
+
+                                        {/* 종료 시간 */}
+                                        {roomReservationStartTime && (
+                                            <div className="space-y-4">
+                                                <h5 className="text-sm font-black text-slate-400 uppercase tracking-wider flex items-center gap-2">
+                                                    <Clock size={16} className="text-indigo-500" /> 03. 종료 시간
+                                                </h5>
+                                                <div className="grid grid-cols-4 gap-2">
+                                                    {roomTimeSlots
+                                                        .filter(time => time > roomReservationStartTime)
+                                                        .map(time => (
+                                                            <button
+                                                                key={`end-${time}`}
+                                                                onClick={() => setRoomReservationEndTime(time)}
+                                                                className={`py-3 rounded-xl border-2 text-sm font-bold transition-all ${roomReservationEndTime === time
+                                                                    ? 'border-indigo-500 bg-indigo-50 text-indigo-600'
+                                                                    : 'border-slate-200 hover:border-slate-300'
+                                                                    }`}
+                                                            >
+                                                                {time}
+                                                            </button>
+                                                        ))}
+                                                </div>
+                                            </div>
+                                        )}
+
+                                        {/* 예약 요약 */}
+                                        {roomReservationStartTime && roomReservationEndTime && (
+                                            <div className="bg-indigo-50 rounded-2xl p-6">
+                                                <p className="text-sm font-bold text-indigo-600">예약 정보</p>
+                                                <p className="text-slate-600 mt-1">
+                                                    {formatDate(roomReservationDate)} {roomReservationStartTime} ~ {roomReservationEndTime}
+                                                </p>
+                                            </div>
+                                        )}  </>
+                                ) : (
+                                    /* 예약 완료 화면 */
+                                    <div className="h-full flex flex-col items-center justify-center text-center space-y-8 py-20">
+                                        <div className="w-28 h-28 bg-emerald-50 text-emerald-500 rounded-full flex items-center justify-center">
+                                            <CheckCircle2 size={56} />
+                                        </div>
+                                        <div className="space-y-4">
+                                            <h3 className="text-4xl font-black">예약 완료</h3>
+                                            <p className="text-slate-400">회의실 예약이 완료되었습니다.</p>
+                                            <div className="bg-slate-50 rounded-2xl p-6 text-left space-y-2">
+                                                <p><span className="text-slate-400">회의실:</span> <span className="font-bold">{selectedRoomForReservation?.name}</span></p>
+                                                <p><span className="text-slate-400">위치:</span> <span className="font-bold">{selectedRoomForReservation?.location}</span></p>
+                                                <p><span className="text-slate-400">예약 일시:</span> <span className="font-bold">{formatDate(roomReservationDate)} {roomReservationStartTime} ~ {roomReservationEndTime}</span></p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                )}
                                 </div>
 
                                 {/* 예약 버튼 */}
                                 <div className="p-8 border-t border-slate-100 bg-slate-50/50">
-                                    <button
-                                        disabled={!roomReservationStartTime || !roomReservationEndTime || roomReservationSubmitting}
-                                        onClick={handleRoomReservationConfirm}
-                                        className="w-full py-5 bg-indigo-600 hover:bg-indigo-700 disabled:bg-slate-200 disabled:text-slate-400 text-white rounded-2xl font-bold text-lg transition-all"
-                                    >
-                                        {roomReservationSubmitting
-                                            ? '예약 중...'
-                                            : !roomReservationStartTime
-                                                ? '시작 시간을 선택해 주세요'
-                                                : !roomReservationEndTime
-                                                    ? '종료 시간을 선택해 주세요'
-                                                    : `${roomReservationStartTime} ~ ${roomReservationEndTime} 예약하기`}
-                                    </button>
+                                    {roomReservationStep === 'select' ? (
+                                        <button
+                                            disabled={!roomReservationStartTime || !roomReservationEndTime || roomReservationSubmitting}
+                                            onClick={handleRoomReservationConfirm}
+                                            className="w-full py-5 bg-indigo-600 hover:bg-indigo-700 disabled:bg-slate-200 disabled:text-slate-400 text-white rounded-2xl font-bold text-lg transition-all"
+                                        >
+                                            {roomReservationSubmitting
+                                                ? '예약 중...'
+                                                : !roomReservationStartTime
+                                                    ? '시작 시간을 선택해 주세요'
+                                                    : !roomReservationEndTime
+                                                        ? '종료 시간을 선택해 주세요'
+                                                        : `${roomReservationStartTime} ~ ${roomReservationEndTime} 예약하기`}
+                                        </button>
+                                    ) : (
+                                        <button
+                                            onClick={handleCloseRoomModal}
+                                            className="w-full py-5 bg-white border-2 border-indigo-600 text-indigo-600 rounded-2xl font-bold text-lg hover:bg-indigo-50 transition-all"
+                                        >
+                                            확인했습니다
+                                        </button>
+                                    )}
                                 </div>
                             </div>
                         </div>
@@ -878,55 +956,66 @@ const OrganizationServiceSection = ({ organizationId }) => {
     );
 };
 // ========== 선생님 카드 UI 컴포넌트 ==========
-const TeacherCard = ({ teacher, onClick }) => (
-    <div
-        onClick={onClick}
-        className="group relative bg-white border border-slate-200 rounded-[40px] p-8 transition-all duration-300 hover:border-blue-400 hover:shadow-2xl hover:shadow-blue-500/10 cursor-pointer flex flex-col justify-between min-h-[280px] overflow-hidden"
-    >
-        <div className="flex justify-between items-start mb-6 z-10">
-            <div className="relative">
-                <img
-                    src={teacher.profileImage || `https://i.pravatar.cc/150?u=${teacher.teacherId || teacher.id}`}
-                    alt={teacher.name}
-                    className="w-20 h-20 rounded-3xl object-cover ring-4 ring-slate-50 shadow-md group-hover:ring-blue-50 transition-all"
-                />
-            </div>
-            <div className="flex gap-2 flex-wrap justify-end">
-                {Array.isArray(teacher.tags) && teacher.tags.length > 0 ? (
-                    teacher.tags.map((tag) => (
-                        <Badge key={tag} className="text-[12px] font-bold px-3 py-1.5 rounded-full bg-slate-200 text-slate-700">
-                            {tag}
-                        </Badge>
-                    ))
-                ) : (
-                    <div className="px-5 py-2.5 rounded-full bg-blue-100 text-blue-700 text-sm font-extrabold tracking-wide shadow-sm">
-                        상담가능
-                    </div>
-                )}
-            </div>
-        </div>
-        <div className="z-10">
-            <h3 className="text-2xl font-black mb-1 group-hover:text-blue-600 transition-colors leading-tight">
-                {teacher.name}
-                <span> </span>
-                <span className="font-black">강사</span>
-            </h3>
-            <p className="text-sm text-slate-400 font-bold mt-2 leading-relaxed">
-                {teacher.subject || "상담 전문"}
-            </p>
-        </div>
-        <div className="flex items-center justify-between pt-6 border-t border-slate-50 mt-8 z-10">
-            <span className="text-slate-400 flex items-center gap-2 font-bold text-[17px] uppercase tracking-widest leading-none">
-                <Clock size={20} className="text-blue-500" /> 1시간
-            </span>
-            <div className="w-12 h-12 rounded-full bg-slate-200/70 text-slate-900 flex items-center justify-center group-hover:scale-110 transition-all shadow-xl">
-                <ArrowRight size={20} />
-            </div>
-        </div>
-        <div className="absolute -right-10 -bottom-10 w-32 h-32 bg-blue-50/50 rounded-full blur-3xl group-hover:bg-blue-100/50 transition-colors" />
-    </div>
-);
+const TeacherCard = ({ teacher, onClick }) => {
+    const imageUrl = teacher.profileImage || teacher.fileUrl || teacher.url;
 
+    return (
+        <div
+            onClick={onClick}
+            className="group relative bg-white border border-slate-200 rounded-[40px] p-8 transition-all duration-300 hover:border-blue-400 hover:shadow-2xl hover:shadow-blue-500/10 cursor-pointer flex flex-col justify-between min-h-[280px] overflow-hidden"
+        >
+            <div className="flex justify-between items-start mb-6 z-10">
+                <div className="relative">
+                    <img
+                        src={
+                            imageUrl
+                                ? `${import.meta.env.VITE_FILE_URL_HEADER}${imageUrl}`
+                                : `https://i.pravatar.cc/150?u=${teacher.teacherId || teacher.id}`
+                        }
+                        alt={teacher.name}
+                        className="w-20 h-20 rounded-3xl object-cover ring-4 ring-slate-50 shadow-md group-hover:ring-blue-50 transition-all"
+                        onError={(e) => {
+                            e.target.src = `https://i.pravatar.cc/150?u=${teacher.teacherId || teacher.id}`;
+                        }}
+                    />
+                </div>
+                <div className="flex gap-2 flex-wrap justify-end">
+                    {Array.isArray(teacher.tags) && teacher.tags.length > 0 ? (
+                        teacher.tags.map((tag) => (
+                            <Badge key={tag} className="text-[12px] font-bold px-3 py-1.5 rounded-full bg-slate-200 text-slate-700">
+                                {tag}
+                            </Badge>
+                        ))
+                    ) : (
+                        <div className="px-5 py-2.5 rounded-full bg-blue-100 text-blue-700 text-sm font-extrabold tracking-wide shadow-sm">
+                            상담가능
+                        </div>
+                    )}
+                </div>
+            </div>
+
+            <div className="z-10">
+                <h3 className="text-2xl font-black mb-1 group-hover:text-blue-600 transition-colors leading-tight">
+                    {teacher.name}
+                    <span> </span>
+                    <span className="font-black">강사</span>
+                </h3>
+                <p className="text-sm text-slate-400 font-bold mt-2 leading-relaxed">
+                    {teacher.subject || "상담 전문"}
+                </p>
+            </div>
+            <div className="flex items-center justify-between pt-6 border-t border-slate-50 mt-8 z-10">
+                <span className="text-slate-400 flex items-center gap-2 font-bold text-[17px] uppercase tracking-widest leading-none">
+                    <Clock size={20} className="text-blue-500" /> 1시간
+                </span>
+                <div className="w-12 h-12 rounded-full bg-slate-200/70 text-slate-900 flex items-center justify-center group-hover:scale-110 transition-all shadow-xl">
+                    <ArrowRight size={20} />
+                </div>
+            </div>
+            <div className="absolute -right-10 -bottom-10 w-32 h-32 bg-blue-50/50 rounded-full blur-3xl group-hover:bg-blue-100/50 transition-colors" />
+        </div>
+    );
+};
 const RoomCard = ({ room, onClick }) => (
     <div
         onClick={onClick}
