@@ -10,16 +10,16 @@ export default function ApproveOrganizationPage() {
         {pendingRequests.length === 0 && !loading ? (
             <p className="text-gray-500">승인 대기 요청이 없습니다.</p>
         ) : (
-            <table className="w-full table-fixed border-collapse">
+            <table className="w-full table-auto border-collapse">
                 <thead>
                     <tr className="bg-gray-100">
-                        <th className="px-4 py-2 w-[150px] text-left whitespace-nowrap">가입 요청 기관</th>
-                        <th className="px-4 py-2 w-[150px] text-left whitespace-nowrap">요청자</th>
-                        <th className="px-4 py-2 w-[80px] text-left whitespace-nowrap">역할</th>
-                        <th className="px-4 py-2 w-[250px] text-left whitespace-nowrap">이메일</th>
-                        <th className="px-4 py-2 w-[150px] text-left whitespace-nowrap">연락처</th>
-                        <th className="px-4 py-2 w-[80px] text-center whitespace-nowrap">조치</th>
-                        <th className="px-4 py-2 w-[80px] text-center whitespace-nowrap"></th>
+                        <th className="px-4 py-2 text-left">가입 요청 기관</th>
+                        <th className="px-4 py-2 text-left">요청자</th>
+                        <th className="px-4 py-2 text-left">역할</th>
+                        <th className="px-4 py-2 text-left">이메일</th>
+                        <th className="px-4 py-2 text-left">연락처</th>
+                        <th className="px-4 py-2 text-center w-[60px]">조치</th>
+                        <th className="px-4 py-2 text-center w-[60px]"></th>
                     </tr>
                 </thead>
                 <tbody>
