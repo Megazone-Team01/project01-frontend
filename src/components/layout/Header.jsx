@@ -86,7 +86,6 @@ export default function Header({ isLoggedIn, hasNotifications, hasMessages }) {
         navigate("/");      // 홈으로 이동
     };
 
-    console.log( user )
 
     return (
         <nav
