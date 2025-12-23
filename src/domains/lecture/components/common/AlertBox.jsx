@@ -12,13 +12,23 @@ import { Button } from "@/components/ui/button"
 import {lectureStatus} from "@/lib/utils.js";
 import useLectureRegister from "@/domains/lecture/hook/useLectureRegister.js";
 import useLectureCancel from "@/domains/lecture/hook/useLectureCancel.js";
+import {useSelector} from "react-redux";
+import {useNavigate} from "react-router";
 
 export function AlertBox({ text, startAt, endAt, lectureType, lectureId}) {
     const register = useLectureRegister();
     const cancel = useLectureCancel();
     const isApply = text === "강의 신청";
 
+    const { isAuthenticated } = useSelector((state) => state.auth ?? {});
+    const navigate = useNavigate()
+
     const handleRegister = () => {
+        if( !isAuthenticated ){
+            alert("로그인이 필요한 작업입니다")
+            navigate( "/login")
+            return
+        }
         register.mutate({
             lectureType: lectureType,
             lectureId: lectureId
@@ -29,6 +39,11 @@ export function AlertBox({ text, startAt, endAt, lectureType, lectureId}) {
         });
     }
     const handleCancel = () => {
+        if( !isAuthenticated ){
+            alert("로그인이 필요한 작업입니다")
+            navigate( "/login")
+            return
+        }
         cancel.mutate({
             lectureType: lectureType,
             lectureId: lectureId

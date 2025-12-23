@@ -274,6 +274,22 @@ export default function Header({  hasNotifications }) {
                     <Button asChild>
                         <Link to="/sign">Sign Up</Link>
                     </Button>
+                    <div className="flex justify-end items-center">
+                        <Toggle variant="outline" pressed={isOnline} onPressedChange={setOnline} asChild>
+                            <div
+                                className="
+                                hover:cursor-pointer hover:bg-transparent
+                                border-white text-white
+                                hover:text-white
+                                hover:font-bold
+                                data-[state=on]:font-bold
+                                data-[state=on]:bg-white
+                                data-[state=on]:text-red-500
+                                ">
+                                <span className="text-xs">{isOnline ? "ON" : "OFF"} </span>
+                            </div>
+                        </Toggle>
+                    </div>
                 </div>
             )}
         </nav>
