@@ -17,9 +17,9 @@ export const updateProfileInfo = async (userData) => {
         const res = await axiosInstance.put("/v1/user/profile", userData);
         return res.data;
     } catch (error) {
-        console.error("Update Profile Info API error:", error);
+        alert( error.response.data.message )
         throw error;
-    }
+      }
 };
 
 // 마이페이지 내 탈퇴 버튼 클릭 시 회원 탈퇴
@@ -29,5 +29,6 @@ export const deleteProfileAccount = async () => {
         return res;
     } catch( error ){
         if( error.status === 401 ) alert( error.response.data.message )
+        throw error;
     }
 };

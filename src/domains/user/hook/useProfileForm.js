@@ -141,7 +141,6 @@ export default function useProfileForm() {
             // 저장
             setLoading(true);
             try {
-                console.log("ㅎㅎ",userInfo);
                 await updateProfileInfo(userInfo);
                 alert("정보가 저장되었습니다.");
             } catch (err) {

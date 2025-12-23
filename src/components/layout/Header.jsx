@@ -223,8 +223,8 @@ export default function Header({  hasNotifications }) {
                                 </DropdownMenuItem>
                                 <DropdownMenuItem asChild className="cursor-pointer">
                                     <Link to="/profile">
-                                        <UserIcon className="size-4 mr-2" />
-                                        마이페이지
+                                        <UserIcon className="size-4 mr-2"/>
+                                        MyPage
                                     </Link>
                                 </DropdownMenuItem>
                             </DropdownMenuGroup>
