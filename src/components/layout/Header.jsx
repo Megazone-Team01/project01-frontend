@@ -14,11 +14,8 @@ import { Button } from "@/components/ui/button.js";
 import { Separator } from "@/components/ui/separator.js";
 import {
     BarChart3Icon,
-    BellIcon, BellMinusIcon, BellOffIcon, BookIcon,
-    ComputerIcon,
+    BellIcon, BellOffIcon, BookIcon,
     LogOutIcon,
-    MessageCircleIcon,
-    SettingsIcon,
     UserIcon,
     FilePlus
 } from "lucide-react";
@@ -35,7 +32,7 @@ import { Toggle } from "@/components/ui/toggle.js";
 import { getProfileInfo } from "@/domains/user/api/profile.js";
 import { useSSE } from "@/routes/SSEContext.jsx";
 
-export default function Header({ isLoggedIn, hasNotifications, hasMessages }) {
+export default function Header({  hasNotifications }) {
 
     const [isScrolled, setIsScrolled] = useState(false);
     const dispatch = useDispatch();
@@ -196,7 +193,7 @@ export default function Header({ isLoggedIn, hasNotifications, hasMessages }) {
                                     }}
                                 >
                                     <BarChart3Icon className="size-4 mr-2" />
-                                    Dashboard
+                                    대시보드
                                 </DropdownMenuItem>
                                 <DropdownMenuItem asChild className="cursor-pointer">
                                     <Link to="/profile">

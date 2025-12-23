@@ -18,17 +18,25 @@ export function AlertBox({ text, startAt, endAt, lectureType, lectureId}) {
     const cancel = useLectureCancel();
     const isApply = text === "강의 신청";
 
-    const handleRegister = () =>{
+    const handleRegister = () => {
         register.mutate({
             lectureType: lectureType,
             lectureId: lectureId
+        }, {
+            onSuccess: () => {
+                window.location.reload(); // 새로고침
+            }
         });
     }
     const handleCancel = () => {
         cancel.mutate({
             lectureType: lectureType,
             lectureId: lectureId
-        })
+        }, {
+            onSuccess: () => {
+                window.location.reload(); // 새로고침
+            }
+        });
     }
 
 

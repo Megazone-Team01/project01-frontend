@@ -26,6 +26,7 @@ import { format, isBefore, startOfDay, isToday, isSameDay } from 'date-fns';
 import { ko } from 'date-fns/locale';
 import axiosInstance from '@/common/api/axiosInstance';
 
+import ApproveOrganization from "@/domains/user/page/ApproveOrganization.jsx";
 // API 함수들
 const teacherApi = {
     getTeacherMeetings: async () => {
@@ -53,7 +54,7 @@ const teacherApi = {
 // 사이드 메뉴 아이템
 const MENU_ITEMS = [
     { id: 'meetings', label: '상담 관리', icon: Users, path: '/teacher/dashboard' },
-    { id: 'organization', label: '기관 승인', icon: Building2, path: '/teacher/organization' },
+    { id: 'organization', label: '기관 신청 승인', icon: Building2, path: '/teacher/organization' },
     { id: 'settings', label: '설정', icon: Settings, path: '/teacher/settings' },
 ];
 
@@ -680,10 +681,9 @@ const TeacherDashboard = () => {
                         )}
 
                         {activeMenu === 'organization' && (
+
                             <div className="text-center py-20 bg-white rounded-2xl border border-slate-200">
-                                <Building2 size={48} className="mx-auto mb-4 text-slate-300" />
-                                <p className="text-slate-400 font-bold text-lg">기관 승인 기능 준비중</p>
-                                <p className="text-slate-400 text-sm mt-2">곧 사용할 수 있습니다.</p>
+                                <ApproveOrganization />
                             </div>
                         )}
 

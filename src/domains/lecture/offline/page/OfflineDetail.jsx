@@ -1,5 +1,4 @@
 import {useLocation, useParams} from "react-router";
-import useLectureDetali from "@/domains/lecture/hook/useLectureDetail.js";
 import {Badge} from "@/components/ui/badge.js";
 import {formatDate, lectureStatus} from "@/lib/utils.js";
 import EducationPeriod from "@/domains/lecture/components/common/EducationPeriod.jsx";
@@ -9,13 +8,19 @@ import OrganizationCard from "@/domains/lecture/components/common/OrganizationCa
 import {Separator} from "@/components/ui/separator.js";
 import LoadingDetail from "@/components/common/LoadingDetail.jsx";
 import ErrorPage from "@/components/common/ErrorPage.jsx";
+import {useSelector} from "react-redux";
+import useLectureDetail from "@/domains/lecture/hook/useLectureDetail.js";
 
 
 function OfflineDetail() {
     const {offlineId} = useParams();
     const location = useLocation();
     const lectureType = location.pathname.includes("/online") ? "online" : "offline";
-    const {data, isLoading,isError} = useLectureDetali(offlineId, lectureType);
+    const {data, isLoading,isError} = useLectureDetail(offlineId, lectureType);
+
+    const enrolled = useSelector(state => state.lecture.enrolled);
+
+    console.log(data,"detail");
 
     if (isLoading) {
         return <LoadingDetail />;
@@ -25,7 +30,7 @@ function OfflineDetail() {
         return <ErrorPage/>
     }
 
-    console.log("asdfa data: ", data)
+
     return (
         <div className="max-w-screen-lg mx-auto p-2">
             <div className="flex flex-col gap-5 sm:grid sm:grid-cols-[1fr_2fr]">
@@ -79,7 +84,7 @@ function OfflineDetail() {
                         </div>
                         <div className="grid grid-cols-2 gap-5">
                                 <div className="flex gap-2">
-                                    {!enrolled ? <AlertBox
+                                    {!data.exists? <AlertBox
                                         text={"강의 신청"}
                                         startAt={data.startAt}
                                         endAt={data.endAt}
