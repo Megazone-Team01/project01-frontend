@@ -9,6 +9,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { useUploadLecture } from "@/domains/lecture/hook/useUploadLecture.js";
 import axiosInstance from "@/common/api/axiosInstance.js";
+import {fileUpload} from "@/common/api/fileApi.js";
+import {useSelector} from "react-redux";
 
 export default function OnlineUpload() {
     const mutation = useUploadLecture("online");
@@ -21,9 +23,14 @@ export default function OnlineUpload() {
 
     // 카테고리 데이터
     const [categories, setCategories] = useState([]);
-    const [selectedMainCategory, setSelectedMainCategory] = useState("");
-    const [selectedSubCategory, setSelectedSubCategory] = useState("");
-    const [selectedDetailCategory, setSelectedDetailCategory] = useState("");
+    const [categories2, setCategories2] = useState([]);
+    const [categories3, setCategories3] = useState([]);
+    const [categories4, setCategories4] = useState([]);
+    const [categories5, setCategories5] = useState([]);
+
+    const [ selectedCategory, setSelectedCategory ] = useState( 0 );
+    const { isAuthenticated, user } = useSelector((state) => state.auth ?? {});
+
 
     // 조직 데이터
     const [organizations, setOrganizations] = useState([]);
@@ -49,7 +56,7 @@ export default function OnlineUpload() {
 
     const fetchCategories = async () => {
         try {
-            const response = await axiosInstance.get('/v1/category/lecture');
+            const response = await axiosInstance.get('/v1/category');
             const data = response.data;
             console.log("category:", data);
             setCategories(data);
@@ -72,39 +79,22 @@ export default function OnlineUpload() {
     // 메인 카테고리 목록
     const mainCategories = categories;
 
-    // 서브 카테고리 목록
-    const subCategories = selectedMainCategory
-        ? categories.find(c => c.code === selectedMainCategory)?.children || []
-        : [];
-
-    // 상세 카테고리 목록
-    const detailCategories = selectedSubCategory
-        ? subCategories.find(c => c.code === selectedSubCategory)?.children || []
-        : [];
-
-    // 카테고리 선택 핸들러
-    const handleMainCategoryChange = (value) => {
-        setSelectedMainCategory(value);
-        setSelectedSubCategory("");
-        setSelectedDetailCategory("");
-        setFormData(prev => ({ ...prev, category: value }));
-        setErrors(prev => ({ ...prev, category: null }));
-    };
-
-    const handleSubCategoryChange = (value) => {
-        setSelectedSubCategory(value);
-        setSelectedDetailCategory("");
-        const fullPath = `${selectedMainCategory}_${value}`;
-        setFormData(prev => ({ ...prev, category: fullPath }));
-        setErrors(prev => ({ ...prev, category: null }));
-    };
-
-    const handleDetailCategoryChange = (value) => {
-        setSelectedDetailCategory(value);
-        const fullPath = `${selectedMainCategory}_${selectedSubCategory}_${value}`;
-        setFormData(prev => ({ ...prev, category: fullPath }));
-        setErrors(prev => ({ ...prev, category: null }));
-    };
+    // Category Logic
+    const selectCategory = async ( data, depth ) => {
+        setSelectedCategory( data.id );
+        const response = await axiosInstance.get('/v1/category', {
+            params: {
+                parentId: data.id
+            }
+        });
+        if( depth === 0 ) setCategories(response.data);
+        else if( depth === 1 ) setCategories2(response.data);
+        else if( depth === 2 ) setCategories3(response.data);
+        else if( depth === 3 ) setCategories4(response.data);
+        else if( depth === 4 ) setCategories5(response.data);
+        else return
+        setFormData( { ...formData, category: data.code })
+    }
 
     const onVideoChange = (event) => {
         const { files } = event.target;
@@ -165,9 +155,6 @@ export default function OnlineUpload() {
     const validateForm = () => {
         const newErrors = {};
 
-        if (!videoFile) {
-            newErrors.video = "영상을 추가해주세요.";
-        }
         if (!formData.name.trim()) {
             newErrors.name = "강의 제목을 입력해주세요.";
         }
@@ -195,53 +182,51 @@ export default function OnlineUpload() {
             newErrors.organizationId = "소속 기관을 선택해주세요.";
         }
 
+        console.log( newErrors )
         setErrors(newErrors);
         return Object.keys(newErrors).length === 0;
     };
 
     const handleSubmit = async () => {
-        if (!validateForm()) {
-            return;
-        }
-
         setIsSubmitting(true);
 
-        const submitData = new FormData();
+        // 강의 등록
+        // 1. 강의 영상 업로드
+        const videoUploadResponse = await fileUpload( videoFile );
+        const videoId = videoUploadResponse.fileId;
 
-        // 1. 파일들을 먼저 추가
-        submitData.append('video', videoFile);
-        if (thumbnailFile) {
-            submitData.append('thumbnail', thumbnailFile);
+        // 2. 강의 썸네일 업로드
+        const thumbnailUploadResponse = await fileUpload( thumbnailFile );
+        const thumbnailId = thumbnailUploadResponse.fileId;
+
+        if (!validateForm()) {
+            console.log( "VALIDATE UNPASSED" )
+            return
         }
-
-        // 2. 나머지 폼 데이터 추가
-        Object.entries(formData).forEach(([key, value]) => {
-            submitData.append(key, value);
-        });
-
-        // FormData 내용 확인 (디버깅용)
-        console.log('=== FormData 내용 ===');
-        for (let [key, value] of submitData.entries()) {
-            if (value instanceof File) {
-                console.log(key, ':', value.name, `(${value.size} bytes)`);
-            } else {
-                console.log(key, ':', value);
-            }
+        
+        // 3. 최종 강의 등록
+        const request = {
+            name: formData.name,
+            organizationId: formData.organizationId,
+            teacherId: user.id,
+            category: formData.category,
+            description: formData.description,
+            type: 1,
+            fileId: videoId,
+            price: formData.price,
+            startAt: formData.startAt + "T00:00:00",
+            endAt: formData.endAt + "T00:00:00",
+            thumbnailId: thumbnailId,
         }
+        const res = await axiosInstance.post( "/v1/lectures", request );
 
         try {
-            // ✅ mutate 사용 (mutateAsync 대신)
-            mutation.mutate(submitData);
-
             // ✅ 폼 초기화를 여기서 하지 말고 onSuccess에서 하는 것이 좋습니다
             // 일단은 오프라인과 동일하게 처리
             setVideoPreview('');
             setThumbnailPreview('');
             setVideoFile(null);
             setThumbnailFile(null);
-            setSelectedMainCategory("");
-            setSelectedSubCategory("");
-            setSelectedDetailCategory("");
             setFormData({
                 name: '',
                 description: '',
@@ -251,7 +236,8 @@ export default function OnlineUpload() {
                 endAt: '',
                 organizationId: '',
             });
-
+            alert( "강의 생성 완료" )
+            window.location.reload()
         } catch (error) {
             console.error('업로드 실패:', error);
             setErrors({ submit: error.message || '업로드에 실패했습니다.' });
@@ -403,72 +389,91 @@ export default function OnlineUpload() {
                     <Card className="md:col-span-2">
                         <CardHeader>
                             <CardTitle>카테고리</CardTitle>
-                            <CardDescription>강의 분류를 선택하세요 (대분류 → 중분류 → 소분류)</CardDescription>
+                            <CardDescription>강의 분류를 선택하세요</CardDescription>
                         </CardHeader>
                         <CardContent className="space-y-4">
                             {/* 대분류 */}
                             <div className="space-y-2">
                                 <Label htmlFor="mainCategory">대분류 *</Label>
                                 <Select
-                                    value={selectedMainCategory}
-                                    onValueChange={handleMainCategoryChange}
+                                    onValueChange={ (value) => selectCategory( value, 1 )}
                                 >
                                     <SelectTrigger>
                                         <SelectValue placeholder="대분류 선택" />
                                     </SelectTrigger>
                                     <SelectContent>
                                         {mainCategories.map(cat => (
-                                            <SelectItem key={cat.id} value={cat.code}>
+                                            <SelectItem
+                                                key={cat.id + "_M"} value={cat}>
                                                 {cat.name}
                                             </SelectItem>
                                         ))}
                                     </SelectContent>
                                 </Select>
                             </div>
-
-                            {/* 중분류 */}
-                            {selectedMainCategory && subCategories.length > 0 && (
+                            {
+                                categories2.length > 0 &&
+                                    <div className="space-y-2">
+                                        <Label htmlFor="mainCategory"> 중분류 *</Label>
+                                        <Select
+                                            onValueChange={ (value) => selectCategory( value, 2 )}
+                                        >
+                                            <SelectTrigger>
+                                                <SelectValue placeholder="중분류 선택"/>
+                                            </SelectTrigger>
+                                            <SelectContent>
+                                                {categories2.map(cat => (
+                                                    <SelectItem
+                                                        key={cat.id + "_2"} value={cat}>
+                                                        {cat.name}
+                                                    </SelectItem>
+                                                ))}
+                                            </SelectContent>
+                                        </Select>
+                                    </div>
+                            }
+                            {
+                                categories3.length > 0 &&
                                 <div className="space-y-2">
-                                    <Label htmlFor="subCategory">중분류 *</Label>
+                                    <Label htmlFor="mainCategory"> 소분류 *</Label>
                                     <Select
-                                        value={selectedSubCategory}
-                                        onValueChange={handleSubCategoryChange}
+                                        onValueChange={ (value) => selectCategory( value, 3 )}
                                     >
                                         <SelectTrigger>
-                                            <SelectValue placeholder="중분류 선택" />
+                                            <SelectValue placeholder="소분류 선택"/>
                                         </SelectTrigger>
                                         <SelectContent>
-                                            {subCategories.map(cat => (
-                                                <SelectItem key={cat.id} value={cat.code}>
+                                            {categories3.map(cat => (
+                                                <SelectItem
+                                                    key={cat.id + "_2"} value={cat}>
                                                     {cat.name}
                                                 </SelectItem>
                                             ))}
                                         </SelectContent>
                                     </Select>
                                 </div>
-                            )}
-
-                            {/* 소분류 */}
-                            {selectedSubCategory && detailCategories.length > 0 && (
+                            }
+                            {
+                                categories4.length > 0 &&
                                 <div className="space-y-2">
-                                    <Label htmlFor="detailCategory">소분류 *</Label>
+                                    <Label htmlFor="mainCategory"> 세부 분류 *</Label>
                                     <Select
-                                        value={selectedDetailCategory}
-                                        onValueChange={handleDetailCategoryChange}
+                                        onValueChange={ (value) => selectCategory( value, 4 )}
                                     >
                                         <SelectTrigger>
-                                            <SelectValue placeholder="소분류 선택" />
+                                            <SelectValue placeholder="세부 분류 선택"/>
                                         </SelectTrigger>
                                         <SelectContent>
-                                            {detailCategories.map(cat => (
-                                                <SelectItem key={cat.id} value={cat.code}>
+                                            {categories4.map(cat => (
+                                                <SelectItem
+                                                    key={cat.id + "_3"} value={cat}>
                                                     {cat.name}
                                                 </SelectItem>
                                             ))}
                                         </SelectContent>
                                     </Select>
                                 </div>
-                            )}
+                            }
 
                             {/* 선택된 카테고리 표시 */}
                             {formData.category && (
@@ -487,7 +492,7 @@ export default function OnlineUpload() {
                     <Card>
                         <CardHeader>
                             <CardTitle className="flex items-center gap-2">
-                                <DollarSign className="w-5 h-5" />
+                                <DollarSign className="w-5 h-5"/>
                                 가격 설정
                             </CardTitle>
                             <CardDescription>강의 수강료를 설정하세요</CardDescription>
