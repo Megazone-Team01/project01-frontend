@@ -28,7 +28,6 @@ export function AlertBox({ text, startAt, endAt, lectureType, lectureId}) {
             }
         });
     }
-
     const handleCancel = () => {
         cancel.mutate({
             lectureType: lectureType,
