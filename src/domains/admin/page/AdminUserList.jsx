@@ -12,10 +12,7 @@ import {Empty, EmptyTitle} from "@/components/ui/empty.js";
 import {adminUpdateUser, deleteUser, getUserDetail, getUsers, getUsersWithFilter} from "@/domains/admin/api/userApi.js";
 import {Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle} from "@/components/ui/dialog.js";
 import {Field, FieldLabel, FieldSet} from "@/components/ui/field.js";
-import {Skeleton} from "@/components/ui/skeleton.js";
 import {Input} from "@/components/ui/input.js";
-import axiosInstance from "@/common/api/axiosInstance.js";
-import {updateProfileInfo} from "@/domains/user/api/profile.js";
 
 
 export const AdminUserList = () => {

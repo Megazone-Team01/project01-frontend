@@ -14,7 +14,7 @@ import {Button} from "@/components/ui/button.js";
 import {Separator} from "@/components/ui/separator.js";
 import {
     BarChart3Icon,
-    BellIcon, BookIcon,
+    BellIcon, BellMinusIcon, BellOffIcon, BookIcon,
     ComputerIcon,
     LogOutIcon,
     MessageCircleIcon,
@@ -32,12 +32,15 @@ import {useEffect, useState} from "react";
 import {Item} from "@/components/ui/item.js";
 import {Toggle} from "@/components/ui/toggle.js";
 import {getProfileInfo} from "@/domains/user/api/profile.js";
+import {useSSE} from "@/routes/SSEContext.jsx";
 
 export default function Header({isLoggedIn,hasNotifications,hasMessages}) {
 
     const [isScrolled, setIsScrolled] = useState(false);
     const dispatch = useDispatch();
     const navigate = useNavigate();
+
+    const { notifications } = useSSE();
 
     const { isAuthenticated, user } = useSelector((state) => state.auth ?? {});
     const [ isOnline, setOnline ] = useState(false);
@@ -106,25 +109,50 @@ export default function Header({isLoggedIn,hasNotifications,hasMessages}) {
             </div>
             {isAuthenticated ?(
                 <div className="flex item-center gap-2">
-                    <Button size="icon" variant="ghost" asChild className="relative">
-                        <Link to="/my/notifications">
-                            <BellIcon className="size-4"/>
-                            {hasNotifications && (
-                                <div className="absolute top-1.5 right-1.5 size-2 bg-red-500 rounded-full"/>
-                            )}
-                        </Link>
-                    </Button>
-                    <Button size="icon" variant="ghost" asChild className="relative">
-                        <Link to="/">
-                            <MessageCircleIcon className="size-4"/>
-                            {hasMessages && (
-                                <div className="absolute top-1.5 right-1.5 size-2 bg-red-500 rounded-full"/>
-                            )}
-                        </Link>
-                    </Button>
                     <DropdownMenu>
                         <DropdownMenuTrigger asChild>
-                            <Avatar>
+                            <div className="relative flex justify-center items-center hover:cursor-pointer px-3">
+                                <BellIcon size={20} />
+                                {
+                                    notifications.length > 0 && (
+                                        <span
+                                            className="absolute -top-1 -right-1 min-w-[18px] h-[18px] flex items-center justify-center bg-red-500 text-white text-[10px] font-semibold rounded-full px-1">
+                                        {notifications.length}
+                                    </span>
+                                    )
+                                }
+                            </div>
+                        </DropdownMenuTrigger>
+
+                        <DropdownMenuContent className="rounded-none min-w-[250px] bg-white p-0">
+                            {
+                                notifications.length > 0 ? (
+                                    notifications.map((noti, index) => (
+                                        <div>
+                                            <DropdownMenuItem
+                                                key={index + "_N"}
+                                                className="rounded-none data-[highlighted]:text-black data-[state=open]:text-black
+                                                data-[highlighted]:bg-yellow-200 data-[state=open]:bg-yellow-200 hover:bg-yellow-200 active:bg-yellow-200 active:text-black hover:cursor-pointer bg-yellow-100 min-h-[60px]">
+                                                <DropdownMenuLabel> { noti.message } </DropdownMenuLabel>
+                                            </DropdownMenuItem>
+                                            <DropdownMenuSeparator className="my-0" />
+                                        </div>
+                                    ))
+                                )
+                                :
+                                    <DropdownMenuItem
+                                        className="rounded-none bg-white disabled p-3">
+                                        <DropdownMenuLabel className="flex justify-center items-center gap-3">
+                                            <BellOffIcon />
+                                            새로운 알림이 없습니다
+                                        </DropdownMenuLabel>
+                                    </DropdownMenuItem>
+                            }
+                        </DropdownMenuContent>
+                    </DropdownMenu>
+                    <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                        <Avatar>
                                 <AvatarImage
                                     src={`${import.meta.env.VITE_FILE_URL_HEADER}${userInfo.fileUrl}`}
                                 />
@@ -154,7 +182,7 @@ export default function Header({isLoggedIn,hasNotifications,hasMessages}) {
                                     user.role !== "STUDENT" ?
                                         <DropdownMenuItem asChild className="cursor-pointer">
                                             <Link to={
-                                                user.role === "ADMIN " ? "/admin" : "/"
+                                                user.role === "ADMIN" ? "/admin" : "/"
                                             }>
                                                 <BookIcon className="size-4 mr-2"/>
                                                 관리
