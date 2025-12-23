@@ -66,7 +66,6 @@ export default function useLoginForm() {
                             name: result.name,
                             email: result.email,
                             role: result.role,
-                            type: result.type,
                         },
                         accessToken: result.accessToken,
                     })
