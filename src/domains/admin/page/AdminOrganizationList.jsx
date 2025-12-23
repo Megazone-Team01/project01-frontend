@@ -84,7 +84,7 @@ export const AdminOrganizationList = () => {
     const submitUpdate = async () => {
         const data = {
             tel: formData.tel,
-            addressCode: formData.addressCode,
+            address: formData.address,
             addressDetail: formData.addressDetail,
             description: formData.description,
             type: formData.isOnline,
@@ -313,9 +313,9 @@ export const AdminOrganizationList = () => {
                                                                 className="flex-5 rounded-none"
                                                                 onChange={(e) => setFormData({
                                                                     ...formData,
-                                                                    addressCode: e.target.value
+                                                                    address: e.target.value
                                                                 })}
-                                                                value={formData.addressCode}/>
+                                                                value={formData.address}/>
                                                             <Input
                                                                 type="text"
                                                                 className="flex-5 rounded-none"
@@ -328,7 +328,7 @@ export const AdminOrganizationList = () => {
                                                         :
                                                         <div className="flex-5 flex flex-col">
                                                             <Label
-                                                                className="text-md text-gray-500"> {formData.addressCode} </Label>
+                                                                className="text-md text-gray-500"> {formData.address} </Label>
                                                             <Label
                                                                 className="text-md text-gray-500"> {formData.addressDetail} </Label>
                                                         </div>

@@ -8,12 +8,19 @@ import {
     NavigationMenuLink,
     NavigationMenuList,
     NavigationMenuTrigger,
-    navigationMenuTriggerStyle
 } from "@/components/ui/navigation-menu.js";
 import {cn} from "@/lib/utils.js";
 import {Button} from "@/components/ui/button.js";
 import {Separator} from "@/components/ui/separator.js";
-import {BarChart3Icon, FilePlus, LogOutIcon, MessageCircleIcon, SettingsIcon, UserIcon} from "lucide-react";
+import {
+    BarChart3Icon,
+    BellIcon, BookIcon,
+    ComputerIcon,
+    LogOutIcon,
+    MessageCircleIcon,
+    SettingsIcon,
+    UserIcon
+} from "lucide-react";
 import {
     DropdownMenu,
     DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem,
@@ -22,100 +29,9 @@ import {
 } from "@/components/ui/dropdown-menu.js";
 import {Avatar, AvatarFallback, AvatarImage} from "@/components/ui/avatar.js";
 import {useEffect, useState} from "react";
-
-
-const menus = [
-    {
-        name: "Online",
-        to: "lecture/online",
-        items: [
-            {
-                name: "Leaderboards",
-                description: "See the top performers in your community",
-                to: "/products/leaderboards",
-            },
-            {
-                name: "Categories",
-                description: "See the top categories in your community",
-                to: "/products/categories",
-            },
-            {
-                name: "Search",
-                description: "Search for a product",
-                to: "/products/search",
-            },
-            {
-                name: "Submit a Product",
-                description: "Submit a product to our community",
-                to: "/products/submit",
-            },
-            {
-                name: "Promote",
-                description: "Promote a product to our community",
-                to: "/products/promote",
-            },
-        ],
-    },
-    {
-        name: "Offline",
-        to: "lecture/offline",
-        items: [
-            {
-                name: "Remote Jobs",
-                description: "Find a remote job in our community",
-                to: "/jobs?location=remote",
-            },
-            {
-                name: "Full-Time Jobs",
-                description: "Find a full-time job in our community",
-                to: "/jobs?type=full-time",
-            },
-            {
-                name: "Freelance Jobs",
-                description: "Find a freelance job in our community",
-                to: "/jobs?type=freelance",
-            },
-            {
-                name: "Internships",
-                description: "Find an internship in our community",
-                to: "/jobs?type=internship",
-            },
-            {
-                name: "Submit a Job",
-                description: "Submit a job to our community",
-                to: "/jobs/submit",
-            },
-        ],
-    },
-    {
-        name: "Academy",
-        to: "/community",
-        items: [
-            {
-                name: "All Posts",
-                description: "See all posts in our community",
-                to: "/community",
-            },
-            {
-                name: "Top Posts",
-                description: "See the top posts in our community",
-                to: "/community?sort=top",
-            },
-            {
-                name: "New Posts",
-                description: "See the new posts in our community",
-                to: "/community?sort=new",
-            },
-            {
-                name: "Create a Post",
-                description: "Create a post in our community",
-                to: "/community/create",
-            },
-        ],
-    }
-];
-
-
+import {Item} from "@/components/ui/item.js";
+import {Toggle} from "@/components/ui/toggle.js";
+import {getProfileInfo} from "@/domains/user/api/profile.js";
 
 export default function Header({isLoggedIn,hasNotifications,hasMessages}) {
 
@@ -124,6 +40,12 @@ export default function Header({isLoggedIn,hasNotifications,hasMessages}) {
     const navigate = useNavigate();
 
     const { isAuthenticated, user } = useSelector((state) => state.auth ?? {});
+    const [ isOnline, setOnline ] = useState(false);
+
+    const [ userInfo, setUserInfo ] = useState({
+        fileUrl: '',
+        name: ''
+    });
 
     useEffect(() => {
         const handleScroll = () => {
@@ -138,11 +60,29 @@ export default function Header({isLoggedIn,hasNotifications,hasMessages}) {
         return () => window.removeEventListener('scroll', handleScroll);
     }, []);
 
+    useEffect(() => {
+        const fetchData = async () => {
+            if( user !== null ){
+                const data = await getProfileInfo( user.id );
+                setUserInfo(data);
+            }
+            else {
+                setUserInfo( {
+                    fileUrl: '',
+                    name: ''
+                })
+            }
+        }
+        fetchData();
+    }, [ isAuthenticated ]);
+
     // 로그아웃
     const handleLogout = () => {
         dispatch(logout()); // Redux 상태 초기화 + localStorage 제거
         navigate("/");      // 홈으로 이동
     };
+
+    console.log( user )
 
     return (
         <nav
@@ -153,30 +93,32 @@ export default function Header({isLoggedIn,hasNotifications,hasMessages}) {
             ])}
         >
             <div className="flex items-center">
-                <Link to="/" className="font-bold tracking-tight text-lg">
+                <Link to="/" className="font-bold tracking-tight text-2xl text-white">
                     LinkEd
                 </Link>
                 <Separator orientation="vertical" className="h-6 mx-4" />
-                <NavigationMenu>
-                </NavigationMenu>
+                <Item
+                    onClick={ isOnline ? () => navigate("/organizations") : () => navigate("/organizations") }
+                    className="text-white hover:font-bold hover:cursor-pointer"> 아카데미 </Item>
+                <Item
+                    onClick={ isOnline ? () => navigate("/lecture/online") : () => navigate("/lecture/offline") }
+                    className="text-white hover:font-bold hover:cursor-pointer"> 강의 </Item>
             </div>
             {isAuthenticated ?(
                 <div className="flex item-center gap-2">
                     <Button size="icon" variant="ghost" asChild className="relative">
-                        <Link to="/upload">
-                            {user.roleName !== "TEACHER" ?
-                                <>
-                                <FilePlus className="size-5"/>
+                        <Link to="/my/notifications">
+                            <BellIcon className="size-4"/>
                             {hasNotifications && (
-                                <div className="absolute top-1.5 right-1.5 size-2 bg-red-500 rounded-full" />
-                            )}</> : null}
+                                <div className="absolute top-1.5 right-1.5 size-2 bg-red-500 rounded-full"/>
+                            )}
                         </Link>
                     </Button>
                     <Button size="icon" variant="ghost" asChild className="relative">
-                        <Link to="/my/messages">
-                            <MessageCircleIcon className="size-4" />
+                        <Link to="/">
+                            <MessageCircleIcon className="size-4"/>
                             {hasMessages && (
-                                <div className="absolute top-1.5 right-1.5 size-2 bg-red-500 rounded-full" />
+                                <div className="absolute top-1.5 right-1.5 size-2 bg-red-500 rounded-full"/>
                             )}
                         </Link>
                     </Button>
@@ -184,52 +126,67 @@ export default function Header({isLoggedIn,hasNotifications,hasMessages}) {
                         <DropdownMenuTrigger asChild>
                             <Avatar>
                                 <AvatarImage
-                                    src={
-                                        user?.fileUrl
-                                            ? `${import.meta.env.VITE_FILE_URL_HEADER}${encodeURIComponent(user.fileUrl)}`
-                                            : "https://avatars.githubusercontent.com/u/9919?v=4"
-                                    }
+                                    src={`${import.meta.env.VITE_FILE_URL_HEADER}${userInfo.fileUrl}`}
                                 />
                                 <AvatarFallback>
-                                    {user?.name ? user.name[0] : "N"}
+                                    <UserIcon className="text-gray-400" />
                                 </AvatarFallback>
                             </Avatar>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent className="w-56">
                             <DropdownMenuLabel className="flex flex-col gap-1">
-                                <span className="font-medium">hello</span>
+                                <span className="font-medium">
+                                    { userInfo.name }
+                                </span>
                                 <span className="text-xs text-muted-foreground">
-                    {user.name}
-                  </span>
+                                    {user.role === "ADMIN" ? "관리자" : user.role === "TEACHER" ? "강사" : "학생" }
+                                  </span>
                             </DropdownMenuLabel>
                             <DropdownMenuSeparator/>
                             <DropdownMenuGroup className="flex flex-col gap-1">
                                 <DropdownMenuItem asChild className="cursor-pointer">
-                                    <Link to="/my/dashboard">
-                                        <BarChart3Icon className="size-4 mr-2" />
-                                        Dashboard
-                                    </Link>
-                                </DropdownMenuItem>
-                                <DropdownMenuItem asChild className="cursor-pointer">
                                     <Link to="/profile">
-                                        <UserIcon className="size-4 mr-2" />
+                                        <UserIcon className="size-4 mr-2"/>
                                         마이페이지
                                     </Link>
                                 </DropdownMenuItem>
-                                <DropdownMenuItem asChild className="cursor-pointer">
-                                    <Link to="/my/settings">
-                                        <SettingsIcon className="size-4 mr-2" />
-                                        Settings
-                                    </Link>
-                                </DropdownMenuItem>
+                                {
+                                    user.role !== "STUDENT" ?
+                                        <DropdownMenuItem asChild className="cursor-pointer">
+                                            <Link to={
+                                                user.role === "ADMIN " ? "/admin" : "/"
+                                            }>
+                                                <BookIcon className="size-4 mr-2"/>
+                                                관리
+                                            </Link>
+                                        </DropdownMenuItem>
+                                        :
+                                        ""
+                                }
                             </DropdownMenuGroup>
                             <DropdownMenuSeparator/>
                             <DropdownMenuItem className="cursor-pointer" onClick={handleLogout}>
-                                <LogOutIcon className="size-4 mr-2" />
+                                <LogOutIcon className="size-4 mr-2"/>
                                 Logout
                             </DropdownMenuItem>
                         </DropdownMenuContent>
                     </DropdownMenu>
+                    <div className="flex justify-end items-center">
+                        <Toggle variant="outline" pressed={isOnline} onPressedChange={setOnline} asChild>
+                            <div
+                                className="
+                                hover:cursor-pointer hover:bg-transparent
+                                border-white text-white
+                                hover:text-white
+                                hover:font-bold
+                                data-[state=on]:font-bold
+                                data-[state=on]:bg-white
+                                data-[state=on]:text-red-500
+                                ">
+                                <span className="text-xs">{ isOnline ? "ON" : "OFF"} </span>
+                            </div>
+                        </Toggle>
+                    </div>
                 </div>
 
             ) : (

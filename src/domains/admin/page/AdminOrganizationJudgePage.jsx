@@ -51,7 +51,7 @@ export const AdminOrganizationJudgePage = () => {
                                             <ItemContent>
                                                 <ItemTitle> { org.name } </ItemTitle>
                                                 <ItemDescription> { org.ownerName} </ItemDescription>
-                                                <ItemDescription> { org.isOnline} </ItemDescription>
+                                                <ItemDescription> { org.isOnline === 0 ? "온/오프라인" : org.isOnline === 1 ? "온라인" : "오프라인"} </ItemDescription>
                                             </ItemContent>
                                             <ItemActions>
                                                 <Button

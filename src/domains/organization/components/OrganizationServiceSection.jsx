@@ -116,7 +116,7 @@ const OrganizationServiceSection = ({ organizationId }) => {
         fetchData()
     }, []);
 
-    console.log( organizationLectures )
+    console.log( organizationTeachers )
 
     return (
         <section className="w-full bg-slate-50 border-t border-slate-200">
@@ -183,9 +183,18 @@ const OrganizationServiceSection = ({ organizationId }) => {
                                                 </CardDescription>
                                             </div>
                                             <div className="flex flex-1 flex-col">
-                                                <div className="w-full min-h-36 flex justify-center items-center">
-                                                    <ImageIcon size={25}/>
-                                                </div>
+                                                {
+                                                    t.url === null ?
+                                                        <div
+                                                            className="w-full min-h-36 flex justify-center items-center">
+                                                            <ImageIcon size={25}/>
+                                                        </div>
+                                                        :
+                                                        <img
+                                                            className="aspect-square"
+                                                            src={`${import.meta.env.VITE_FILE_URL_HEADER}${t.url}`}
+                                                            alt={t.url}/>
+                                                }
                                             </div>
                                         </div>
                                     </CardContent>
@@ -198,12 +207,20 @@ const OrganizationServiceSection = ({ organizationId }) => {
                                     <CardContent>
                                         <div key={index} className="flex flex-col">
                                             <div className="flex flex-col">
-                                                <div className="w-full h-40 flex justify-center items-center">
-                                                    <ImageIcon size={25}/>
-                                                </div>
+                                                {
+                                                    l.thumbnail != null ?
+                                                        <img
+                                                            className="object-contain max-w-full max-h-40"
+                                                            src={`${import.meta.env.VITE_FILE_URL_HEADER}${l.thumbnail}`}
+                                                            alt={l.thumbnail}/>
+                                                        :
+                                                        <div className="w-full h-40 flex justify-center items-center">
+                                                            <ImageIcon size={25}/>
+                                                        </div>
+                                                }
                                             </div>
                                             <div className="flex flex-col">
-                                                <CardTitle className="font-bold text-xl"> {l.name} </CardTitle>
+                                            <CardTitle className="font-bold text-xl"> {l.name} </CardTitle>
                                                 <CardDescription className="text-gray-500 text-md">
                                                     {l.teacherName}
                                                 </CardDescription>

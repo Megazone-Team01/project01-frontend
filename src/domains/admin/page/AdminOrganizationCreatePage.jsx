@@ -170,11 +170,11 @@ export const AdminOrganizationCreatePage = () => {
                                     </Field>
                                     <div className="grid grid-cols-2 gap-4">
                                         <Field>
-                                            <FieldLabel htmlFor="city"> 우편 번호 </FieldLabel>
+                                            <FieldLabel htmlFor="city"> 도로명 주소 </FieldLabel>
                                             <Input
                                                 onChange={ (e) => setFormData( { ...formData, address: e.target.value } )}
                                                 value={ formData.address }
-                                                id="city" type="text" placeholder="우편번호를 입력하세요"/>
+                                                id="city" type="text" placeholder="주소를 입력하세요"/>
                                         </Field>
                                         <Field>
                                             <FieldLabel htmlFor="zip"> 상세 주소</FieldLabel>

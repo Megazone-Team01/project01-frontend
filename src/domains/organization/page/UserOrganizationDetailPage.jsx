@@ -3,10 +3,12 @@ import {useParams} from "react-router";
 import {Separator} from "@/components/ui/separator.js";
 import {Table, TableBody, TableCell, TableRow} from "@/components/ui/table.js";
 import {useEffect, useState} from "react";
-import {getOrganization} from "../api/organizationApi.js";
+import {applyOrganization, getOrganization} from "../api/organizationApi.js";
 import {Tabs, TabsContent, TabsList, TabsTrigger} from "@/components/ui/tabs.js";
 import {Label} from "@/components/ui/label.js";
 import {Card, CardContent, CardHeader} from "@/components/ui/card.js";
+import {ImageIcon} from "lucide-react";
+import {Button} from "@/components/ui/button.js";
 
 
 export const UserOrganizationDetailPage = () => {
@@ -15,6 +17,20 @@ export const UserOrganizationDetailPage = () => {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
 
+    const submitApply = async () => {
+        try {
+            const flag = confirm( organization.name + "에 등록하시겠습니까?" );
+            if( flag ){
+                await applyOrganization( id );
+                alert( "등록 신청이 완료되었습니다" )
+            }
+        }
+        catch( error ){
+            if( error.status === 401 ){
+                alert( error.response.data.message )
+            }
+        }
+    }
     useEffect(() => {
         const fetchOrganization = async () => {
             try {
@@ -37,9 +53,16 @@ export const UserOrganizationDetailPage = () => {
         <div className="flex flex-col w-full">
             <div className="flex w-full min-h-80">
                 <div className="flex flex-1 justify-center items-center m-2">
-                    <img
-                        className="aspect-square max-h-72 max-w-full"
-                        src={`/${organization.leadImage}`} alt={id} />
+                    {
+                        organization.leadImage !== null ?
+                        <img
+                            className="aspect-square max-h-72 max-w-full"
+                            src={`${import.meta.env.VITE_FILE_URL_HEADER}${organization.leadImage}`}
+                            alt={id}/>
+                            : <div
+                                className="aspect-square max-h-72 flex justify-center items-center w-full bg-gray-50"
+                            > <ImageIcon className="text-gray-400" size={25} /></div>
+                    }
                 </div>
                 <div className="flex flex-1 flex-col justify-start items-center m-2">
                     <h2> {organization.name} </h2>
@@ -54,7 +77,7 @@ export const UserOrganizationDetailPage = () => {
                             </TableRow>
                             <TableRow>
                                 <TableCell className="w-[100px]"> 주소: </TableCell>
-                                <TableCell> {organization.addressCode + " " + organization.addressDetail} </TableCell>
+                                <TableCell> {organization.address + " " + organization.addressDetail} </TableCell>
                             </TableRow>
                             <TableRow>
                                 <TableCell className="w-[100px]"> 홈페이지: </TableCell>
@@ -84,6 +107,14 @@ export const UserOrganizationDetailPage = () => {
                           </TableRow>
                         </TableBody>
                     </Table>
+                    <div className="pt-2">
+                        <Button type="button" variant="outline"
+                            onClick={submitApply}
+                            className="rounded-none hover:text-gray-700 hover:cursor-pointer"
+                        >
+                            등록 신청
+                        </Button>
+                    </div>
                 </div>
             </div>
             <OrganizationServiceSection organizationId={Number(id)} />
