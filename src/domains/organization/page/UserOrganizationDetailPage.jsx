@@ -72,7 +72,7 @@ export const UserOrganizationDetailPage = () => {
                             <TableRow>
                                 <TableCell className="w-[100px]"> 강의 유형: </TableCell>
                                 <TableCell>
-                                    {organization.isOnline === 1 ? "온라인" : organization.isOnline === 0 ? "온라인 + 오프라인" : "오프라인" }
+                                    {organization.isOnline === 1 ? "온라인" : organization.isOnline === 0 ? "온라인 + 오프라인" : "오프라인"}
                                 </TableCell>
                             </TableRow>
                             <TableRow>
@@ -88,7 +88,7 @@ export const UserOrganizationDetailPage = () => {
                                 <TableCell>
                                     {
                                         organization.tel ?
-                                             organization.tel.length === 9 ?
+                                            organization.tel.length === 9 ?
                                                 organization.tel.substring(0, 2) + "-" + organization.tel.substring(2, 5) + "-" + organization.tel.substring(5, 9)
                                                 :
                                                 organization.tel.length === 11 ?
@@ -102,9 +102,9 @@ export const UserOrganizationDetailPage = () => {
                                 </TableCell>
                             </TableRow>
                             <TableRow>
-                              <TableCell className="w-[100px]"> 소개: </TableCell>
-                              <TableCell> { organization.description }  </TableCell>
-                          </TableRow>
+                                <TableCell className="w-[100px]"> 소개: </TableCell>
+                                <TableCell> {organization.description}  </TableCell>
+                            </TableRow>
                         </TableBody>
                     </Table>
                     <div className="pt-2">

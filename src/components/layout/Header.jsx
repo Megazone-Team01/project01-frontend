@@ -1,6 +1,6 @@
 import { useSelector, useDispatch } from "react-redux";
-import {logout} from "@/common/store/auth/authSlice";
-import { Link , useNavigate } from "react-router";
+import { logout } from "@/common/store/auth/authSlice";
+import { Link, useNavigate } from "react-router";
 import {
     NavigationMenu,
     NavigationMenuItem,
@@ -34,7 +34,7 @@ import {Toggle} from "@/components/ui/toggle.js";
 import {getProfileInfo} from "@/domains/user/api/profile.js";
 import {useSSE} from "@/routes/SSEContext.jsx";
 
-export default function Header({isLoggedIn,hasNotifications,hasMessages}) {
+export default function Header({ isLoggedIn, hasNotifications, hasMessages }) {
 
     const [isScrolled, setIsScrolled] = useState(false);
     const dispatch = useDispatch();
@@ -107,8 +107,18 @@ export default function Header({isLoggedIn,hasNotifications,hasMessages}) {
                     onClick={ isOnline ? () => navigate("/lecture/online") : () => navigate("/lecture/offline") }
                     className="text-white hover:font-bold hover:cursor-pointer"> 강의 </Item>
             </div>
-            {isAuthenticated ?(
+            {isAuthenticated ? (
                 <div className="flex item-center gap-2">
+                    <Button size="icon" variant="ghost" asChild className="relative">
+                        <Link to="/upload">
+                            {user.roleName !== "TEACHER" ?
+                                <>
+                                    <FilePlus className="size-5" />
+                                    {hasNotifications && (
+                                        <div className="absolute top-1.5 right-1.5 size-2 bg-red-500 rounded-full" />
+                                    )}</> : null}
+                        </Link>
+                    </Button>                                 
                     <DropdownMenu>
                         <DropdownMenuTrigger asChild>
                             <div className="relative flex justify-center items-center hover:cursor-pointer px-3">
@@ -170,8 +180,21 @@ export default function Header({isLoggedIn,hasNotifications,hasMessages}) {
                                     {user.role === "ADMIN" ? "관리자" : user.role === "TEACHER" ? "강사" : "학생" }
                                   </span>
                             </DropdownMenuLabel>
-                            <DropdownMenuSeparator/>
+                            <DropdownMenuSeparator />
                             <DropdownMenuGroup className="flex flex-col gap-1">
+                                <DropdownMenuItem
+                                    className="cursor-pointer"
+                                    onClick={() => {
+                                        if (user?.roleName === 'TEACHER') {
+                                            navigate('/teacher/dashboard');
+                                        } else {
+                                            navigate('/reservations/my');
+                                        }
+                                    }}
+                                >
+                                    <BarChart3Icon className="size-4 mr-2" />
+                                    Dashboard
+                                </DropdownMenuItem>
                                 <DropdownMenuItem asChild className="cursor-pointer">
                                     <Link to="/profile">
                                         <UserIcon className="size-4 mr-2"/>
@@ -192,7 +215,7 @@ export default function Header({isLoggedIn,hasNotifications,hasMessages}) {
                                         ""
                                 }
                             </DropdownMenuGroup>
-                            <DropdownMenuSeparator/>
+                            <DropdownMenuSeparator />
                             <DropdownMenuItem className="cursor-pointer" onClick={handleLogout}>
                                 <LogOutIcon className="size-4 mr-2"/>
                                 Logout
