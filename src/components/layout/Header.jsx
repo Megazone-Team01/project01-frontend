@@ -227,19 +227,6 @@ export default function Header({  hasNotifications }) {
                                         마이페이지
                                     </Link>
                                 </DropdownMenuItem>
-                                {
-                                    user.role !== "STUDENT" ?
-                                        <DropdownMenuItem asChild className="cursor-pointer">
-                                            <Link to={
-                                                user.role === "ADMIN" ? "/admin" : "/"
-                                            }>
-                                                <BookIcon className="size-4 mr-2" />
-                                                관리
-                                            </Link>
-                                        </DropdownMenuItem>
-                                        :
-                                        ""
-                                }
                             </DropdownMenuGroup>
                             <DropdownMenuSeparator />
                             <DropdownMenuItem className="cursor-pointer" onClick={handleLogout}>
