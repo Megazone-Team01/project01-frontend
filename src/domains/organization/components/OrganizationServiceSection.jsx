@@ -371,96 +371,47 @@ const OrganizationServiceSection = ({ organizationId }) => {
                                     </CardContent>
                                 </Card>
                             ))
-                                )
-                                : activeTab === 2 ? (
+                        )
+                            : activeTab === 2 ? (
                                         teachersLoading ? (
                                             Array.from({length: 3}).map((_, i) => (
                                                 <div key={i} className="h-64 bg-slate-100 rounded-[40px] animate-pulse"/>
-                                ))
-                            ) : teachers.length === 0 ? (
-                                <div className="col-span-full text-center py-32 bg-white border-2 border-dashed border-slate-200 rounded-[40px]">
-                                    <UserCheck size={48} className="mx-auto mb-4 opacity-20" />
-                                    <p className="text-slate-400 font-bold">등록된 상담 전문가가 없습니다.</p>
-                                </div>
-                            ) : (
-                                teachers.map(teacher => (
-                                    <TeacherCard
-                                        key={teacher.teacherId || teacher.id}
-                                        teacher={teacher}
-                                        onClick={() => handleOpenModal(teacher)}
-                                    />
-                                ))
+                                        ))
+                                    ) : teachers.length === 0 ? (
+                                        <div className="col-span-full text-center py-32 bg-white border-2 border-dashed border-slate-200 rounded-[40px]">
+                                            <UserCheck size={48} className="mx-auto mb-4 opacity-20" />
+                                            <p className="text-slate-400 font-bold">등록된 상담 전문가가 없습니다.</p>
+                                        </div>
+                                    ) : (
+                                        teachers.map(teacher => (
+                                            <TeacherCard
+                                                key={teacher.teacherId || teacher.id}
+                                                teacher={teacher}
+                                                onClick={() => handleOpenModal(teacher)}
+                                            />
+                                        ))
+                                    )
                             )
-                                : activeTab === 1 ? (
-                                    organizationLectures.map((l, index) => (
-                                        <Card>
-                                            <CardContent>
-                                                <div key={index} className="flex flex-col">
-                                                    <div className="flex flex-col">
-                                                        <div className="w-full h-40 flex justify-center items-center">
-                                                            <ImageIcon size={25} />
-                                                        </div>
-                                                    </div>
-                                                    <div className="flex flex-col">
-                                                        <CardTitle className="font-bold text-xl"> {l.name} </CardTitle>
-                                                        <CardDescription className="text-gray-500 text-md">
-                                                            {l.teacherName}
-                                                        </CardDescription>
-                                                        <CardDescription className="text-gray-400">
-                                                            {
-                                                                l.category.map((name, index) => (
-                                                                    <span key={name}>
-                                                                        {name}{index < l.category.length - 1 ? " > " : ""}
-                                                                    </span>
-                                                                ))
-                                                            }
-                                                        </CardDescription>
-                                                    </div>
-                                                </div>
-                                            </CardContent>
-                                        </Card>
+                            : activeTab === 3 ? (
+                                roomListLoading ? (
+                                    Array.from({ length: 3 }).map((_, i) => (
+                                        <div key={i} className="h-64 bg-slate-100 rounded-[40px] animate-pulse" />
+                                    ))
+                                ) : roomList.length === 0 ? (
+                                    <div className="col-span-full text-center py-32 bg-white border-2 border-dashed border-slate-200 rounded-[40px]">
+                                        <Monitor size={48} className="mx-auto mb-4 opacity-20" />
+                                        <p className="text-slate-400 font-bold">등록된 회의실이 없습니다.</p>
+                                    </div>
+                                ) : (
+                                    roomList.map(room => (
+                                        <RoomCard
+                                            key={room.id}
+                                            room={room}
+                                            onClick={() => handleOpenRoomModal(room)}
+                                        />
                                     ))
                                 )
-                                    : activeTab === 2 ? (
-                                        teachersLoading ? (
-                                            Array.from({ length: 3 }).map((_, i) => (
-                                                <div key={i} className="h-64 bg-slate-100 rounded-[40px] animate-pulse" />
-                                            ))
-                                        ) : teachers.length === 0 ? (
-                                            <div className="col-span-full text-center py-32 bg-white border-2 border-dashed border-slate-200 rounded-[40px]">
-                                                <UserCheck size={48} className="mx-auto mb-4 opacity-20" />
-                                                <p className="text-slate-400 font-bold">등록된 상담 전문가가 없습니다.</p>
-                                            </div>
-                                        ) : (
-                                            teachers.map(teacher => (
-                                                <TeacherCard
-                                                    key={teacher.teacherId || teacher.id}
-                                                    teacher={teacher}
-                                                    onClick={() => handleOpenModal(teacher)}
-                                                />
-                                            ))
-                                        )
-                                    )
-                                        : activeTab === 3 ? (
-                                            roomListLoading ? (
-                                                Array.from({ length: 3 }).map((_, i) => (
-                                                    <div key={i} className="h-64 bg-slate-100 rounded-[40px] animate-pulse" />
-                                                ))
-                                            ) : roomList.length === 0 ? (
-                                                <div className="col-span-full text-center py-32 bg-white border-2 border-dashed border-slate-200 rounded-[40px]">
-                                                    <Monitor size={48} className="mx-auto mb-4 opacity-20" />
-                                                    <p className="text-slate-400 font-bold">등록된 회의실이 없습니다.</p>
-                                                </div>
-                                            ) : (
-                                                roomList.map(room => (
-                                                    <RoomCard
-                                                        key={room.id}
-                                                        room={room}
-                                                        onClick={() => handleOpenRoomModal(room)}
-                                                    />
-                                                ))
-                                            )
-                                        ) : null
+                            ) : null
                         }
                     </div>
                 </div>

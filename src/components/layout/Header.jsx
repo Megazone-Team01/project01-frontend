@@ -19,7 +19,8 @@ import {
     LogOutIcon,
     MessageCircleIcon,
     SettingsIcon,
-    UserIcon
+    UserIcon,
+    FilePlus
 } from "lucide-react";
 import {
     DropdownMenu,
