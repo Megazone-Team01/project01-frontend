@@ -7,11 +7,13 @@ import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import {useUploadLecture} from "@/domains/lecture/hook/useUploadLecture.js";
 import axiosInstance from "@/common/api/axiosInstance.js";
+import {useSelector} from "react-redux";
+import {fileUpload} from "@/common/api/fileApi.js";
+import {useNavigate} from "react-router";
+import {Checkbox} from "@/components/ui/checkbox.js";
 
 export default function OfflineUpload() {
-    const mutation = useUploadLecture("offline");
     const [thumbnailPreview, setThumbnailPreview] = useState("");
     const [thumbnailFile, setThumbnailFile] = useState(null);
     // 카테고리 데이터 (API에서 가져올 예정)
@@ -21,6 +23,7 @@ export default function OfflineUpload() {
     const [categories4, setCategories4] = useState([]);
 
     const [ , setSelectedCategory ] = useState( 0 );
+    const { user } = useSelector((state) => state.auth ?? {});
 
     const [organizations, setOrganizations] = useState([]);
     const [rooms, setRooms] = useState([]);
@@ -42,17 +45,17 @@ export default function OfflineUpload() {
 
     const [errors, setErrors] = useState({});
     const [isSubmitting, setIsSubmitting] = useState(false);
-
+    const navigate = useNavigate();
 
     // 요일 옵션
     const days = [
-        { value: '월', label: '월요일' },
-        { value: '화', label: '화요일' },
-        { value: '수', label: '수요일' },
-        { value: '목', label: '목요일' },
-        { value: '금', label: '금요일' },
-        { value: '토', label: '토요일' },
-        { value: '일', label: '일요일' },
+        { value: 0, label: '월요일' },
+        { value: 1, label: '화요일' },
+        { value: 2, label: '수요일' },
+        { value: 3, label: '목요일' },
+        { value: 4, label: '금요일' },
+        { value: 5, label: '토요일' },
+        { value: 6, label: '일요일' },
     ];
 
     // 기관 옵션
@@ -93,12 +96,6 @@ export default function OfflineUpload() {
         }
     };
 
-    // 카테고리 데이터 가져오기
-    useEffect(() => {
-        fetchCategories();
-        fetchOrganizationsWithRooms();
-    }, []);
-
     const fetchCategories = async () => {
         try {
             const response = await axiosInstance.get('/v1/category');
@@ -109,6 +106,13 @@ export default function OfflineUpload() {
             console.error('카테고리 로딩 실패:', error);
         }
     };
+
+    // 카테고리 데이터 가져오기
+    useEffect(() => {
+        // eslint-disable-next-line react-hooks/set-state-in-effect
+        fetchCategories();
+        fetchOrganizationsWithRooms();
+    }, []);
 
     // 메인 카테고리 목록
     const mainCategories = categories;
@@ -171,7 +175,7 @@ export default function OfflineUpload() {
         if (!formData.description.trim()) {
             newErrors.description = "강의 설명을 입력해주세요.";
         }
-        if (!formData.category) {
+        if (formData.category.length === 0) {
             newErrors.category = "카테고리를 선택해주세요.";
         }
         if (!formData.price) {
@@ -179,8 +183,8 @@ export default function OfflineUpload() {
         } else if (isNaN(formData.price) || Number(formData.price) < 0) {
             newErrors.price = "올바른 가격을 입력해주세요.";
         }
-        if( !formData.startAt <= Date.now() ) {
-            newErrors.startAt = "시작일은 오늘보다 이전일 수 없습니다. 합니다";
+        if( new Date(formData.startAt) < new Date().setHours(0, 0, 0, 0) ) {
+            newErrors.startAt = "시작일은 오늘보다 이전일 수 없습니다.";
         }
         if (!formData.startAt) {
             newErrors.startAt = "시작일을 선택해주세요.";
@@ -211,7 +215,7 @@ export default function OfflineUpload() {
         if (!formData.roomId) {
             newErrors.roomId = "강의실을 선택해주세요.";
         }
-
+        console.log( newErrors )
         setErrors(newErrors);
         return Object.keys(newErrors).length === 0;
     };
@@ -221,45 +225,43 @@ export default function OfflineUpload() {
             return;
         }
 
-        setIsSubmitting(true);
+        console.log( formData )
 
-        const submitData = new FormData();
-        if (thumbnailFile) {
-            submitData.append('thumbnail', thumbnailFile);
+        //setIsSubmitting(true);
+
+        let thumbnailId = null;
+        if( thumbnailFile != null ){
+            const thumbnailUploadResponse = await fileUpload( thumbnailFile );
+            thumbnailId = thumbnailUploadResponse.fileId;
         }
 
+        const request = {
+            name: formData.name,
+            organizationId: formData.organizationId,
+            teacherId: user.id,
+            category: formData.category,
+            description: formData.description,
+            type: 2,
+            maxNum: formData.maxNum,
+            price: formData.price,
+            roomId: formData.roomId,
+            startAt: formData.startAt + "T00:00:00",
+            endAt: formData.endAt + "T00:00:00",
+            startTimeAt: formData.startTime,
+            endTimeAt: formData.endTime,
+            dayValue: formData.day,
+            thumbnailId: thumbnailId
+        }
         try {
-            Object.entries(formData).forEach(([key, value]) => submitData.append(key, value));
-            console.log("submitData: ", ...submitData);
-            mutation.mutate(submitData);
-            console.log('등록할 데이터:', {
-                thumbnail: thumbnailFile?.name,
-                ...formData,
-            });
-
-            alert('오프라인 강의가 성공적으로 등록되었습니다!');
-
-            setThumbnailPreview('');
-            setThumbnailFile(null);
-            setFormData({
-                name: '',
-                description: '',
-                category: '',
-                price: '',
-                startAt: '',
-                endAt: '',
-                day: '',
-                startTime: '',
-                endTime: '',
-                maxNum: '',
-                organizationId: '',
-                roomId: '',
-            });
-
-        } catch (error) {
-            console.error('등록 실패:', error);
-            setErrors({ submit: '등록에 실패했습니다.' });
-        } finally {
+            const res = await axiosInstance.post('/v1/lectures', request);
+            if( res.status === 200 ){
+                alert( "강의 생성이 완료되었습니다" )
+            }
+            setIsSubmitting(false);
+            navigate("/")
+        }
+        catch( error ){
+            console.error( error )
             setIsSubmitting(false);
         }
     };
@@ -360,8 +362,6 @@ export default function OfflineUpload() {
                         </CardContent>
                     </Card>
 
-                    {/* 카테고리 */}
-
                     {/* 카테고리 (계층적) */}
                     <Card className="md:col-span-2">
                         <CardHeader>
@@ -454,32 +454,6 @@ export default function OfflineUpload() {
                         </CardContent>
                     </Card>
 
-                    {/* 가격 */}
-                    <Card>
-                        <CardHeader>
-                            <CardTitle className="flex items-center gap-2">
-                                <DollarSign className="w-5 h-5" />
-                                가격 설정
-                            </CardTitle>
-                            <CardDescription>강의 수강료를 설정하세요</CardDescription>
-                        </CardHeader>
-                        <CardContent className="space-y-2">
-                            <Label htmlFor="price">가격 (원) *</Label>
-                            <Input
-                                id="price"
-                                name="price"
-                                type="number"
-                                min="0"
-                                value={formData.price}
-                                onChange={handleInputChange}
-                                placeholder="예: 200000"
-                            />
-                            {errors.price && (
-                                <p className="text-sm text-red-500">{errors.price}</p>
-                            )}
-                        </CardContent>
-                    </Card>
-
                     {/* 강의 기간 */}
                     <Card>
                         <CardHeader>
@@ -527,6 +501,32 @@ export default function OfflineUpload() {
                         </CardContent>
                     </Card>
 
+                    {/* 가격 */}
+                    <Card>
+                        <CardHeader>
+                            <CardTitle className="flex items-center gap-2">
+                                <DollarSign className="w-5 h-5" />
+                                가격 설정
+                            </CardTitle>
+                            <CardDescription>강의 수강료를 설정하세요</CardDescription>
+                        </CardHeader>
+                        <CardContent className="space-y-2">
+                            <Label htmlFor="price">가격 (원) *</Label>
+                            <Input
+                                id="price"
+                                name="price"
+                                type="number"
+                                min="0"
+                                value={formData.price}
+                                onChange={handleInputChange}
+                                placeholder="예: 200000"
+                            />
+                            {errors.price && (
+                                <p className="text-sm text-red-500">{errors.price}</p>
+                            )}
+                        </CardContent>
+                    </Card>
+
                     {/* 수업 요일 */}
                     <Card>
                         <CardHeader>
@@ -535,21 +535,26 @@ export default function OfflineUpload() {
                         </CardHeader>
                         <CardContent className="space-y-2">
                             <Label htmlFor="day">요일 *</Label>
-                            <Select
-                                value={formData.day}
-                                onValueChange={(value) => handleSelectChange('day', value)}
-                            >
-                                <SelectTrigger>
-                                    <SelectValue placeholder="선택하세요" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                    {days.map(day => (
-                                        <SelectItem key={day.value} value={day.label}>
-                                            {day.label}
-                                        </SelectItem>
-                                    ))}
-                                </SelectContent>
-                            </Select>
+                            <div className="grid grid-cols-4">
+                                {
+                                    days.map((day, index) => (
+                                        <div key={index + "_d"} className="flex p-2 gap-3">
+                                            <Checkbox
+                                                checked={formData.day.includes(day.label)}
+                                                onCheckedChange={(checked) => {
+                                                    setFormData({
+                                                        ...formData,
+                                                        day: checked
+                                                            ? [...formData.day, day.label]
+                                                            : formData.day.filter(d => d !== day.label)
+                                                    });
+                                                }}
+                                            />
+                                            <Label> {day.label } </Label>
+                                        </div>
+                                    ))
+                                }
+                            </div>
                             {errors.day && (
                                 <p className="text-sm text-red-500">{errors.day}</p>
                             )}
@@ -622,7 +627,7 @@ export default function OfflineUpload() {
                     </Card>
 
                     {/* 소속 기관 */}
-                    <Card>
+                    <Card className="md:col-span-2">
                         <CardHeader>
                             <CardTitle>소속 기관</CardTitle>
                             <CardDescription>강의를 개설할 교육 기관</CardDescription>

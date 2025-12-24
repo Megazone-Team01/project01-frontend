@@ -325,6 +325,7 @@ const OrganizationServiceSection = ({ organizationId }) => {
                         {
                             activeTab === 0 ? (
                                 organizationTeachers.map((t, index) => (
+                                    t.status === 1 &&
                                     <Card className="rounded-none p-0">
                                         <CardContent className="p-0">
                                             <div key={index} className="flex">
@@ -702,7 +703,7 @@ const OrganizationServiceSection = ({ organizationId }) => {
                                                 </div>
                                             </div>
                                             <div className="space-y-4">
-                                                <h3 className="text-4xl font-black text-slate-900 tracking-tighter uppercase">에약 완료</h3>
+                                                <h3 className="text-4xl font-black text-slate-900 tracking-tighter uppercase">예약 완료</h3>
                                                 <p className="text-slate-400 font-bold text-base leading-relaxed">
                                                     상담 예약이 성공적으로 완료되었습니다.<br />
                                                     선생님 확인 후 최종 확정됩니다.

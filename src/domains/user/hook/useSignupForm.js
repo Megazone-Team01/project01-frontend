@@ -124,6 +124,13 @@ export default function useSignupForm() {
         e.preventDefault();
         setLoading(true);
         console.log("폼 제출 데이터:", form);
+
+        if( emailError.length !== 0 || phoneError.length !== 0 || passwordError.length !== 0 || passwordConfirmError.length !== 0 ) {
+            setError("올바르지 않은 입력 값이 있습니다.");
+            setLoading(false);
+            return;
+        }
+
         if (!form.email || !form.password || !form.passwordConfirm || !form.name || !form.phone) {
             setError("모든 값을 입력해주세요.");
             setLoading(false);

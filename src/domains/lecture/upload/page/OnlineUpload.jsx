@@ -183,12 +183,19 @@ export default function OnlineUpload() {
 
         // 강의 등록
         // 1. 강의 영상 업로드
+        if( videoFile == null ){
+            alert( "강의 영상을 업로드해주세요" )
+            return;
+        }
         const videoUploadResponse = await fileUpload( videoFile );
         const videoId = videoUploadResponse.fileId;
 
         // 2. 강의 썸네일 업로드
-        const thumbnailUploadResponse = await fileUpload( thumbnailFile );
-        const thumbnailId = thumbnailUploadResponse.fileId;
+        let thumbnailId = null;
+        if( thumbnailFile != null ){
+            const thumbnailUploadResponse = await fileUpload( thumbnailFile );
+            thumbnailId = thumbnailUploadResponse.fileId;
+        }
 
         if (!validateForm()) {
             console.log( "VALIDATE UNPASSED" )

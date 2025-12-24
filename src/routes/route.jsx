@@ -27,18 +27,19 @@ import OnlineUpload from "@/domains/lecture/upload/page/OnlineUpload.jsx";
 import {SSEProvider} from "@/routes/SSEContext.jsx";
 import {Provider} from "react-redux";
 import store from "@/common/store/index.js";
+import {useState} from "react";
 
 function CommonRouter() {
-
+    const [ online, setOnline ] = useState(true);
 
     return (
         <Provider store={store}>
             <SSEProvider>
                 <Routes>
-                    <Route element={<MainLayout />}>
+                    <Route element={<MainLayout online={online} setOnline={setOnline} />}>
                         <Route path="/organizations" element={<UserOrganizationListPage />} />
                         <Route path="/organization/:id" element={<UserOrganizationDetailPage />} />
-                        <Route path="/" element={<Home />} />
+                        <Route path="/" element={<Home online={online} />} />
                         <Route path="/admin" element={<AdminRoute><AdminMainPage /></AdminRoute>} />
                         <Route path="/online/:id" element={<OnlineLecturePlayingPage />} />
 

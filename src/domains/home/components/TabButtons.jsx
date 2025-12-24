@@ -8,7 +8,7 @@ export function TabButtons({ tabs, activeTab, onTabChange, className }) {
             {tabs.map((tab) => (
                 <Button
                     key={tab.id}
-                    onClick={() => onTabChange(tab.id)}
+                    onClick={() => onTabChange( tab.value )}
                     className={cn(
                         "px-6 py-3 rounded-lg font-semibold transition-colors",
                         activeTab === tab.id

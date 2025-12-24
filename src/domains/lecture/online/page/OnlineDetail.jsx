@@ -1,13 +1,13 @@
 import {useLocation, useParams} from "react-router";
 import {Badge} from "@/components/ui/badge.js";
-import {formatDate, lectureStatus} from "@/lib/utils.js";
-import EducationPeriod from "@/domains/lecture/components/common/EducationPeriod.jsx";
+import {lectureStatus} from "@/lib/utils.js";
 import {AlertBox} from "@/domains/lecture/components/common/AlertBox.jsx";
 import useLectureDetail from "@/domains/lecture/hook/useLectureDetail.js";
 import {Separator} from "@/components/ui/separator.js";
 import OrganizationCard from "@/domains/lecture/components/common/OrganizationCard.jsx";
 import ErrorPage from "@/components/common/ErrorPage.jsx";
 import LoadingDetail from "@/components/common/LoadingDetail.jsx";
+import {useSelector} from "react-redux";
 
 function OnlineDetail() {
     // useParams()로 URL 변수 받기
@@ -15,6 +15,8 @@ function OnlineDetail() {
     const location = useLocation();
     const lectureType = location.pathname.includes("/online") ? "online" : "offline";
     const {data, isLoading ,isError} = useLectureDetail(onlineId, lectureType);
+
+    const { user } = useSelector((state) => state.auth ?? {});
 
     if (isError) {
         return <ErrorPage/>;
@@ -75,26 +77,28 @@ function OnlineDetail() {
                                 </ul>
                             </div>
                         </div>
-                        <div>
-                            <div className="grid grid-cols-2 gap-5">
-                                <div className="flex gap-2">
-                                    {!data.exists ? <AlertBox
-                                            text={"강의 신청"}
-                                            startAt={data.startAt}
-                                            endAt={data.endAt}
-                                            lectureId={onlineId}
-                                            lectureType={lectureType}
-                                        /> :
-                                        <AlertBox
-                                            text={"강의취소"}
-                                            startAt={data.startAt}
-                                            endAt={data.endAt}
-                                            lectureId={onlineId}
-                                            lectureType={lectureType}
-                                        />}
+                        {
+                            user.role === "STUDENT" && <div>
+                                <div className="grid grid-cols-2 gap-5">
+                                    <div className="flex gap-2">
+                                        {!data.exists ? <AlertBox
+                                                text={"강의 신청"}
+                                                startAt={data.startAt}
+                                                endAt={data.endAt}
+                                                lectureId={onlineId}
+                                                lectureType={lectureType}
+                                            /> :
+                                            <AlertBox
+                                                text={"강의취소"}
+                                                startAt={data.startAt}
+                                                endAt={data.endAt}
+                                                lectureId={onlineId}
+                                                lectureType={lectureType}
+                                            />}
+                                    </div>
                                 </div>
                             </div>
-                        </div>
+                        }
                     </section>
                 </div>
             </div>

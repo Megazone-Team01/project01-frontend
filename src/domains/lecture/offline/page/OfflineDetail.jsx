@@ -10,6 +10,7 @@ import LoadingDetail from "@/components/common/LoadingDetail.jsx";
 import ErrorPage from "@/components/common/ErrorPage.jsx";
 import useLectureDetail from "@/domains/lecture/hook/useLectureDetail.js";
 import {ImageIcon} from "lucide-react";
+import {useSelector} from "react-redux";
 
 
 function OfflineDetail() {
@@ -17,6 +18,8 @@ function OfflineDetail() {
     const location = useLocation();
     const lectureType = location.pathname.includes("/online") ? "online" : "offline";
     const {data, isLoading,isError} = useLectureDetail(offlineId, lectureType);
+
+    const { user } = useSelector((state) => state.auth ?? {});
 
     if (isLoading) {
         return <LoadingDetail />;
@@ -84,24 +87,28 @@ function OfflineDetail() {
                                 </ul>
                             </div>
                         </div>
-                        <div className="grid grid-cols-2 gap-5">
-                                <div className="flex gap-2">
-                                    {!data.exists? <AlertBox
-                                        text={"강의 신청"}
-                                        startAt={data.startAt}
-                                        endAt={data.endAt}
-                                        lectureId={offlineId}
-                                        lectureType={lectureType}
-                                    />:
-                                    <AlertBox
-                                        text={"강의 취소"}
-                                        startAt={data.startAt}
-                                        endAt={data.endAt}
-                                        lectureId={offlineId}
-                                        lectureType={lectureType}
-                                    />}
+                        {
+                            user.role === "STUDENT" && <div>
+                                <div className="grid grid-cols-2 gap-5">
+                                    <div className="flex gap-2">
+                                        {!data.exists ? <AlertBox
+                                                text={"강의 신청"}
+                                                startAt={data.startAt}
+                                                endAt={data.endAt}
+                                                lectureId={onlineId}
+                                                lectureType={lectureType}
+                                            /> :
+                                            <AlertBox
+                                                text={"강의취소"}
+                                                startAt={data.startAt}
+                                                endAt={data.endAt}
+                                                lectureId={onlineId}
+                                                lectureType={lectureType}
+                                            />}
+                                    </div>
                                 </div>
                             </div>
+                        }
                     </section>
                 </div>
             </div>

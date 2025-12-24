@@ -32,7 +32,7 @@ import { Toggle } from "@/components/ui/toggle.js";
 import { getProfileInfo } from "@/domains/user/api/profile.js";
 import { useSSE } from "@/routes/SSEContext.jsx";
 
-export default function Header({  hasNotifications }) {
+export default function Header({ online, setOnline, hasNotifications }) {
 
     const [isScrolled, setIsScrolled] = useState(false);
     const dispatch = useDispatch();
@@ -41,7 +41,6 @@ export default function Header({  hasNotifications }) {
     const { notifications } = useSSE();
 
     const { isAuthenticated, user } = useSelector((state) => state.auth ?? {});
-    const [isOnline, setOnline] = useState(false);
 
     const [userInfo, setUserInfo] = useState({
         fileUrl: '',
@@ -99,10 +98,10 @@ export default function Header({  hasNotifications }) {
                 </Link>
                 <Separator orientation="vertical" className="h-6 mx-4" />
                 <Item
-                    onClick={isOnline ? () => navigate("/organizations") : () => navigate("/organizations")}
+                    onClick={online ? () => navigate("/organizations") : () => navigate("/organizations")}
                     className="text-white hover:font-bold hover:cursor-pointer"> 아카데미 </Item>
                 <Item
-                    onClick={isOnline ? () => navigate("/lecture/online") : () => navigate("/lecture/offline")}
+                    onClick={online ? () => navigate("/lecture/online") : () => navigate("/lecture/offline")}
                     className="text-white hover:font-bold hover:cursor-pointer"> 강의 </Item>
             </div>
             {isAuthenticated ? (
@@ -123,16 +122,22 @@ export default function Header({  hasNotifications }) {
 
                         {user.role !== "STUDENT" && (
                             <DropdownMenuContent align="end">
-                                <DropdownMenuItem asChild>
-                                    <Link to="/offline/upload" className="cursor-pointer">
-                                        오프라인 강의 업로드
-                                    </Link>
-                                </DropdownMenuItem>
-                                <DropdownMenuItem asChild>
-                                    <Link to="/online/upload" className="cursor-pointer">
-                                        온라인 강의 업로드
-                                    </Link>
-                                </DropdownMenuItem>
+                                {
+                                    user.type !== 1 &&
+                                    <DropdownMenuItem asChild>
+                                        <Link to="/offline/upload" className="cursor-pointer">
+                                            오프라인 강의 업로드
+                                        </Link>
+                                    </DropdownMenuItem>
+                                }
+                                {
+                                    user.type !== 2 &&
+                                    <DropdownMenuItem asChild>
+                                        <Link to="/online/upload" className="cursor-pointer">
+                                            온라인 강의 업로드
+                                        </Link>
+                                    </DropdownMenuItem>
+                                }
                             </DropdownMenuContent>
                         )}
                     </DropdownMenu>
@@ -236,7 +241,7 @@ export default function Header({  hasNotifications }) {
                         </DropdownMenuContent>
                     </DropdownMenu>
                     <div className="flex justify-end items-center">
-                        <Toggle variant="outline" pressed={isOnline} onPressedChange={setOnline} asChild>
+                        <Toggle variant="outline" pressed={online} onPressedChange={setOnline} asChild>
                             <div
                                 className="
                                 hover:cursor-pointer hover:bg-transparent
@@ -247,7 +252,7 @@ export default function Header({  hasNotifications }) {
                                 data-[state=on]:bg-white
                                 data-[state=on]:text-red-500
                                 ">
-                                <span className="text-xs">{isOnline ? "ON" : "OFF"} </span>
+                                <span className="text-xs">{online ? "ON" : "OFF"} </span>
                             </div>
                         </Toggle>
                     </div>
@@ -262,7 +267,7 @@ export default function Header({  hasNotifications }) {
                         <Link to="/sign">Sign Up</Link>
                     </Button>
                     <div className="flex justify-end items-center">
-                        <Toggle variant="outline" pressed={isOnline} onPressedChange={setOnline} asChild>
+                        <Toggle variant="outline" pressed={online} onPressedChange={setOnline} asChild>
                             <div
                                 className="
                                 hover:cursor-pointer hover:bg-transparent
@@ -273,7 +278,7 @@ export default function Header({  hasNotifications }) {
                                 data-[state=on]:bg-white
                                 data-[state=on]:text-red-500
                                 ">
-                                <span className="text-xs">{isOnline ? "ON" : "OFF"} </span>
+                                <span className="text-xs">{online ? "ON" : "OFF"} </span>
                             </div>
                         </Toggle>
                     </div>
