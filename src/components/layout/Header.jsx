@@ -110,7 +110,7 @@ export default function Header({  hasNotifications }) {
                     <DropdownMenu>
                         <DropdownMenuTrigger asChild>
                             <Button size="icon" variant="ghost" className="relative">
-                                {user.roleName !== "TEACHER" ? (
+                                {user.role !== "STUDENT" ? (
                                     <>
                                         <FilePlus className="size-5" />
                                         {hasNotifications && (
@@ -121,7 +121,7 @@ export default function Header({  hasNotifications }) {
                             </Button>
                         </DropdownMenuTrigger>
 
-                        {user.roleName !== "TEACHER" && (
+                        {user.role !== "STUDENT" && (
                             <DropdownMenuContent align="end">
                                 <DropdownMenuItem asChild>
                                     <Link to="/offline/upload" className="cursor-pointer">
@@ -219,7 +219,7 @@ export default function Header({  hasNotifications }) {
                                     }}
                                 >
                                     <BarChart3Icon className="size-4 mr-2" />
-                                    대시보드
+                                    Dashboard
                                 </DropdownMenuItem>
                                 <DropdownMenuItem asChild className="cursor-pointer">
                                     <Link to="/profile">

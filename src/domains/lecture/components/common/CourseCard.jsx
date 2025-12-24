@@ -37,14 +37,17 @@ function CourseCard({id,imgUrl, title, description, startAt, endAt}) {
                         </p>
                         <Separator/>
                         <div className="flex flex-col gap-3 justify-end mt-auto">
-                            <div className="flex justify-start items-center gap-2">
-                                <Badge className="hidden lg:block bg-black text-white">수강기간</Badge>
-                                <div>
-                                    <span>{formatDate(startAt)}</span>
-                                    <span>~</span>
-                                    <span>{formatDate(endAt)}</span>
+                            {
+                                type === "offline" &&
+                                <div className="flex justify-start items-center gap-2">
+                                    <Badge className="hidden lg:block bg-black text-white">수강기간</Badge>
+                                    <div>
+                                        <span>{formatDate(startAt)}</span>
+                                        <span>~</span>
+                                        <span>{formatDate(endAt)}</span>
+                                    </div>
                                 </div>
-                            </div>
+                            }
                             <div className="flex justify-center *:w-full items-center gap-2">
                                 <Button variant="link"
                                         className="cursor-pointer bg-amber-50 text-black shadow-2xl border-1 border-black hover:bg-none">

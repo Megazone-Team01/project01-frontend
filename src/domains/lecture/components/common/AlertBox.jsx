@@ -61,8 +61,7 @@ export function AlertBox({ text, startAt, endAt, lectureType, lectureId}) {
                 {isApply ?  <Button
                         className={`
                     w-full
-                    ${lectureStatus(startAt, endAt) === "강의 종료"||
-                        lectureStatus(startAt, endAt) === "강의중"
+                    ${lectureStatus(startAt, endAt) === "강의 종료"
                             ? "pointer-events-none opacity-50" : ""}
                      p-2 border-1 border-black `}
                         variant="outline">{text}

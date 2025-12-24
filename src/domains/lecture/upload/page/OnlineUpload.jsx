@@ -7,13 +7,12 @@ import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { useUploadLecture } from "@/domains/lecture/hook/useUploadLecture.js";
 import axiosInstance from "@/common/api/axiosInstance.js";
 import {fileUpload} from "@/common/api/fileApi.js";
 import {useSelector} from "react-redux";
+import {useNavigate} from "react-router";
 
 export default function OnlineUpload() {
-    const mutation = useUploadLecture("online");
     const maxSize = 500 * 1024 * 1024; // 500MB
 
     const [videoPreview, setVideoPreview] = useState("");
@@ -26,11 +25,10 @@ export default function OnlineUpload() {
     const [categories2, setCategories2] = useState([]);
     const [categories3, setCategories3] = useState([]);
     const [categories4, setCategories4] = useState([]);
-    const [categories5, setCategories5] = useState([]);
 
-    const [ selectedCategory, setSelectedCategory ] = useState( 0 );
-    const { isAuthenticated, user } = useSelector((state) => state.auth ?? {});
-
+    const [ , setSelectedCategory ] = useState( 0 );
+    const { user } = useSelector((state) => state.auth ?? {});
+    const navigate = useNavigate();
 
     // 조직 데이터
     const [organizations, setOrganizations] = useState([]);
@@ -91,7 +89,6 @@ export default function OnlineUpload() {
         else if( depth === 1 ) setCategories2(response.data);
         else if( depth === 2 ) setCategories3(response.data);
         else if( depth === 3 ) setCategories4(response.data);
-        else if( depth === 4 ) setCategories5(response.data);
         else return
         setFormData( { ...formData, category: data.code })
     }
@@ -169,12 +166,6 @@ export default function OnlineUpload() {
         } else if (isNaN(formData.price) || Number(formData.price) < 0) {
             newErrors.price = "올바른 가격을 입력해주세요.";
         }
-        if (!formData.startAt) {
-            newErrors.startAt = "시작일을 선택해주세요.";
-        }
-        if (!formData.endAt) {
-            newErrors.endAt = "종료일을 선택해주세요.";
-        }
         if (formData.startAt && formData.endAt && new Date(formData.startAt) >= new Date(formData.endAt)) {
             newErrors.endAt = "종료일은 시작일보다 늦어야 합니다.";
         }
@@ -214,11 +205,11 @@ export default function OnlineUpload() {
             type: 1,
             fileId: videoId,
             price: formData.price,
-            startAt: formData.startAt + "T00:00:00",
-            endAt: formData.endAt + "T00:00:00",
+            startAt: "2000-01-01T00:00:00",
+            endAt: "3000-01-01T00:00:00",
             thumbnailId: thumbnailId,
         }
-        const res = await axiosInstance.post( "/v1/lectures", request );
+        await axiosInstance.post( "/v1/lectures", request );
 
         try {
             // ✅ 폼 초기화를 여기서 하지 말고 onSuccess에서 하는 것이 좋습니다
@@ -237,7 +228,7 @@ export default function OnlineUpload() {
                 organizationId: '',
             });
             alert( "강의 생성 완료" )
-            window.location.reload()
+            navigate( "/" )
         } catch (error) {
             console.error('업로드 실패:', error);
             setErrors({ submit: error.message || '업로드에 실패했습니다.' });
@@ -474,17 +465,6 @@ export default function OnlineUpload() {
                                     </Select>
                                 </div>
                             }
-
-                            {/* 선택된 카테고리 표시 */}
-                            {formData.category && (
-                                <div className="text-sm text-slate-600 bg-slate-100 p-3 rounded">
-                                    선택된 카테고리: <span className="font-semibold">{formData.category}</span>
-                                </div>
-                            )}
-
-                            {errors.category && (
-                                <p className="text-sm text-red-500">{errors.category}</p>
-                            )}
                         </CardContent>
                     </Card>
 
@@ -531,7 +511,7 @@ export default function OnlineUpload() {
                                 </SelectTrigger>
                                 <SelectContent>
                                     {organizations.map(org => (
-                                        <SelectItem key={org.id} value={org.id.toString()}>
+                                        org.isOnline !== 2 &&  <SelectItem key={org.id} value={org.id.toString()}>
                                             {org.name}
                                         </SelectItem>
                                     ))}
@@ -539,54 +519,6 @@ export default function OnlineUpload() {
                             </Select>
                             {errors.organizationId && (
                                 <p className="text-sm text-red-500">{errors.organizationId}</p>
-                            )}
-                        </CardContent>
-                    </Card>
-
-                    {/* 강의 기간 - 시작일 */}
-                    <Card>
-                        <CardHeader>
-                            <CardTitle className="flex items-center gap-2">
-                                <Calendar className="w-5 h-5" />
-                                시작일
-                            </CardTitle>
-                            <CardDescription>강의 시작 날짜</CardDescription>
-                        </CardHeader>
-                        <CardContent className="space-y-2">
-                            <Label htmlFor="startAt">시작일 *</Label>
-                            <Input
-                                id="startAt"
-                                name="startAt"
-                                type="date"
-                                value={formData.startAt}
-                                onChange={handleInputChange}
-                            />
-                            {errors.startAt && (
-                                <p className="text-sm text-red-500">{errors.startAt}</p>
-                            )}
-                        </CardContent>
-                    </Card>
-
-                    {/* 강의 기간 - 종료일 */}
-                    <Card>
-                        <CardHeader>
-                            <CardTitle className="flex items-center gap-2">
-                                <Calendar className="w-5 h-5" />
-                                종료일
-                            </CardTitle>
-                            <CardDescription>강의 종료 날짜</CardDescription>
-                        </CardHeader>
-                        <CardContent className="space-y-2">
-                            <Label htmlFor="endAt">종료일 *</Label>
-                            <Input
-                                id="endAt"
-                                name="endAt"
-                                type="date"
-                                value={formData.endAt}
-                                onChange={handleInputChange}
-                            />
-                            {errors.endAt && (
-                                <p className="text-sm text-red-500">{errors.endAt}</p>
                             )}
                         </CardContent>
                     </Card>

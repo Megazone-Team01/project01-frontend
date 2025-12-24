@@ -8,7 +8,6 @@ import {Separator} from "@/components/ui/separator.js";
 import OrganizationCard from "@/domains/lecture/components/common/OrganizationCard.jsx";
 import ErrorPage from "@/components/common/ErrorPage.jsx";
 import LoadingDetail from "@/components/common/LoadingDetail.jsx";
-import {useSelector} from "react-redux";
 
 function OnlineDetail() {
     // useParams()로 URL 변수 받기
@@ -38,7 +37,7 @@ function OnlineDetail() {
                         <Badge className="rounded-none p-1 font-medium">{lectureType}</Badge>
                         {data?.category && (
                             <Badge className="rounded-none bg-orange-400 p-1 font-medium">
-                                {data.category}
+                                {data.category.join(" > ")}
                             </Badge>
                         )}
                     </section>
@@ -63,7 +62,6 @@ function OnlineDetail() {
                                     </div>
 
                                 </div>
-                                <p>{data.description}</p>
                             </div>
 
                         </div>
@@ -74,11 +72,6 @@ function OnlineDetail() {
                                     <li>강사: {data.teacherName}</li>
                                     <li>아카데미: {data.organizationName}</li>
                                     <li>가격: {data.price}</li>
-                                    <EducationPeriod
-                                        startAt={data.startAt}
-                                        endAt={data.endAt}
-                                        formatDate={formatDate}
-                                    />
                                 </ul>
                             </div>
                         </div>
@@ -86,19 +79,19 @@ function OnlineDetail() {
                             <div className="grid grid-cols-2 gap-5">
                                 <div className="flex gap-2">
                                     {!data.exists ? <AlertBox
-                                        text={"강의 신청"}
-                                        startAt={data.startAt}
-                                        endAt={data.endAt}
-                                        lectureId={onlineId}
-                                        lectureType={lectureType}
-                                    />:
-                                    <AlertBox
-                                        text={"강의취소"}
-                                        startAt={data.startAt}
-                                        endAt={data.endAt}
-                                        lectureId={onlineId}
-                                        lectureType={lectureType}
-                                    />}
+                                            text={"강의 신청"}
+                                            startAt={data.startAt}
+                                            endAt={data.endAt}
+                                            lectureId={onlineId}
+                                            lectureType={lectureType}
+                                        /> :
+                                        <AlertBox
+                                            text={"강의취소"}
+                                            startAt={data.startAt}
+                                            endAt={data.endAt}
+                                            lectureId={onlineId}
+                                            lectureType={lectureType}
+                                        />}
                                 </div>
                             </div>
                         </div>
@@ -110,6 +103,12 @@ function OnlineDetail() {
                 <OrganizationCard
                     name={data.organizationName}
                     description={data.organizationDescription}/>
+            </section>
+            <Separator className="my-2"/>
+            <section>
+                <pre className="whitespace-pre">
+                    {data.description}
+                </pre>
             </section>
 
         </div>

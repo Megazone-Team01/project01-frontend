@@ -9,6 +9,7 @@ import {Separator} from "@/components/ui/separator.js";
 import LoadingDetail from "@/components/common/LoadingDetail.jsx";
 import ErrorPage from "@/components/common/ErrorPage.jsx";
 import useLectureDetail from "@/domains/lecture/hook/useLectureDetail.js";
+import {ImageIcon} from "lucide-react";
 
 
 function OfflineDetail() {
@@ -17,7 +18,6 @@ function OfflineDetail() {
     const lectureType = location.pathname.includes("/online") ? "online" : "offline";
     const {data, isLoading,isError} = useLectureDetail(offlineId, lectureType);
 
-    console.log(data.thumbnail)
     if (isLoading) {
         return <LoadingDetail />;
     }
@@ -30,17 +30,23 @@ function OfflineDetail() {
     return (
         <div className="max-w-screen-lg mx-auto p-2">
             <div className="flex flex-col gap-5 sm:grid sm:grid-cols-[1fr_2fr]">
-                <img
-                    src={`${import.meta.env.VITE_FILE_URL_HEADER}${data.thumbnail}`}
-                    alt="thumbnail"
-                    className="w-[400px] h-[300px] object-fit"
-                />
+                {
+                    data.thumbnail ? <img
+                        src={`${import.meta.env.VITE_FILE_URL_HEADER}${data.thumbnail}`}
+                        alt="thumbnail"
+                        className="w-[400px] h-[300px] object-fit"
+                    />
+                    :
+                    <div className="flex justify-center items-center text-gray-400">
+                        <ImageIcon />
+                    </div>
+                }
                 <div>
                     <section className="flex gap-2 mb-2">
                         <Badge className="rounded-none p-1 font-medium">{lectureType}</Badge>
                         {data.category && (
                             <Badge className="rounded-none bg-orange-400 p-1 font-medium">
-                                {data.category}
+                                {data.category.join(" > ")}
                             </Badge>
                         )}
                     </section>
@@ -104,6 +110,12 @@ function OfflineDetail() {
                 <OrganizationCard
                 name={data.organizationName}
                 description={data.organizationDescription}/>
+            </section>
+            <Separator className="my-1"/>
+            <section>
+                <pre className="whitespace-pre">
+                    { data.description }
+                </pre>
             </section>
         </div>
 
